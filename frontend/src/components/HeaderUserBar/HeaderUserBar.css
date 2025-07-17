@@ -1,0 +1,44 @@
+.header-userbar {
+  position: fixed;
+  top: 0.6rem;
+  right: 1.5rem;
+  z-index: 2000;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 1rem;
+  background: #fff;
+  box-shadow: 0 4px 16px 0 rgba(0, 0, 0, 0.2), 0 1.5px 4px 0 rgba(0, 0, 0, 0.04);
+  border-radius: 1.2rem;
+  padding: 0.1rem 1.3rem;
+  min-height: 40px;
+  width: auto;
+  max-width: 400px;
+}
+
+.header-username {
+  font-family: "Rajdhani", Arial, sans-serif;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #2d3748;
+  letter-spacing: 0.02em;
+  margin-top: 0.1875rem;
+}
+
+.header-cart {
+  display: flex;
+  align-items: center;
+  position: relative;
+}
+
+.header-cart svg {
+  display: block;
+}
+
+@media (max-width: 900px) {
+  .header-userbar {
+    right: 1rem;
+    top: 0.2rem;
+    padding: 0.3rem 1rem 0.3rem 0.7rem;
+  }
+}

@@ -1,0 +1,188 @@
+.cumples-card {
+  width: 100%;
+  max-width: 100%;
+  height: 100%;
+  max-height: 22rem; /* 350px */
+  margin: auto;
+  box-sizing: border-box;
+  background: white;
+  border-radius: 0.75rem; /* 12px */
+  padding: 1rem;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  padding: 1.3rem;
+}
+
+.cumples-header {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  margin-bottom: 12px;
+  gap: 10px;
+}
+
+.cumples-icon {
+  font-size: 1.2rem;
+  margin-right: 8px;
+}
+
+.cumples-title {
+  font-size: 1.2rem;
+  font-weight: 700;
+  margin: 0;
+  color: #222;
+  flex: none;
+  text-align: left;
+}
+
+.cumples-action {
+  background: none;
+  border: none;
+  color: #bdbdbd;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  transition: color 0.2s;
+  margin-left: auto;
+}
+.cumples-action:hover {
+  color: #222;
+}
+
+.cumples-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex: 1 1 auto;
+  min-height: 0;
+  max-height: unset;
+  overflow-y: auto;
+  padding-bottom: 4px;
+}
+
+.cumples-list-header {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 0 10px 4px 0;
+  font-size: 1rem;
+  font-weight: 700;
+  color: #111;
+}
+
+.cumples-item {
+  display: flex;
+  align-items: center;
+  padding: 7px 0 7px 0;
+  border-bottom: 1.5px solid #d1d5db;
+  min-height: 38px;
+  box-sizing: border-box;
+  margin-bottom: 8px;
+}
+
+.cumples-item:last-child {
+  margin-bottom: 0;
+}
+
+.cumples-avatar {
+  width: 38px;
+  height: 28px;
+  background: #e5e5e5;
+  border-radius: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #222;
+  margin-right: 12px;
+}
+
+.cumples-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 0;
+  min-height: 28px;
+}
+
+.cumples-nombre {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #222;
+  text-align: left;
+  margin-bottom: 0px;
+  display: block;
+}
+
+.cumples-desc {
+  font-size: 0.92rem;
+  color: #bdbdbd;
+  font-weight: 500;
+  margin-top: 0px;
+  text-align: left;
+  line-height: 1.1;
+}
+
+.cumples-desc-inline {
+  font-size: 0.72rem;
+  color: #bdbdbd;
+  font-weight: 500;
+  margin-top: 0.5px;
+  margin-bottom: 0px;
+  line-height: 1;
+  display: block;
+  position: relative;
+  top: -3px;
+}
+
+.cumples-fecha {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #222;
+  margin-right: 10px;
+  min-width: 40px;
+  text-align: right;
+}
+
+.cumples-fecha-label-header {
+  min-width: 40px;
+  text-align: right;
+}
+
+.cumples-wa {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 28px;
+}
+
+@media (max-width: 600px) {
+  .cumples-card {
+    padding: 10px 4px 6px 4px;
+    min-width: unset;
+  }
+  .cumples-avatar {
+    width: 28px;
+    height: 18px;
+    font-size: 0.9rem;
+    margin-right: 6px;
+  }
+  .cumples-title {
+    font-size: 1rem;
+  }
+  .cumples-nombre {
+    font-size: 0.95rem;
+  }
+  .cumples-fecha {
+    font-size: 0.95rem;
+    margin-right: 6px;
+  }
+}

@@ -1,0 +1,196 @@
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&family=Rajdhani:wght@400;500;600;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Reenie+Beanie&display=swap");
+
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 4.275rem; /* 70px */
+  height: 100vh;
+  background: #f1f2f7;
+  display: flex;
+  flex-direction: column;
+  border-right: 0.0625rem solid #e0e0e0; /* 1px */
+  z-index: 1300; /* mayor que la sidebar de categorías */
+  transition: width 0.2s;
+}
+.sidebar:hover,
+.sidebar.sidebar-expanded {
+  width: 15rem; /* 240px */
+}
+
+.sidebar-header {
+  font-family: "Reenie Beanie", sans-serif;
+  font-size: 1.875rem; /* 30px */
+  font-weight: bold;
+  color: black;
+  border-bottom: 0.0625rem solid #bbbbbb91; /* 1px */
+  white-space: nowrap;
+  opacity: 0;
+  transition: opacity 0.2s;
+
+  background: #f1f2f7;
+
+  padding: 0.8rem 1rem 0.8rem 1rem; /* aún más bajo */
+  min-height: unset;
+  height: auto;
+}
+.sidebar-header h2 {
+  margin: 0;
+  line-height: 1;
+  /* Aumenté la sombra del texto del nombre 'Ananda' */
+  text-shadow: 0 4px 16px rgba(44, 62, 80, 0.22),
+    0 1.5px 4px rgba(0, 0, 0, 0.13);
+}
+
+.sidebar:hover .sidebar-header,
+.sidebar.sidebar-expanded .sidebar-header {
+  opacity: 1;
+}
+
+.sidebar-nav {
+  margin-top: 3.125rem; /* 50px */
+}
+
+.sidebar-item {
+  display: flex;
+  align-items: center;
+  padding: 1rem;
+  color: #888;
+  text-decoration: none;
+  font-family: "Poppins", sans-serif;
+  font-weight: 500;
+  font-size: 0.75rem; /* 12px */
+  transition: background 0.2s, color 0.2s;
+  border-radius: 0.5rem; /* 8px */
+  margin: 0 0.5rem; /* 8px */
+}
+
+.sidebar-item .sidebar-label {
+  opacity: 0;
+  margin-left: 0;
+  white-space: nowrap;
+  transition: opacity 0.2s, margin-left 0.2s;
+  display: none;
+  /* Aumenté la sombra del texto de los labels */
+  text-shadow: 0 2px 8px rgba(44, 62, 80, 0.18), 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+.sidebar:hover .sidebar-item .sidebar-label,
+.sidebar.sidebar-expanded .sidebar-item .sidebar-label {
+  opacity: 1;
+  margin-left: 1rem;
+  display: inline;
+}
+
+.sidebar-item.active,
+.sidebar-item:hover {
+  background: #e6eaf8;
+  color: #2563eb;
+}
+.sidebar-item.active {
+  background: #e6eaf8;
+  color: #2563eb;
+}
+
+.sidebar-icon {
+  font-size: 1.3rem;
+  min-width: 1.5rem; /* 24px */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.sidebar-footer {
+  margin-top: auto;
+  padding: 0; /* Quitar padding para que no se vea fondo extra */
+  margin-inline-start: 0.625rem; /* Quitar margen lateral */
+  margin-inline-end: 0.625rem;
+  margin-bottom: 2rem;
+  background: none; /* Quitar fondo azul del contenedor */
+  border-radius: 0; /* Quitar border-radius del contenedor */
+  font-size: 8px;
+  position: relative;
+  min-height: unset;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  box-shadow: none;
+}
+
+.sidebar-cart-btn {
+  color: white;
+}
+
+.sidebar-cart-btn:hover {
+  color: white;
+}
+
+.sidebar-footer .sidebar-item {
+  margin: 0 0.5rem;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.7rem;
+  transition: background 0.2s, color 0.2s, width 0.2s, filter 0.15s;
+  overflow: visible;
+}
+
+.sidebar-footer .sidebar-item:hover,
+.sidebar-footer .sidebar-item:focus {
+  filter: brightness(1.18);
+  background: #3456e6 !important;
+  box-shadow: 0 6px 24px 0 rgba(44, 62, 80, 0.28), 0 2px 8px rgba(0, 0, 0, 0.18);
+}
+
+.sidebar-footer .sidebar-item:active {
+  filter: brightness(0.97);
+  background: #2746b3 !important;
+  box-shadow: 0 1px 4px 0 rgba(44, 62, 80, 0.13), 0 1px 2px rgba(0, 0, 0, 0.1);
+  transform: scale(0.97);
+  transition: filter 0.1s, background 0.1s, box-shadow 0.1s, transform 0.1s;
+}
+
+.sidebar-footer .sidebar-item .sidebar-icon {
+  color: #fff !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 0;
+  margin-right: 0;
+  flex: 0 0 auto;
+  width: 1.8rem;
+  height: 1.8rem;
+}
+
+.sidebar-footer .sidebar-item .sidebar-label {
+  opacity: 0;
+  margin-left: 0;
+  color: #fff !important;
+  transition: opacity 0.2s, margin-left 0.2s, display 0.2s;
+  text-align: center;
+  display: none;
+}
+.sidebar:hover .sidebar-footer .sidebar-item .sidebar-label {
+  opacity: 1;
+  margin-left: 0.7rem;
+  display: inline;
+}
+
+.sidebar-footer .sidebar-item .sidebar-notification-dot {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.7rem;
+  margin: 0;
+  z-index: 2;
+}
+
+.sidebar:not(.sidebar-expanded) .sidebar-footer .sidebar-item {
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.sidebar:not(.sidebar-expanded) .sidebar-footer .sidebar-item .sidebar-label {
+  display: none;
+}

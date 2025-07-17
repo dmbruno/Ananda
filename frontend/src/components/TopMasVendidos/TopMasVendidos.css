@@ -1,0 +1,136 @@
+.top-mas-vendidos-card {
+  width: 100%;
+  max-width: 100%;
+  height: 100%;
+  max-height: 22rem; /* 350px */
+  margin: auto;
+  box-sizing: border-box;
+  background: white;
+  border-radius: 0.75rem; /* 12px */
+  padding: 1rem;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  padding: 1.3rem;
+}
+
+.top-mas-vendidos-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 18px;
+}
+
+.top-mas-vendidos-icon {
+  font-size: 1.4rem;
+  margin-right: 8px;
+}
+
+.top-mas-vendidos-header-content {
+  flex: 1;
+  display: flex;
+  align-items: center;
+}
+
+.top-mas-vendidos-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin: 0;
+  color: #222;
+}
+
+.top-mas-vendidos-action {
+  background: none;
+  border: none;
+  color: #bdbdbd;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  transition: color 0.2s;
+}
+.top-mas-vendidos-action:hover {
+  color: #222;
+}
+
+.top-mas-vendidos-list {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1 1 auto;
+  min-height: 0;
+  max-height: unset;
+  overflow-y: auto;
+  padding-bottom: 4px;
+}
+
+.top-mas-vendidos-list-header {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 0 18px 4px 0;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #111;
+}
+
+.top-mas-vendidos-item {
+  display: flex;
+  align-items: center;
+  background: #e5e5e593;
+  border-radius: 14px;
+  padding: 7px 12px;
+  min-height: 38px;
+  box-sizing: border-box;
+  margin-bottom: 6px;
+  justify-content: flex-start;
+}
+
+.top-mas-vendidos-img {
+  width: 28px;
+  height: 28px;
+  font-size: 1.1rem;
+  margin-right: 10px;
+  border-radius: 6px;
+}
+
+.top-mas-vendidos-info {
+  flex: 1;
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  color: #222;
+  margin-left: 0;
+}
+
+.top-mas-vendidos-nombre {
+  font-size: 1rem;
+  font-weight: 600;
+  margin-left: 0;
+  text-align: left;
+}
+
+.top-mas-vendidos-cantidad {
+  display: none;
+}
+
+.top-mas-vendidos-cantidad-label {
+  font-size: 0.85rem;
+}
+
+.top-mas-vendidos-cantidad-label-header {
+  min-width: 40px;
+  text-align: right;
+}
+
+.top-mas-vendidos-cantidad-num {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #222;
+  min-width: 40px;
+  text-align: right;
+}

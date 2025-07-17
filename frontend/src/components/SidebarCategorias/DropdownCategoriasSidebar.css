@@ -1,0 +1,97 @@
+/* Sidebar de categorías lateral, fondo sólido, NO tapa la sidebar principal */
+.dropdown-categorias-sidebar {
+  position: fixed;
+  top: 0;
+  left: 240px; /* sidebar expandida: 240px */
+  width: 220px;
+  height: 100vh;
+  background: #f1f2f7;
+  box-shadow: 2px 0 16px 0 rgba(0, 0, 0, 0.08);
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+
+  border-radius: 0 1.2rem 1.2rem 0;
+  animation: slideInSidebarRight 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: hidden;
+}
+
+.modal-categorias-panel {
+  background-color: rgba(102, 51, 153, 0);
+}
+
+@keyframes slideInSidebarRight {
+  from {
+    transform: translateX(-100%);
+    opacity: 0.5;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@media (max-width: 600px) {
+  .dropdown-categorias-sidebar {
+    width: 100vw;
+    left: 0;
+    border-radius: 0;
+  }
+}
+
+.dropdown-categorias-content {
+  flex: 1;
+  padding: 2.5rem 1.5rem 1.5rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  max-height: 100vh;
+  background: #f1f2f7;
+}
+
+.dropdown-categorias-list {
+  margin: 0; /* Remove default list margin */
+  padding: 0; /* Remove default list padding */
+  list-style-type: none;
+  margin-top: 2rem;
+  margin-bottom: 2rem;
+  background: #f1f2f7;
+}
+.dropdown-subcategorias-item {
+  background: #f1f2f7;
+}
+
+.dropdown-categorias-item {
+  display: block; /* Ensure items are block elements */
+  align-items: flex-start;
+  list-style-type: none; /* Remove bullet points */
+  padding-left: 0; /* Align items properly */
+  text-align: left; /* Ensure text alignment */
+  font-weight: 600;
+  background: #f1f2f7;
+}
+
+/* Overlay opcional: puedes jugar con este bloque para cubrir el contenido a la derecha de la sidebar de categorías */
+.categorias-overlay-demo {
+  position: fixed;
+  top: 0;
+  left: 560px; /* 240px sidebar + 320px sidebar de categorías */
+  width: calc(100vw - 560px);
+  height: 100vh;
+  background: rgba(30, 41, 59, 0.08);
+  z-index: 1100;
+  pointer-events: auto;
+}
+
+/* Estilos para el botón de cierre (X) en el sidebar de categorías */
+.dropdown-categorias-close-btn {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: #888;
+  transition: color 0.2s;
+}
+.dropdown-categorias-close-btn:hover {
+  color: #333;
+}

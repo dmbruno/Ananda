@@ -1,0 +1,48 @@
+.cart-badge-root {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cart-badge-badge {
+  position: absolute;
+  top: -0.4rem;
+  right: -0.4rem;
+  min-width: 1.2rem;
+  height: 1.2rem;
+  padding: 0 0.2rem;
+  background: #2563eb;
+  color: #fff;
+  font-size: 0.55rem;
+  font-weight: 600;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 0 2px #fff;
+  z-index: 2;
+}
+
+.cart-badge-root.primary .cart-badge-badge {
+  background: #2563eb;
+}
+.cart-badge-root.secondary .cart-badge-badge {
+  background: #9c27b0;
+}
+.cart-badge-root.error .cart-badge-badge {
+  background: #f44336;
+}
+.cart-badge-root.success .cart-badge-badge {
+  background: #4caf50;
+}
+.cart-badge-root.warning .cart-badge-badge {
+  background: #ff9800;
+}
+
+.cart-badge-root.circular .cart-badge-badge {
+  border-radius: 50%;
+}
+.cart-badge-root.rectangular .cart-badge-badge {
+  border-radius: 0.5rem;
+}

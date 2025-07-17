@@ -1,0 +1,97 @@
+.categorias-page-layout {
+  display: flex;
+  height: 100vh;
+  font-family: "Rajdhani", sans-serif;
+}
+
+.categorias-main-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  padding: 2rem;
+
+  height: 100vh;
+}
+
+.crud-categorias-col1 {
+  gap: 2rem;
+  padding: 2rem;
+  background: #dbdcdd5f;
+
+  height: 70vh;
+  border-radius: 10px;
+  margin-top: 60px;
+}
+
+.crud-categorias-col2 {
+  margin-top: 60px;
+  gap: 2rem;
+  padding: 2rem;
+  background: #dbdcdd5f;
+
+  height: 70vh;
+  border-radius: 10px;
+}
+
+.crud-categorias-col1,
+.crud-categorias-col2 {
+  box-shadow: 0 4px 16px 0 rgba(0, 0, 0, 0.08),
+    0 1.5px 4px 0 rgba(0, 0, 0, 0.04); /* Updated tonal box-shadow */
+  transition: box-shadow 0.3s ease;
+}
+
+.crud-categorias-col1:hover,
+.crud-categorias-col2:hover {
+  box-shadow: 0 4px 16px 0 rgba(0, 0, 0, 0.08),
+    0 1.5px 4px 0 rgba(0, 0, 0, 0.04); /* Maintain tonal shadow on hover */
+}
+
+.categorias-header {
+  font-size: 0.5rem; /* Increase font size */
+  font-weight: 800; /* Make it bold */
+  color: black;
+  text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.3); /* Add text shadow */
+  margin: 0 0 1rem 0;
+  font-family: "Rajdhani", Arial, sans-serif;
+  text-align: start;
+  margin-left: 90px;
+  margin-top: 10px;
+}
+
+.crud-categorias,
+.crud-subcategorias {
+  /* Elimino fondo, border-radius, box-shadow y padding para que los estilos internos de cada componente dominen */
+  background: none !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+  margin: 0;
+}
+
+.crud-categorias-list {
+  flex: 1 1 auto;
+  overflow-y: auto;
+  min-height: 0;
+  margin: 0;
+  padding: 0;
+}
+
+.crud-categorias {
+  margin-right: 1rem;
+}
+
+.crud-subcategorias {
+  margin-left: 1rem;
+}
+
+.crud-categorias,
+.crud-subcategorias {
+  box-shadow: 0 4px 16px 0 rgba(0, 0, 0, 1), 0 1.5px 4px 0 rgba(0, 0, 0, 0.04);
+  transition: box-shadow 0.3s ease;
+}
+
+.crud-categorias:hover,
+.crud-subcategorias:hover {
+  box-shadow: 0 4px 16px 0 rgba(0, 0, 0, 0.08),
+    0 1.5px 4px 0 rgba(0, 0, 0, 0.04);
+}
