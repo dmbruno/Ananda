@@ -1,13 +1,14 @@
 import React from "react";
 import SidebarItem from "./sidebarItem";
 import BotonCarrito from "./Carrito/BotonCarrito";
-import { FaChartBar, FaShoppingCart, FaUsers, FaBox, FaBirthdayCake, FaUser, FaPlus } from "react-icons/fa";
+import { FaChartBar, FaShoppingCart, FaUsers, FaBox, FaBirthdayCake, FaUser, FaPlus, FaTags } from "react-icons/fa";
 
 const items = [
   { label: "Dashboard", icon: <FaChartBar />, route: "/dashboard" },
   { label: "Nueva Venta", icon: <FaPlus />, route: "/ventas/nueva" },
   { label: "ventas", icon: <FaShoppingCart />, route: "/ventas" },
-  { label: "Stock", icon: <FaBox />, route: "/stock", active: true },
+  { label: "Stock", icon: <FaBox /> }, // Sin route para evitar navegación automática
+  { label: "Categorías", icon: <FaTags />, route: "/categorias" },
   { label: "Clientes", icon: <FaUsers />, route: "/clientes" },
   { label: "Cumpleaños", icon: <FaBirthdayCake />, route: "/cumpleanos" },
   { label: "Usuarios", icon: <FaUser />, route: "/usuarios" },

@@ -47,9 +47,9 @@ const DropdownCategoriasSidebar = ({ onSelectSubcategoria, visible, onClose }) =
     }
   };
 
-  const handleSubcategoriaClick = (sub) => {
-    console.log("Subcategory clicked:", sub);
-    onSelectSubcategoria(sub);
+  const handleSubcategoriaClick = (sub, categoria) => {
+    console.log("Subcategory clicked:", sub, "from category:", categoria);
+    onSelectSubcategoria(sub, categoria);
   };
 
   if (!visible) return null;
@@ -89,7 +89,7 @@ const DropdownCategoriasSidebar = ({ onSelectSubcategoria, visible, onClose }) =
                       <li key={sub.id}>
                         <button
                           className="dropdown-subcategorias-item"
-                          onClick={() => handleSubcategoriaClick(sub)}
+                          onClick={() => handleSubcategoriaClick(sub, cat)}
                         >
                           {sub.nombre}
                         </button>

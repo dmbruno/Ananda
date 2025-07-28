@@ -1,0 +1,393 @@
+/* Buscador de stock arriba, centrado y con separación */
+.buscador-stock-bar {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: transparent;
+  z-index: 2;
+  
+}
+/* Quitar el borde azul de focus en los botones de acción */
+.btn-carrito:focus, .btn-eliminar:focus {
+  outline: none;
+  box-shadow: none;
+}
+.tabla-stock-container {
+  background: white;
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  
+}
+
+.tabla-stock-header {
+  padding: 1.25rem 1.5rem;
+  background: #f9fafb;
+  color: #111827;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.tabla-stock-header h3 {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  color: #374151;
+  font-family: 'Rajdhani', Arial, sans-serif;
+}
+
+.tabla-stock-wrapper {
+  overflow-x: auto;
+  max-height: 500px;
+  overflow-y: auto;
+  position: relative;
+}
+
+.tabla-stock {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  background: white;
+}
+
+.tabla-stock thead {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: #f9fafb;
+}
+
+.tabla-stock thead th {
+  position: sticky;
+  top: 0;
+  background: #f9fafb;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.tabla-stock th {
+  color: #374151;
+  font-weight: 600;
+  padding: 0.6rem 0.3rem;
+  text-align: center;
+  border-bottom: 1px solid #e5e7eb;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.025em;
+  font-family: 'Rajdhani', Arial, sans-serif;
+}
+
+.tabla-stock td {
+  padding: 0.6rem 0.3rem;
+  border-bottom: 1px solid #f3f4f6;
+  vertical-align: middle;
+  font-size: 0.75rem;
+  transition: background-color 0.2s ease;
+  font-family: 'Rajdhani', Arial, sans-serif;
+}
+
+.tabla-stock tbody tr:hover {
+  background-color: #f9fafb;
+}
+
+/* Estilos para diferentes estados de stock */
+.stock-row-agotado {
+  background: #fef2f2;
+}
+
+.stock-row-bajo {
+  background: #fffbeb;
+}
+
+.stock-row-normal {
+  background: white;
+  align-items: center;
+}
+
+.stock-row-agotado:hover {
+  background: #fee2e2 !important;
+}
+
+.stock-row-bajo:hover {
+  background: #fef3c7 !important;
+}
+
+/* Celdas específicas */
+.id-cell {
+  font-family: 'Rajdhani', 'SF Mono', 'Monaco', 'Courier New', monospace;
+  font-weight: 600;
+  color: #1f2937;
+  background: #f3f4f6;
+  border-radius: 6px;
+  text-align: center;
+  font-size: 0.7rem;
+  padding: 0.3rem 0.5rem;
+  width: 50px;
+  min-width: 50px;
+}
+
+.nombre-cell {
+  font-weight: 500;
+  color: #111827;
+  max-width: 110px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-family: 'Rajdhani', Arial, sans-serif;
+}
+
+.sku-cell {
+  font-family: 'Rajdhani', 'SF Mono', 'Monaco', 'Courier New', monospace;
+  color: #6b7280;
+  font-size: 0.7rem;
+  width: 100px;
+  min-width: 100px;
+  white-space: nowrap;
+}
+
+.talle-cell {
+  text-align: center;
+  font-weight: 600;
+  color: #1f2937;
+  background: #f3f4f6;
+  border-radius: 4px;
+  padding: 0.15rem 0.3rem;
+  font-family: 'Rajdhani', Arial, sans-serif;
+  width: 40px;
+  min-width: 40px;
+}
+
+.color-cell {
+  font-weight: 500;
+  color: #374151;
+  font-family: 'Rajdhani', Arial, sans-serif;
+  width: 65px;
+  min-width: 65px;
+}
+
+.precio-cell {
+  font-weight: 600;
+  color: #059669;
+  text-align: center;
+  font-family: 'Rajdhani', Arial, sans-serif;
+  width: 75px;
+  min-width: 75px;
+}
+
+.stock-cell {
+  text-align: center;
+  font-weight: 600;
+  border-radius: 6px;
+  padding: 0.3rem 0.5rem;
+  font-family: 'Rajdhani', Arial, sans-serif;
+  width: 50px;
+  min-width: 50px;
+}
+
+.stock-agotado {
+  background: #fecaca;
+  color: #dc2626;
+}
+
+.stock-bajo {
+  background: #fcd34d;
+  color: #d97706;
+}
+
+.stock-normal {
+  background: #86efac;
+  color: #16a34a;
+}
+
+.ingreso-cell {
+  text-align: center;
+  color: #6b7280;
+  font-weight: 500;
+  font-size: 0.7rem;
+  font-family: 'Rajdhani', Arial, sans-serif;
+  width: 75px;
+  min-width: 75px;
+}
+
+/* Columnas adicionales */
+.categoria-cell {
+  font-family: 'Rajdhani', Arial, sans-serif;
+  width: 80px;
+  min-width: 80px;
+  font-size: 0.75rem;
+}
+
+.marca-cell {
+  font-family: 'Rajdhani', Arial, sans-serif;
+  width: 70px;
+  min-width: 70px;
+  font-size: 0.75rem;
+}
+
+.temporada-cell {
+  font-family: 'Rajdhani', Arial, sans-serif;
+  width: 70px;
+  min-width: 70px;
+  font-size: 0.75rem;
+}
+
+.estado-cell {
+  width: 65px;
+  min-width: 65px;
+  text-align: center;
+}
+
+/* Estados */
+.estado-badge {
+  padding: 0.15rem 0.4rem;
+  border-radius: 12px;
+  font-size: 0.65rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.025em;
+  font-family: 'Rajdhani', Arial, sans-serif;
+}
+
+.estado-activo {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.estado-inactivo {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+/* Acciones */
+.acciones-cell {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  align-items: center;
+  width: 75px;
+  min-width: 75px;
+  margin-left: 1.25rem;
+}
+
+.btn-carrito,
+.btn-eliminar {
+  background: none;
+  border: none;
+  color: #222;
+  box-shadow: none;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: color 0.15s, transform 0.1s;
+  border-radius: 6px;
+}
+
+.btn-carrito:hover,
+.btn-eliminar:hover {
+  color: #111;
+  
+}
+
+.btn-carrito:active,
+.btn-eliminar:active {
+  transform: translateY(2px) scale(0.97);
+}
+
+.btn-carrito svg,
+.btn-eliminar svg {
+  width: 18px;
+  height: 18px;
+  display: block;
+  filter: drop-shadow(0 2px 6px rgba(0,0,0,0.13));
+  transition: filter 0.15s;
+}
+
+.btn-carrito:active svg,
+.btn-eliminar:active svg {
+  filter: drop-shadow(0 1px 2px rgba(0,0,0,0.10));
+}
+
+/* Loading */
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem 2rem;
+  color: #6b7280;
+}
+
+.loading-spinner {
+  width: 32px;
+  height: 32px;
+  border: 3px solid #f3f4f6;
+  border-top: 3px solid #3b82f6;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 1rem;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* No datos */
+.no-datos {
+  text-align: center;
+  color: #6b7280;
+  font-style: italic;
+  padding: 3rem !important;
+  background: #f9fafb;
+}
+
+/* Responsividad */
+@media (max-width: 1200px) {
+  .tabla-stock-wrapper {
+    max-height: 400px;
+  }
+  
+  .tabla-stock th,
+  .tabla-stock td {
+    padding: 0.75rem 0.5rem;
+    font-size: 0.8rem;
+  }
+  
+  .tabla-stock-header h3 {
+    font-size: 1rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .tabla-stock-wrapper {
+    max-height: 350px;
+  }
+  
+  .tabla-stock th,
+  .tabla-stock td {
+    padding: 0.5rem 0.375rem;
+    font-size: 0.75rem;
+  }
+  
+  .nombre-cell {
+    max-width: 120px;
+  }
+  
+  .acciones-cell {
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+  
+  .btn-carrito,
+  .btn-eliminar {
+    width: 28px;
+    height: 28px;
+  }
+}

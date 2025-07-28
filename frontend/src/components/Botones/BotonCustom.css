@@ -1,0 +1,106 @@
+.boton-custom {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: 'Rajdhani', Arial, sans-serif;
+  font-weight: 500;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.07), 0 1px 3px rgba(0, 0, 0, 0.1);
+  border: 1px solid transparent;
+}
+
+.boton-custom:active:not(:disabled) {
+  transform: translateY(3px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.08);
+}
+
+.boton-custom:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Tamaños */
+.boton-custom--small {
+  padding: 0.5rem 0.75rem;
+  font-size: 0.8rem;
+}
+
+.boton-custom--medium {
+  padding: 0.75rem 1.25rem;
+  font-size: 0.875rem;
+}
+
+.boton-custom--large {
+  padding: 1rem 1.5rem;
+  font-size: 1rem;
+}
+
+/* Variantes de color */
+.boton-custom--primary {
+  background: #ecfdf5;
+  color: #16a34a;
+  border-color: #86efac;
+}
+
+.boton-custom--primary:hover:not(:disabled) {
+  background: #dcfce7;
+  border-color: #4ade80;
+}
+
+.boton-custom--primary:active:not(:disabled) {
+  background: #bbf7d0;
+  border-color: #22c55e;
+}
+
+.boton-custom--secondary {
+  background: #f8fafc;
+  color: #475569;
+  border-color: #cbd5e1;
+}
+
+.boton-custom--secondary:hover:not(:disabled) {
+  background: #f1f5f9;
+  border-color: #94a3b8;
+  box-shadow: 0 10px 20px rgba(100, 116, 139, 0.15), 0 6px 6px rgba(100, 116, 139, 0.1);
+}
+
+.boton-custom--success {
+  background: #ecfdf5;
+  color: #16a34a;
+  border-color: #86efac;
+}
+
+.boton-custom--success:hover:not(:disabled) {
+  background: #dcfce7;
+  border-color: #4ade80;
+  box-shadow: 0 10px 20px rgba(34, 197, 94, 0.2), 0 6px 6px rgba(34, 197, 94, 0.1);
+}
+
+.boton-custom--info {
+  background: #eff6ff;
+  color: #1d4ed8;
+  border-color: #93c5fd;
+}
+
+.boton-custom--info:hover:not(:disabled) {
+  background: #dbeafe;
+  border-color: #60a5fa;
+  box-shadow: 0 10px 20px rgba(59, 130, 246, 0.2), 0 6px 6px rgba(59, 130, 246, 0.1);
+}
+
+/* Iconos */
+.boton-custom-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1em;
+}
+
+.boton-custom-text {
+  white-space: nowrap;
+}

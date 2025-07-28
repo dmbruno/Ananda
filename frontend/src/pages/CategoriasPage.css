@@ -1,97 +1,107 @@
+/* SOLO ESTILOS DE CONTENEDORES DE LA PÁGINA */
+
 .categorias-page-layout {
   display: flex;
+  flex-direction: column; /* Cambiar a columna para título arriba */
   height: 100vh;
   font-family: "Rajdhani", sans-serif;
+  
+}
+
+/* Contenedor para centrar solo los componentes */
+.categorias-content-wrapper {
+  width: 100%;
+  height: 85vh; /* Altura que quepa bien en pantalla */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding-top: 0rem; /* Sin padding para estar más arriba */
+  overflow: auto;
 }
 
 .categorias-main-row {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 2rem;
-  padding: 2rem;
-
-  height: 100vh;
+  grid-template-columns: 3fr 3fr; /* 50% más anchos que antes */
+  margin-left: 4rem;
+  padding: 0.5rem; /* Padding mínimo para máximo ancho */
+  height: 80vh; /* Altura que cabe en pantalla */
+  max-width: 1800px; /* Ancho máximo mucho mayor */
+  width: 90%; /* Usar casi todo el ancho disponible */
 }
 
 .crud-categorias-col1 {
-  gap: 2rem;
-  padding: 2rem;
-  background: #dbdcdd5f;
-
-  height: 70vh;
-  border-radius: 10px;
-  margin-top: 60px;
+  padding-top: 1rem;
+  padding-left: 2rem;
+  padding-right: 2rem;
+  padding-bottom: 2rem;
+  height: 75vh; /* Más alto */
+  border-radius: 16px; /* Border radius más elegante */
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(10px);
+  
 }
 
 .crud-categorias-col2 {
-  margin-top: 60px;
-  gap: 2rem;
-  padding: 2rem;
-  background: #dbdcdd5f;
 
-  height: 70vh;
-  border-radius: 10px;
+  padding-top: 1rem;
+  padding-left: 2rem;
+  padding-right: 2rem;
+  padding-bottom: 2rem;
+  height: 75vh; /* Más alto */
+  border-radius: 16px; /* Border radius más elegante */
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(10px);
 }
 
-.crud-categorias-col1,
-.crud-categorias-col2 {
-  box-shadow: 0 4px 16px 0 rgba(0, 0, 0, 0.08),
-    0 1.5px 4px 0 rgba(0, 0, 0, 0.04); /* Updated tonal box-shadow */
-  transition: box-shadow 0.3s ease;
-}
 
-.crud-categorias-col1:hover,
-.crud-categorias-col2:hover {
-  box-shadow: 0 4px 16px 0 rgba(0, 0, 0, 0.08),
-    0 1.5px 4px 0 rgba(0, 0, 0, 0.04); /* Maintain tonal shadow on hover */
+
+
+
+/* Efecto de brillo sutil */
+.crud-categorias-col1::before,
+.crud-categorias-col2::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  
+  border-radius: 16px 16px 0 0;
 }
 
 .categorias-header {
-  font-size: 0.5rem; /* Increase font size */
-  font-weight: 800; /* Make it bold */
+  font-size: .5rem; /* Tamaño más pequeño como en Dashboard */
+  font-weight: 600; /* Menos bold */
+  color: #333; /* Color más suave */
+  font-family: "Rajdhani", Arial, sans-serif;
+  padding: 1rem 0 0.5rem 1rem; /* Menos padding, más pegado al margen */
+  flex-shrink: 0; /* No se encoge */
+  background: transparent; /* Sin fondo especial */
+  display: flex;
+  justify-content: flex-start;
+  margin-left: 5rem;
+
+}
+
+.categorias-header h1 {
+  font-size: 2rem;
+  font-weight: 800; /* Menos bold */
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
   color: black;
-  text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.3); /* Add text shadow */
   margin: 0 0 1rem 0;
   font-family: "Rajdhani", Arial, sans-serif;
+  padding-left: 1rem;
+  padding-top: 1rem;
   text-align: start;
-  margin-left: 90px;
-  margin-top: 10px;
+  letter-spacing: 0.25px;
+  line-height: 1.2;
 }
 
-.crud-categorias,
-.crud-subcategorias {
-  /* Elimino fondo, border-radius, box-shadow y padding para que los estilos internos de cada componente dominen */
-  background: none !important;
-  border-radius: 0 !important;
-  box-shadow: none !important;
-  padding: 0 !important;
-  margin: 0;
-}
-
-.crud-categorias-list {
-  flex: 1 1 auto;
-  overflow-y: auto;
-  min-height: 0;
-  margin: 0;
-  padding: 0;
-}
-
-.crud-categorias {
-  margin-right: 1rem;
-}
-
-.crud-subcategorias {
-  margin-left: 1rem;
-}
-
-.crud-categorias,
-.crud-subcategorias {
-  box-shadow: 0 4px 16px 0 rgba(0, 0, 0, 1), 0 1.5px 4px 0 rgba(0, 0, 0, 0.04);
-  transition: box-shadow 0.3s ease;
-}
-
-.crud-categorias:hover,
-.crud-subcategorias:hover {
-  box-shadow: 0 4px 16px 0 rgba(0, 0, 0, 0.08),
-    0 1.5px 4px 0 rgba(0, 0, 0, 0.04);
-}

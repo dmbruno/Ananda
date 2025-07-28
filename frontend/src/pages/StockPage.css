@@ -1,0 +1,111 @@
+.stock-page {
+  display: flex;
+  height: 100vh;
+  background-color: #fafbfc;
+  margin-top: 50px;
+  margin-left: 60px;
+  
+}
+
+.stock-page-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.stock-page-main {
+  flex: 1;
+  padding: 2rem;
+  overflow-y: auto;
+  background: #fafbfc;
+}
+
+/* Header que contiene breadcrumbs y botones en una línea */
+.stock-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 2rem;
+  width: 100%;
+}
+
+/* Breadcrumbs mejorados */
+.stock-breadcrumbs {
+  display: flex;
+  align-items: center;
+  padding: 0;
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  margin-bottom: 0;
+}
+
+.stock-breadcrumbs-icon {
+  margin-right: 0.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  background: transparent;
+  border-radius: 6px;
+  color: #9ca3af;
+  flex-shrink: 0;
+}
+
+.stock-title {
+  font-size: 1.5rem;
+  font-weight: 800; /* Menos bold */
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  color: black;
+  margin: 0 0 1rem 0;
+  font-family: "Rajdhani", Arial, sans-serif;
+  
+  padding-top: 1rem;
+  text-align: start;
+  letter-spacing: 0.25px;
+  line-height: 1.2;
+padding-left: 1rem;
+
+}
+
+/* Botones de acción mejorados */
+.stock-actions {
+  display: flex;
+  gap: 0.75rem;
+  margin-bottom: 0;
+  justify-content: flex-end;
+}
+
+/* Responsividad */
+@media (max-width: 768px) {
+  .stock-page-main {
+    padding: 1rem;
+  }
+  
+  .stock-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+  
+  .stock-breadcrumbs {
+    flex-direction: row;
+    align-items: center;
+  }
+  
+  .stock-breadcrumbs-icon {
+    margin-right: 0.75rem;
+  }
+  
+  .stock-title {
+    font-size: 1rem;
+  }
+  
+  .stock-actions {
+    align-self: stretch;
+    justify-content: stretch;
+    gap: 0.5rem;
+  }
+}

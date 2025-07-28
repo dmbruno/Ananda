@@ -2,6 +2,10 @@ import React, { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { fetchCategorias } from "../../store/categoriasSlice";
 import { fetchSubcategorias, updateSubcategoria, deleteSubcategoria, addSubcategoria } from "../../store/subcategoriasSlice";
+import BotonEnviar from "../Botones/BotonEnviar";
+import BotonCancelar from "../Botones/BotonCancelar";
+import BotonAgregar from "../Botones/BotonAgregar";
+import BotonEditar from "../Botones/BotonEditar";
 import "./CrudSubcategorias.css";
 
 const CrudSubcategorias = () => {
@@ -23,8 +27,7 @@ const CrudSubcategorias = () => {
     }
   }, [categoriaSeleccionada, dispatch]);
 
-  const handleAgregar = async (e) => {
-    e.preventDefault();
+  const handleAgregar = async () => {
     if (!nuevaSubcategoria.trim()) return;
     try {
       console.log("Intentando agregar subcategoría:", nuevaSubcategoria);
@@ -96,18 +99,22 @@ const CrudSubcategorias = () => {
       </select>
       {categoriaSeleccionada && (
         <>
-          <form onSubmit={handleAgregar} className="crud-subcategorias-form">
+          <div className="crud-subcategorias-form">
             <input
               type="text"
               placeholder="Nueva subcategoría"
               value={nuevaSubcategoria}
               onChange={(e) => setNuevaSubcategoria(e.target.value)}
+              onKeyPress={(e) => e.key === 'Enter' && handleAgregar()}
               className="crud-subcategorias-input"
             />
-            <button type="submit" className="crud-subcategorias-btn-agregar">
+            <BotonAgregar 
+              onClick={handleAgregar}
+              disabled={!nuevaSubcategoria.trim() || !categoriaSeleccionada}
+            >
               Agregar
-            </button>
-          </form>
+            </BotonAgregar>
+          </div>
           <ul className="crud-subcategorias-list">
             {subcategoriasActivas.map((subcat) => (
               <li key={subcat.id} className="crud-subcategorias-item">
@@ -119,35 +126,37 @@ const CrudSubcategorias = () => {
                       className="crud-subcategorias-edit-input"
                       autoFocus
                     />
-                    <button
-                      onClick={() => handleGuardarEdit(subcat)}
-                      className="crud-subcategorias-btn-guardar"
-                    >
-                      Guardar
-                    </button>
-                    <button
-                      onClick={() => setEditId(null)}
-                      className="crud-subcategorias-btn-cancelar"
-                    >
-                      Cancelar
-                    </button>
+                    <div style={{ display: "flex", alignItems: "center", gap: "0.3rem" }}>
+                      <BotonEnviar
+                        onClick={() => handleGuardarEdit(subcat)}
+                        small={true}
+                      >
+                        Guardar
+                      </BotonEnviar>
+                      <BotonCancelar
+                        onClick={() => setEditId(null)}
+                        small={true}
+                      >
+                        Cancelar
+                      </BotonCancelar>
+                    </div>
                   </>
                 ) : (
                   <>
                     <span>{subcat.nombre}</span>
-                    <div style={{ display: "flex", gap: "0.3rem" }}>
-                      <button
+                    <div style={{ display: "flex", alignItems: "center", gap: "0.3rem" }}>
+                      <BotonEditar
                         onClick={() => handleEditar(subcat)}
-                        className="crud-subcategorias-btn-editar"
+                        small={true}
                       >
                         Editar
-                      </button>
-                      <button
+                      </BotonEditar>
+                      <BotonCancelar
                         onClick={() => handleEliminar(subcat)}
-                        className="crud-subcategorias-btn-eliminar"
+                        small={true}
                       >
                         Eliminar
-                      </button>
+                      </BotonCancelar>
                     </div>
                   </>
                 )}

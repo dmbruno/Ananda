@@ -1,6 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { fetchCategorias, addCategoria } from "../../store/categoriasSlice";
+import BotonEnviar from "../Botones/BotonEnviar";
+import BotonCancelar from "../Botones/BotonCancelar";
+import BotonAgregar from "../Botones/BotonAgregar";
+import BotonEditar from "../Botones/BotonEditar";
 import axios from "axios";
 import "./CrudCategorias.css";
 
@@ -66,22 +70,22 @@ const CrudCategorias = () => {
   return (
     <section className="crud-categorias">
       <h2>Categorías</h2>
-      <form onSubmit={handleAgregar} className="crud-categorias-form">
+      <div className="crud-categorias-form">
         <input
           type="text"
           placeholder="Nueva categoría"
           value={nuevaCategoria}
           onChange={(e) => setNuevaCategoria(e.target.value)}
+          onKeyPress={(e) => e.key === 'Enter' && handleAgregar(e)}
           className="crud-categorias-input"
         />
-        <button
-          type="submit"
+        <BotonAgregar
+          onClick={handleAgregar}
           disabled={agregando || !nuevaCategoria.trim()}
-          className="crud-categorias-btn-agregar"
         >
           Agregar
-        </button>
-      </form>
+        </BotonAgregar>
+      </div>
       {status === "loading" && <p>Cargando...</p>}
       {error && <p style={{ color: "red" }}>{error}</p>}
       <ul className="crud-categorias-list">
@@ -95,36 +99,38 @@ const CrudCategorias = () => {
                   className="crud-categorias-edit-input"
                   autoFocus
                 />
-                <button
-                  onClick={() => handleGuardarEdit(cat)}
-                  className="crud-categorias-btn-guardar"
-                >
-                  Guardar
-                </button>
-                <button
-                  onClick={() => setEditId(null)}
-                  className="crud-categorias-btn-cancelar"
-                >
-                  Cancelar
-                </button>
+                <div style={{ display: "flex", alignItems: "center", gap: "0.3rem" }}>
+                  <BotonEnviar
+                    onClick={() => handleGuardarEdit(cat)}
+                    small={true}
+                  >
+                    Guardar
+                  </BotonEnviar>
+                  <BotonCancelar
+                    onClick={() => setEditId(null)}
+                    small={true}
+                  >
+                    Cancelar
+                  </BotonCancelar>
+                </div>
               </>
             ) : (
               <>
                 <span>{cat.nombre}</span>
-                <div style={{ display: "flex", gap: "0.3rem" }}>
-                  <button
+                <div style={{ display: "flex", alignItems: "center", gap: "0.3rem" }}>
+                  <BotonEditar
                     onClick={() => handleEditar(cat)}
-                    className="crud-categorias-btn-editar"
+                    small={true}
                   >
                     Editar
-                  </button>
-                  <button
+                  </BotonEditar>
+                  <BotonCancelar
                     onClick={() => handleEliminar(cat)}
                     disabled={eliminandoId === cat.id}
-                    className="crud-categorias-btn-eliminar"
+                    small={true}
                   >
                     Eliminar
-                  </button>
+                  </BotonCancelar>
                 </div>
               </>
             )}
