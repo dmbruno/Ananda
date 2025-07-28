@@ -1,4 +1,4 @@
-#!/Users/diegobruno/Documents/Programacion/Ananda/backend/venv/bin/python
+#!/Users/matias/Desktop/Ananda/backend/venv/bin/python3.13
 # -*- coding: utf-8 -*-
 import re
 import sys
