@@ -1,15 +1,20 @@
-
 import React, { useState } from 'react';
 import './TablaStock.css';
 import Buscador from '../Buscador/Buscador';
+import axios from 'axios';
+import ModalVerProducto from '../Modals/ModalVerProducto';
+import { useDispatch } from 'react-redux';
+import { updateProducto } from '../../store/productosSlice';
 
 // Recibe productos y loading por props desde StockPage
 const TablaStock = ({ productos = [], loading = false, error = null }) => {
   const [busqueda, setBusqueda] = useState('');
+  const [productoSeleccionado, setProductoSeleccionado] = useState(null);
+  const dispatch = useDispatch();
 
   const getStockStatus = (stock) => {
     if (stock <= 0) return 'agotado';
-    if (stock <= 5) return 'bajo';
+    if (stock <= 2) return 'bajo';
     return 'normal';
   };
 
@@ -30,6 +35,28 @@ const TablaStock = ({ productos = [], loading = false, error = null }) => {
     );
   });
 
+  const handleEliminarProducto = async (id) => {
+    const confirmar = window.confirm('¿Estás seguro de que deseas eliminar este producto?');
+    if (!confirmar) return;
+
+    try {
+      await axios.delete(`/api/productos/${id}`);
+      alert('Producto eliminado con éxito');
+      window.location.reload(); // Recargar la página para actualizar la tabla
+    } catch (error) {
+      console.error('Error al eliminar el producto:', error);
+      alert('Hubo un error al intentar eliminar el producto');
+    }
+  };
+
+  const handleRowClick = (producto) => {
+    setProductoSeleccionado(producto);
+  };
+
+  const closeModal = () => {
+    setProductoSeleccionado(null);
+  };
+
   if (loading) {
     return (
       <div className="tabla-stock-container">
@@ -44,7 +71,7 @@ const TablaStock = ({ productos = [], loading = false, error = null }) => {
   return (
     <>
       {/* Buscador arriba, centrado y fuera de la tarjeta de stock */}
-      <div className="buscador-stock-bar">
+      <div className="buscador-stock-bar-stock">
         <Buscador
           value={busqueda}
           onChange={e => setBusqueda(e.target.value)}
@@ -81,6 +108,7 @@ const TablaStock = ({ productos = [], loading = false, error = null }) => {
                 <th>Nombre</th>
                 <th>SKU</th>
                 <th>Categoría</th>
+                <th>Subcategoría</th> {/* Nueva columna para subcategoría */}
                 <th>Talle</th>
                 <th>Color</th>
                 <th>Marca</th>
@@ -96,26 +124,36 @@ const TablaStock = ({ productos = [], loading = false, error = null }) => {
             <tbody>
               {productosFiltrados.length > 0 ? (
                 productosFiltrados.map((producto) => (
-                  <tr key={producto.id} className={`stock-row-${getStockStatus(producto.stock_actual)}`}>
-                    <td className="id-cell">{producto.id.toString().padStart(3, '0')}</td>
-                    <td className="nombre-cell">{producto.nombre}</td>
-                    <td className="sku-cell">{producto.codigo}</td>
-                    <td className="categoria-cell">{producto.categoria_nombre}</td>
-                    <td className="talle-cell">{producto.talle}</td>
-                    <td className="color-cell">{producto.color}</td>
-                    <td className="marca-cell">{producto.marca}</td>
-                    <td className="temporada-cell">-</td>
-                    <td className="precio-cell">{formatPrecio(producto.costo)}</td>
-                    <td className="precio-cell">{formatPrecio(producto.precio_venta)}</td>
-                    <td className={`stock-cell stock-${getStockStatus(producto.stock_actual)}`}>
+                  <tr 
+                    key={producto.id} 
+                    className={`stock-row-${getStockStatus(producto.stock_actual)}`}
+                  >
+                    <td className="id-cell" onClick={() => handleRowClick(producto)}>{producto.id.toString().padStart(3, '0')}</td>
+                    <td className="nombre-cell" onClick={() => handleRowClick(producto)}>{producto.nombre}</td>
+                    <td className="sku-cell" onClick={() => handleRowClick(producto)}>{producto.codigo}</td>
+                    <td className="categoria-cell" onClick={() => handleRowClick(producto)}>{producto.categoria_nombre}</td>
+                    <td className="subcategoria-cell" onClick={() => handleRowClick(producto)}>{producto.subcategoria_nombre}</td>
+                    <td className="talle-cell" onClick={() => handleRowClick(producto)}>{producto.talle}</td>
+                    <td className="color-cell" onClick={() => handleRowClick(producto)}>{producto.color}</td>
+                    <td className="marca-cell" onClick={() => handleRowClick(producto)}>{producto.marca}</td>
+                    <td className="temporada-cell" onClick={() => handleRowClick(producto)}>{producto.temporada || '-'}</td>
+                    <td className="precio-cell" onClick={() => handleRowClick(producto)}>{formatPrecio(producto.costo)}</td>
+                    <td className="precio-cell" onClick={() => handleRowClick(producto)}>{formatPrecio(producto.precio_venta)}</td>
+                    <td className={`stock-cell stock-${getStockStatus(producto.stock_actual)}`} onClick={() => handleRowClick(producto)}>
                       {producto.stock_actual}
                     </td>
-                    <td className="estado-cell">
-                      <span className={`estado-badge estado-activo`}>
-                        Activo
+                    <td className="estado-cell" onClick={() => handleRowClick(producto)}>
+                      <span className={`estado-badge ${
+                        producto.stock_actual <= 0 ? 'estado-sin-stock' : 
+                        !producto.activo ? 'estado-inactivo' : 
+                        'estado-activo'
+                      }`}>
+                        {producto.stock_actual <= 0 ? 'Sin Stock' : 
+                        !producto.activo ? 'Inactivo' : 
+                        'Activo'}
                       </span>
                     </td>
-                    <td className="ingreso-cell">-</td>
+                    <td className="ingreso-cell" onClick={() => handleRowClick(producto)}>{producto.fecha_ingreso || '-'}</td>
                     <td className="acciones-cell">
                       <div className="acciones-cell">
                         <button className="btn-carrito" title="Agregar al carrito">
@@ -127,7 +165,7 @@ const TablaStock = ({ productos = [], loading = false, error = null }) => {
                             <line x1="19" y1="2" x2="19" y2="8"/>
                           </svg>
                         </button>
-                        <button className="btn-eliminar" title="Eliminar producto">
+                        <button className="btn-eliminar" title="Eliminar producto" onClick={e => { e.stopPropagation(); handleEliminarProducto(producto.id); }}>
                           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                             <polyline points="3 6 5 6 21 6"/>
                             <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
@@ -141,7 +179,7 @@ const TablaStock = ({ productos = [], loading = false, error = null }) => {
                 ))
               ) : (
                 <tr>
-                  <td colSpan="14" className="no-datos">
+                  <td colSpan="15" className="no-datos"> {/* Ajustar colspan para nueva columna */}
                     No hay productos para mostrar
                   </td>
                 </tr>
@@ -150,6 +188,16 @@ const TablaStock = ({ productos = [], loading = false, error = null }) => {
           </table>
         </div>
       </div>
+
+      {productoSeleccionado && (
+        <ModalVerProducto 
+          producto={productoSeleccionado} 
+          onClose={closeModal}
+          onProductoActualizado={prodActualizado => {
+            dispatch(updateProducto(prodActualizado));
+          }}
+        />
+      )}
     </>
   );
 };

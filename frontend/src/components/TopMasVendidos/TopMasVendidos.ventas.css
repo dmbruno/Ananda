@@ -1,0 +1,59 @@
+.ventas-top-list-scroll {
+  max-height: 260px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-top: 1.2rem;
+}
+
+.ventas-top-item {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+  padding: .5rem;
+  font-family: 'Rajdhani', Arial, sans-serif;
+  font-size: 1.1rem;
+  font-weight: 500;
+  color: #222;
+}
+
+.ventas-top-pos {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #42425e;
+  width: 2.2rem;
+  text-align: center;
+}
+
+.ventas-top-img img {
+  width: 54px;
+  height: 54px;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 1.5px solid #e5e7eb;
+  background: #f3f4f6;
+}
+
+.ventas-top-nombre {
+  flex: 1;
+  font-size: 1.08rem;
+  color: #222;
+  font-weight: 600;
+  margin-left: 0.2rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ventas-top-cant {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #059669;
+  margin-left: 0.5rem;
+  min-width: 80px;
+  text-align: right;
+}

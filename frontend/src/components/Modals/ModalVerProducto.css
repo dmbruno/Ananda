@@ -1,0 +1,577 @@
+.modal-imagen-preview-img {
+  max-width: 70vw;
+  max-height: 70vh;
+  border-radius: 18px;
+  box-shadow: 0 8px 32px 0 rgba(0,0,0,0.25);
+  background: #fff;
+  object-fit: contain;
+  padding: 1.5rem;
+  cursor: auto;
+  animation: modal-preview-img-in 0.22s cubic-bezier(0.6,-0.01,0.45,0.99);
+}
+/* Overlay para vista previa de imagen grande */
+.modal-imagen-preview-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0,0,0,0.7);
+  z-index: 4000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: zoom-out;
+  animation: modal-preview-fade-in 0.25s;
+}
+
+@keyframes modal-preview-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.modal-imagen-preview-overlay img {
+  max-width: 70vw;
+  max-height: 70vh;
+  border-radius: 18px;
+  box-shadow: 0 8px 32px 0 rgba(0,0,0,0.25);
+  background: #fff;
+  object-fit: contain;
+  padding: 1.5rem;
+  cursor: auto;
+  animation: modal-preview-img-in 0.22s cubic-bezier(0.6,-0.01,0.45,0.99);
+}
+
+@keyframes modal-preview-img-in {
+  from { transform: scale(0.92); opacity: 0.7; }
+  to { transform: scale(1); opacity: 1; }
+}
+/* Contenedor para la imagen del producto, permite achicar en modo edición */
+.contenedor-imagen-producto {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 0.5rem 0 0.5rem 0;
+  height: 190px;
+  min-height: 100px;
+  transition: min-height 0.2s;
+  
+}
+
+.contenedor-imagen-producto.edicion {
+  height: 150px;
+  margin-top: 15px;
+  
+}
+
+/* Inputs de edición en el modal de producto */
+.input-editar {
+  font-family: "Rajdhani", Arial, sans-serif;
+  font-size: 1rem;
+  color: #222;
+  background: #f8fafc;
+  border: 1.5px solid #d1d5db;
+  border-radius: 7px;
+  padding: 0.08rem 0.4rem;
+  margin: 0 0.1rem;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+  outline: none;
+  transition: border 0.18s, box-shadow 0.18s;
+  width: 100%;
+  max-width: 130px;
+}
+
+.input-editar:focus {
+  border: 1.5px solid #7c3aed;
+  box-shadow: 0 0 0 2px #ede9fe;
+}
+
+.input-header {
+  font-size: 1rem;
+  font-weight: 400;
+  background: #f3f4f6;
+  padding: 0.08rem 0.3rem;
+  margin-bottom: 0.1rem;
+  max-width: 170px;
+  width: 100%;
+}
+
+.input-editar.input-header {
+  height: 1rem;
+  font-size: 0.78rem;
+  
+  max-width: 120px;
+  min-width: 70px;
+  
+}
+
+.boton-modal-uniforme {
+  min-width: 0;
+  min-height: 2.7rem;
+  height: 2.7rem;
+  font-size: 1rem;
+  border-radius: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.08);
+  transition: box-shadow 0.18s, transform 0.12s, background 0.18s;
+  border: none;
+  font-family: "Rajdhani", Arial, sans-serif;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.boton-modal-uniforme:active {
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  transform: scale(0.97);
+  filter: brightness(0.97);
+}
+
+.boton-modal-small {
+  height: 2rem;
+  font-size: 0.75rem;
+  padding: 0.25rem 0.5rem;
+}
+.modal-ver-backdrop {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  background: rgba(0, 0, 0, 0.18);
+  z-index: 3000;
+  display: flex;
+  justify-content: flex-end;
+  align-items: flex-start;
+}
+
+.modal-ver-producto {
+  margin-top: 2.45rem; /* 100px */
+  margin-right: 2.45rem; /* 100px */
+  background: #fafbfc;
+  border-radius: 1.2rem;
+  box-shadow: 0 0.5rem 2rem 0 rgba(0, 0, 0, 0.18),
+    0 0.125rem 0.5rem 0 rgba(0, 0, 0, 0.1);
+  padding: 1.2rem;
+  display: flex;
+  flex-direction: column;
+  font-family: "Rajdhani", Arial, sans-serif;
+  animation: modal-slide-in 0.45s cubic-bezier(0.6, -0.01, 0.45, 0.99) forwards;
+  z-index: 3100;
+  min-width: 22.5rem;
+  width: 31.25rem;
+  height: 34.5rem;
+  max-width: 98vw;
+  max-height: 95vh;
+  overflow-y: auto;
+  position: relative;
+  
+}
+
+.modal-exit {
+  animation: modal-slide-out 0.45s cubic-bezier(0.6, -0.01, 0.45, 0.99) forwards;
+}
+
+@keyframes modal-slide-in {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes modal-slide-out {
+  from {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+}
+
+.modal-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border-bottom: 1px solid #ddd;
+}
+
+.modal-header-producto {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding-top: 10px;
+  margin-bottom: 5px;
+}
+
+.modal-header-producto.ver {
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.header-left {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 1.2rem;
+}
+
+.circle-id {
+  width: 3.625rem;
+  height: 3.625rem;
+  background: #dedede;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  font-family: "Rajdhani", Arial, sans-serif;
+  font-weight: 600;
+  color: #222;
+  line-height: 1.8rem;
+  margin-top: 0.5rem;
+}
+
+.header-main-info {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  margin-top: 1rem;
+}
+
+.nombre-producto {
+  font-size: 1.2rem;
+  font-family: "Rajdhani", Arial, sans-serif;
+  font-weight: 800;
+  color: #222;
+  line-height: 1.3rem;
+  display: flex;
+  text-align: start;
+}
+
+.sku-producto {
+  font-size: 1.2rem;
+  font-family: "Rajdhani", Arial, sans-serif;
+  font-weight: 600;
+  color: #b0b0b0;
+  opacity: 0.7;
+  letter-spacing: 0.05em;
+  line-height: 1.5rem;
+  margin-top: -5px;
+}
+
+.header-right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.1rem;
+
+  min-width: 120px;
+  padding: 10px;
+}
+
+.categoria-producto,
+.subcategoria-producto,
+.marca-producto,
+.temporada-producto {
+  font-size: 0.95rem;
+  color: #b0b0b0;
+  font-family: "Rajdhani", Arial, sans-serif;
+  font-weight: 500;
+  line-height: 1.125rem;
+}
+
+.categoria-producto {
+  font-weight: 600;
+}
+
+.subcategoria-producto {
+  font-weight: 600;
+}
+
+.marca-producto {
+  font-weight: 600;
+}
+
+.temporada-producto {
+  font-weight: 600;
+}
+
+.modal-body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.producto-imagen {
+  width: 200px;
+  height: 200px;
+  
+  background-color: rebeccapurple;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+  background: #fafbfc;
+  margin-bottom: 1rem;
+  transition: height 0.2s;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 10px;
+}
+
+
+
+.modal-nuevo-img-preview,
+.producto-imagen img {
+  width: 120px;
+  min-width: 80px;
+  max-width: 120px;
+  height: auto;
+  border-radius: 12px;
+  object-fit: cover;
+  aspect-ratio: 1/1; /* Opcional, para cuadrado */
+}
+
+
+
+.producto-imagen.placeholder {
+  width: 100%;
+  min-width: 220px;
+  height: 38px;
+  min-height: unset;
+  background: #f3f4f6;
+  border-radius: 18px;
+  border: 2px solid #d1d5db;
+  margin-bottom: 0.7rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  transition: height 0.2s;
+
+  /* Solo visible cuando no hay imagen */
+}
+
+.producto-imagen img {
+  width: 190px;
+  height: 190px;
+  object-fit: cover;
+  border-radius: 16px;
+  box-shadow: 0 4px 16px 0 rgba(0, 0, 0, 0.1), 0 1.5px 4px 0 rgba(0, 0, 0, 0.08);
+  display: block;
+  margin: 0 auto;
+  background: #f5f6fa;
+}
+
+
+
+.no-imagen-placeholder {
+  color: #888;
+  font-size: 1rem;
+  text-align: center;
+  font-family: "Rajdhani", Arial, sans-serif;
+  font-style: normal;
+  width: 100%;
+  user-select: none;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  padding: 0 1rem;
+  white-space: pre-line;
+}
+
+.producto-detalles {
+  width: 100%;
+  font-size: 0.9rem;
+  color: #333;
+}
+
+.producto-detalles p {
+  margin: 5px 0;
+}
+
+.producto-detalles-grid2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.7rem 5.5rem;
+  padding: 10px;
+}
+
+.detalle-row {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  justify-content: start;
+  font-family: "Rajdhani", Arial, sans-serif;
+  
+}
+
+.detalle-label {
+  font-size: .9rem;
+  font-family: "Rajdhani", Arial, sans-serif;
+  font-weight: 500;
+  color: #222;
+  line-height: 1.125rem;
+  margin-right: 0.3rem;
+  min-width: 90px;
+  display: flex;
+}
+
+.detalle-value {
+  font-size: 1rem;
+  font-family: "Rajdhani", Arial, sans-serif;
+  font-weight: 500;
+  color: #b0b0b0;
+  line-height: 1.125rem;
+}
+
+.detalle-value input,
+.detalle-value select {
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+.detalle-col {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  min-width: 120px;
+}
+
+.detalle-col label {
+  font-size: 1rem;
+  color: #222;
+  font-family: "Rajdhani", Arial, sans-serif;
+  font-weight: 600;
+  margin-right: 0.5rem;
+  margin-bottom: 0.1rem;
+  line-height: 24px;
+}
+
+.detalle-valor {
+  font-size: 0.75rem;
+  color: #b0b0b0;
+  font-family: "Rajdhani", Arial, sans-serif;
+  font-weight: 500;
+  margin-bottom: 0.2rem;
+  line-height: 1.125rem;
+}
+
+.producto-detalles-grid input,
+.producto-detalles-grid select {
+  font-size: 0.75rem;
+  font-family: "Rajdhani", Arial, sans-serif;
+  font-weight: 500;
+  line-height: 1.125rem;
+}
+
+.detalle-separador {
+  border: none;
+  border-top: 2px solid #e5e7eb;
+  margin: 1.2rem 0 0.5rem 0;
+}
+
+.modal-footer {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 1rem;
+}
+
+.modal-footer button {
+  flex: 1;
+  margin: 0 5px;
+}
+
+.modal-footer-producto {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 1.5rem;
+  gap: 1.2rem;
+}
+
+.modal-footer-producto-row {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+
+  justify-content: space-between;
+  gap: 1.2rem;
+  width: 100%;
+  
+}
+
+.modal-footer-producto-row button {
+  flex: 1 1 0;
+  min-width: 0;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Asegura que los botones personalizados mantengan su color de fondo y texto */
+
+.modal-footer-producto-row .modal-whatsapp-cancel svg circle {
+  fill: #e57373 !important;
+}
+.modal-footer-producto-row .modal-whatsapp-cancel svg path {
+  stroke: #fff !important;
+}
+
+.modal-footer-producto-row .boton-azul {
+  background: #2196f3 !important;
+  color: #fff !important;
+  font-weight: 600;
+}
+.modal-footer-producto-row .boton-azul svg circle {
+  fill: #2196f3 !important;
+}
+.modal-footer-producto-row .boton-azul svg path {
+  stroke: #fff !important;
+}
+
+.modal-footer-producto-row .boton-amarillo {
+  background: #ffe082 !important;
+  color: #b48a00 !important;
+  font-weight: 600;
+}
+.modal-footer-producto-row .boton-amarillo svg circle {
+  fill: #ffe082 !important;
+}
+.modal-footer-producto-row .boton-amarillo svg path {
+  stroke: #fff !important;
+}
+
+.footer-secundarios {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  width: 100%;
+  gap: 4.2rem;
+}
+
+.footer-secundarios button,
+.modal-footer-producto button {
+  font-size: 0.75rem;
+  font-family: "Rajdhani", Arial, sans-serif;
+  font-weight: 500;
+  line-height: 1.125rem;
+}
+
+.modal-divider {
+  width: 100%;
+  height: 1px;
+  background: #e5e7eb;
+  margin: 0 0 1rem 0;
+  border: none;
+}

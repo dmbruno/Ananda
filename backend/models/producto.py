@@ -11,6 +11,7 @@ class Producto(db.Model):
     codigo = Column(String(30), unique=True)
     color = Column(String(30))
     marca = Column(String(30))
+    stock_minimo = Column(Integer, default=0)
     costo = Column(Float, nullable=False)
     precio_venta = Column(Float, nullable=False)  # Nuevo campo para el precio de venta
     imagen_url = Column(String(255))  # Nuevo campo para la URL de la imagen
@@ -18,6 +19,8 @@ class Producto(db.Model):
     categoria_id = Column(Integer, ForeignKey('categorias.id'), nullable=False)
     subcategoria_id = Column(Integer, ForeignKey('subcategorias.id'), nullable=True)
     activo = Column(Boolean, default=True)  # Borrado lógico
+    temporada = Column(String(50))  # Temporada del producto
+    fecha_ingreso = Column(String(50))  # Fecha de ingreso del producto
     # Relación con categoría
     categoria = db.relationship('Categoria', back_populates='productos')
     # Relación con subcategoría

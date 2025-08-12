@@ -1,0 +1,71 @@
+.buscador-fechas-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  background: #f9fafb;
+  border-radius: 8px;
+  padding: 0.5rem 1rem;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+  font-family: 'Rajdhani', Arial, sans-serif;
+  
+  
+}
+
+.buscador-fechas-label {
+  font-size: .9rem;
+  color: #222;
+  font-weight: 600;
+}
+
+.buscador-fechas-input {
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  padding: 0.25rem 0.7rem;
+  font-size: 1rem;
+  font-family: inherit;
+  background: #fff;
+  color: #222;
+  outline: none;
+  transition: border 0.2s;
+}
+.buscador-fechas-input:focus {
+  border: 1.5px solid #6366f1;
+}
+
+.buscador-fechas-buscar {
+  background: #f3f4f6;
+  border: none;
+  border-radius: 6px;
+  padding: 0.3rem 0.7rem;
+  font-size: 1.1rem;
+  cursor: pointer;
+  color: #6366f1;
+  transition: background 0.15s;
+  margin-left: 0.5rem;
+box-shadow: 0 4px 16px 0 rgba(0, 0, 0, 0.08),
+    0 1.5px 4px 0 rgba(0, 0, 0, 0.04);
+  
+}
+.buscador-fechas-buscar:active {
+  background: #e0e7ff;
+  transform: translateY(3px);
+}
+
+.buscador-fechas-csv {
+  background: #e0f2fe;
+  border: none;
+  border-radius: 6px;
+  padding: 0.3rem 0.7rem;
+  font-size: 1.1rem;
+  cursor: pointer;
+  color: #059669;
+  font-weight: 700;
+  margin-left: 0.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  transition: background 0.15s;
+}
+.buscador-fechas-csv:active {
+  background: #bae6fd;
+}

@@ -46,16 +46,23 @@ def crear_venta():
 @ventas_bp.route('/', methods=['GET'])
 def listar_ventas():
     ventas = Venta.query.all()
-    return jsonify([
-        {'id': v.id, 
-         'cliente_id': v.cliente_id, 
-         'usuario_id': v.usuario_id, 
-         'fecha_venta': v.fecha_venta.isoformat(), 
-         'total': v.total, 
-         'metodo_pago': v.metodo_pago, 
-         'descuento': v.descuento}
-        for v in ventas
-    ])
+    resultado = []
+    for v in ventas:
+        cliente_nombre = v.cliente.nombre + ' ' + v.cliente.apellido if v.cliente else None
+        for d in v.detalles:
+            producto_nombre = d.producto.nombre if d.producto else None
+            resultado.append({
+                'id': v.id,
+                'cliente_id': v.cliente_id,
+                'cliente_nombre': cliente_nombre,
+                'usuario_id': v.usuario_id,
+                'fecha_venta': v.fecha_venta.isoformat(),
+                'total': v.total,
+                'metodo_pago': v.metodo_pago,
+                'descuento': v.descuento,
+                'producto': producto_nombre
+            })
+    return jsonify(resultado)
 
 # Obtener venta por id
 @ventas_bp.route('/<int:id>', methods=['GET'])
@@ -135,3 +142,29 @@ def estadisticas_ultimos_10_dias():
         'total_general': total_general,
         'periodo': f"{fecha_inicio.strftime('%d %b')} - {fecha_fin.strftime('%d %b, %Y')}"
     })
+
+# Obtener detalles de una venta específica
+@ventas_bp.route('/<int:id>/detalles', methods=['GET'])
+def obtener_detalles_venta(id):
+    # Verificar que la venta existe
+    venta = Venta.query.get_or_404(id)
+    
+    # Obtener todos los detalles de esta venta con datos del producto
+    detalles = []
+    for detalle in venta.detalles:
+        producto = detalle.producto
+        producto_nombre = producto.nombre if producto else None
+        talle = producto.talle if producto else None
+        
+        detalles.append({
+            'id': detalle.id,
+            'venta_id': detalle.venta_id,
+            'producto_id': detalle.producto_id,
+            'producto_nombre': producto_nombre,
+            'talle': talle,
+            'cantidad': detalle.cantidad,
+            'precio_unitario': detalle.precio_unitario,
+            'subtotal': detalle.subtotal
+        })
+    
+    return jsonify(detalles)

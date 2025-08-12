@@ -3,15 +3,49 @@ from flask import Blueprint, request, jsonify
 from models.producto import Producto
 from models.subcategoria import Subcategoria
 from database.db import db
+from models.categoria import Categoria
 
 productos_bp = Blueprint('productos', __name__, url_prefix='/api/productos')
 
 # Crear producto
 @productos_bp.route('/', methods=['POST'])
 def crear_producto():
-    data = request.get_json()
+    # Si el request es multipart/form-data (con archivo)
+    if request.content_type and 'multipart/form-data' in request.content_type:
+        data = request.form
+        imagen = request.files.get('imagen')
+    else:
+        data = request.get_json()
+        imagen = None
+
+    # Validar campos obligatorios
     if not data.get('nombre') or not data.get('costo') or not data.get('precio_venta') or not data.get('categoria_id'):
         return jsonify({'error': 'Faltan datos obligatorios'}), 400
+
+    # Validar unicidad del código
+    if data.get('codigo'):
+        producto_existente = Producto.query.filter_by(codigo=data['codigo']).first()
+        if producto_existente:
+            return jsonify({'error': 'El código del producto ya existe'}), 400
+
+    categoria = Categoria.query.get(data['categoria_id']) if data.get('categoria_id') else None
+    subcategoria = Subcategoria.query.get(data['subcategoria_id']) if data.get('subcategoria_id') else None
+
+    imagen_url = None
+    if imagen:
+        import os
+        from flask import current_app
+        uploads_dir = os.path.join(current_app.root_path, 'uploads')
+        os.makedirs(uploads_dir, exist_ok=True)
+        filename = imagen.filename
+        imagen_path = os.path.join(uploads_dir, filename)
+        imagen.save(imagen_path)
+        # Construir URL absoluta
+        host = request.host_url.rstrip('/')
+        imagen_url = f'{host}/uploads/{filename}'
+    else:
+        imagen_url = data.get('imagen_url')
+
     producto = Producto(
         nombre=data['nombre'],
         talle=data.get('talle'),
@@ -20,10 +54,16 @@ def crear_producto():
         marca=data.get('marca'),
         costo=data['costo'],
         precio_venta=data['precio_venta'],
-        imagen_url=data.get('imagen_url'),
+        imagen_url=imagen_url,
         stock_actual=data.get('stock_actual', 0),
-        categoria_id=data['categoria_id']
+        stock_minimo=data.get('stock_minimo', 0),
+        categoria_id=data['categoria_id'],
+        subcategoria_id=data.get('subcategoria_id'),
+        activo=True,
+        temporada=data.get('temporada'),
+        fecha_ingreso=data.get('fecha_ingreso')
     )
+
     db.session.add(producto)
     db.session.commit()
     return jsonify({'id': producto.id}), 201
@@ -44,10 +84,14 @@ def listar_productos():
             'precio_venta': p.precio_venta,
             'imagen_url': p.imagen_url,
             'stock_actual': p.stock_actual,
+            'stock_minimo': p.stock_minimo,  # <-- Agregado para el modal
             'categoria_id': p.categoria_id,
             'categoria_nombre': p.categoria.nombre if p.categoria else None,
             'subcategoria_id': p.subcategoria_id,
-            'subcategoria_nombre': p.subcategoria.nombre if p.subcategoria else None
+            'subcategoria_nombre': p.subcategoria.nombre if p.subcategoria else None,
+            'temporada': p.temporada,
+            'fecha_ingreso': p.fecha_ingreso,
+            'activo': p.activo  # Add 'activo' property
         }
         for p in productos
     ])
@@ -77,7 +121,13 @@ def obtener_producto(id):
 @productos_bp.route('/<int:id>', methods=['PUT'])
 def actualizar_producto(id):
     producto = Producto.query.get_or_404(id)
-    data = request.get_json()
+    if request.content_type and 'multipart/form-data' in request.content_type:
+        data = request.form
+        imagen = request.files.get('imagen')
+    else:
+        data = request.get_json()
+        imagen = None
+
     producto.nombre = data.get('nombre', producto.nombre)
     producto.talle = data.get('talle', producto.talle)
     producto.codigo = data.get('codigo', producto.codigo)
@@ -88,8 +138,23 @@ def actualizar_producto(id):
     producto.stock_actual = data.get('stock_actual', producto.stock_actual)
     producto.categoria_id = data.get('categoria_id', producto.categoria_id)
     producto.subcategoria_id = data.get('subcategoria_id', producto.subcategoria_id)
+
+    # Manejar imagen si se envía
+    if imagen:
+        import os
+        from flask import current_app
+        uploads_dir = os.path.join(current_app.root_path, 'uploads')
+        os.makedirs(uploads_dir, exist_ok=True)
+        filename = imagen.filename
+        imagen_path = os.path.join(uploads_dir, filename)
+        imagen.save(imagen_path)
+        host = request.host_url.rstrip('/')
+        producto.imagen_url = f'{host}/uploads/{filename}'
+    elif data.get('imagen_url'):
+        producto.imagen_url = data.get('imagen_url')
+
     db.session.commit()
-    return jsonify({'msg': 'Producto actualizado'})
+    return jsonify({'msg': 'Producto actualizado', 'imagen_url': producto.imagen_url})
 
 # Eliminar producto
 @productos_bp.route('/<int:id>', methods=['DELETE'])

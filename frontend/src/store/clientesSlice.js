@@ -9,6 +9,14 @@ export const fetchClientes = createAsyncThunk(
   }
 );
 
+export const addClienteAsync = createAsyncThunk(
+  "clientes/addClienteAsync",
+  async (nuevoCliente) => {
+    const response = await axios.post("/api/clientes/", nuevoCliente);
+    return response.data.cliente;
+  }
+);
+
 const clientesSlice = createSlice({
   name: "clientes",
   initialState: {
@@ -33,6 +41,9 @@ const clientesSlice = createSlice({
       .addCase(fetchClientes.rejected, (state, action) => {
         state.status = "failed";
         state.error = action.error.message;
+      })
+      .addCase(addClienteAsync.fulfilled, (state, action) => {
+        state.items.push(action.payload);
       });
   },
 });

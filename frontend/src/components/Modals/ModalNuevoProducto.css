@@ -1,0 +1,211 @@
+/* Imagen upload area */
+.modal-nuevo-img-placeholder {
+  cursor: pointer;
+  position: relative;
+  display: inline-block;
+}
+
+.modal-nuevo-img-plus {
+  position: absolute;
+  right: 10px;
+  bottom: 10px;
+  
+  background-color: white;
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.5rem;
+  color: #888;
+  pointer-events: none;
+  z-index: 2;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.06);
+}
+
+.modal-nuevo-img-input {
+  display: none;
+}
+.modal-nuevo-backdrop {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  background: rgba(0, 0, 0, 0.18);
+  z-index: 3000;
+  display: flex;
+  justify-content: flex-end;
+  align-items: flex-start;
+}
+
+.modal-nuevo-container {
+  margin-top: 2.5rem;
+  margin-right: 2.5rem;
+  background: #fafbfc;
+  border-radius: 1.2rem;
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.18), 0 2px 8px 0 rgba(0, 0, 0, 0.1);
+  padding: 1.2rem 1.2rem 1rem 1.2rem;
+  display: flex;
+  flex-direction: column;
+  min-width: 360px;
+  width: 31.25rem; /* 25rem + 100px aprox */
+  height: 33.5rem; /* 24rem + 100px aprox */
+  max-width: 98vw;
+  max-height: 95vh;
+  overflow-y: auto;
+  font-family: "Rajdhani", Arial, sans-serif;
+  animation: modal-slide-in 0.45s cubic-bezier(0.6, -0.01, 0.45, 0.99) forwards;
+  position: relative;
+  margin-left: 2rem; /* Ubicar el modal hacia la izquierda */
+}
+
+.modal-exit {
+  animation: modal-slide-out 0.45s cubic-bezier(0.6, -0.01, 0.45, 0.99) forwards;
+}
+
+@keyframes modal-slide-in {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes modal-slide-out {
+  from {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+}
+
+.modal-nuevo-header {
+  display: flex;
+  align-items: center;
+  font-size: 2rem;
+  font-weight: 600;
+  margin-bottom: 0.7rem;
+  gap: 0.4rem;
+}
+.modal-nuevo-icon {
+  font-size: 1rem;
+  background: #e5e7eb;
+  
+  border-radius: 50%;
+  width: 2.2rem;
+  height: 2.2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.modal-nuevo-title {
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: #222;
+}
+
+.modal-nuevo-img-upload {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 0.7rem;
+  
+  
+}
+
+.modal-nuevo-img-placeholder {
+  width: calc(100% + 50px); /* Incrementar ancho */
+  height: calc(6.5rem + 50px); /* Incrementar altura */
+  background: transparent; /* Fondo transparente */
+  border-radius: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.modal-nuevo-img-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.9rem;
+  text-align: center;
+  border-radius: 0.7rem;
+  z-index: 2;
+}
+
+.modal-nuevo-img-overlay span {
+  line-height: 1.4;
+  font-size: 1rem;
+}
+
+.modal-nuevo-img-link {
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.modal-nuevo-img-preview {
+  width: 100%;
+  height: 100%;
+  object-fit: contain; /* Ajustar imagen al contenedor */
+  border-radius: 0.7rem;
+  
+  
+}
+
+.modal-nuevo-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+.modal-nuevo-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.1rem;
+}
+.modal-nuevo-row label {
+  min-width: 3.2rem;
+  font-family: 'Rajdhani', Arial, sans-serif;
+  font-size: 0.85rem;
+  color: #222;
+}
+.modal-nuevo-row input,
+.modal-nuevo-row select {
+  flex: 0.5;
+  padding: 0.22rem 0.4rem;
+  border-radius: 0.3rem;
+  border: 1px solid #e5e7eb;
+  background: #f5f6fa;
+  font-size: 0.9rem;
+  font-family: 'Rajdhani', Arial, sans-serif;
+  color: #222;
+  outline: none;
+  transition: border 0.2s;
+  width: 100px;
+}
+.modal-nuevo-row input:focus,
+.modal-nuevo-row select:focus {
+  border: 1px solid #a5b4fc;
+}
+
+.modal-nuevo-actions {
+  display: flex;
+  justify-content: center;
+  margin-top: 1.2rem;
+  gap: 5rem;
+}

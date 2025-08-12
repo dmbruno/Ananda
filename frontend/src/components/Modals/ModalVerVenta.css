@@ -1,0 +1,303 @@
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  z-index: 1000;
+  overflow: hidden;
+}
+
+.modal-overlay.cerrando {
+  animation: fade-out 0.5s forwards;
+}
+
+.modal-container-venta {
+  width: 400px;
+  max-height: 85vh;
+  background: #fff;
+  box-shadow: -5px 0 15px rgba(0, 0, 0, 0.2);
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow-y: auto;
+  border-radius: 8px;
+  margin-right: 20px;
+}
+
+.modal-container-venta.slide-in {
+  animation: slide-in 0.45s forwards;
+}
+
+.modal-container-venta.slide-out {
+  animation: slide-out 0.45s forwards;
+}
+
+.modal-header-venta {
+  padding: 15px 15px 10px;
+  border-bottom: 1px solid #e0e0e0;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  position: sticky;
+  top: 0;
+  background: #fff;
+  z-index: 10;
+}
+
+.venta-title {
+  width: 100%;
+  
+}
+
+.modal-header-venta h2 {
+  margin: 0;
+  color: #333;
+  font-size: 1.25rem;
+  font-weight: 600;
+  display: flex;
+}
+
+.venta-fecha {
+  margin-top: -5px;
+  color: #666;
+  font-size: 0.9rem;
+  display: flex;
+}
+
+.modal-close-btn {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: #666;
+  position: absolute;
+  right: 15px;
+  top: 10px;
+}
+
+.modal-close-btn:hover {
+  color: #333;
+}
+
+.modal-download-btn {
+  background: none;
+  border: none;
+  font-size: 1.25rem;
+  cursor: pointer;
+  color: #666;
+  display: flex;
+  align-items: center;
+  padding: 8px 12px;
+  border-radius: 4px;
+  margin-top: 10px;
+}
+
+.modal-download-btn:hover {
+  color: #333;
+  background-color: #f0f0f0;
+}
+
+.modal-content-venta {
+  flex: 1;
+  overflow-y: auto;
+}
+
+/* Elimino este estilo ya que la fecha se mueve al header */
+
+.cliente-section {
+  padding: 0 15px 10px;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.cliente-section h3 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: 10px;
+  color: #333;
+  display: flex;
+}
+
+.cliente-info {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.cliente-nombre,
+.cliente-telefono {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.9rem;
+}
+
+.cliente-nombre i,
+.cliente-telefono i {
+  color: #666;
+}
+
+
+
+.productos-section h3 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin: 0 0 10px;
+  color: #333;
+  padding: 15px 15px 5px;
+  display: flex;
+}
+
+.productos-table-header {
+  display: grid;
+  grid-template-columns: 1.5fr 0.8fr 0.8fr 1fr;
+  background: #f5f5f5;
+  padding: 8px 15px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #666;
+  text-transform: uppercase;
+  margin-inline: 20px;
+
+  
+}
+
+
+  
+  
+  
+  
+  
+
+
+
+
+.productos-table-row {
+  display: grid;
+  grid-template-columns: 1.5fr 0.8fr 0.8fr 1fr;
+  padding: 4px 7px;
+  border-bottom: 1px dotted #eee;
+  font-size: 0.8rem;
+  
+  margin-inline: 30px;
+}
+
+.productos-table-row:last-child {
+  border-bottom: none;
+  margin-bottom: 10px;
+}
+
+.productos-table{
+    border-bottom: 1px solid #eee;
+}
+
+.resumen-venta {
+  padding: 15px 15px 10px;
+  margin-inline: 20px;
+}
+
+.subtotal-section,
+.descuento-section,
+.metodo-pago-section {
+  display: flex;
+  justify-content: space-between;
+  padding: 5px 0;
+  font-size: 0.92rem;
+}
+
+.subtotal-label,
+.descuento-label,
+.metodo-pago-label,
+.total-label {
+  font-weight: 500;
+  color: #555;
+}
+
+.subtotal-value,
+.descuento-value,
+.metodo-pago-value,
+.total-value {
+  color: #333;
+  font-weight: 600;
+}
+
+.total-section {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 0 5px;
+  margin-top: 10px;
+  border-top: 1px solid #ddd;
+  font-weight: 700;
+  font-size: 1rem;
+}
+
+.total-label {
+  color: #333;
+}
+
+.total-value {
+  color: #000;
+}
+
+.nota-comprobante {
+  text-align: center;
+  color: #888;
+  font-size: 0.9rem;
+  margin: 15px 0;
+  font-style: oblique;
+}
+
+.modal-footer-venta {
+  padding: 10px 15px;
+  display: flex;
+  justify-content: space-between;
+  background: #fff;
+  position: sticky;
+  bottom: 10px;
+  margin-left: 10px;
+}
+
+@keyframes slide-in {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+@keyframes slide-out {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(100%);
+  }
+}
+
+@keyframes fade-out {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+/* Estilos para dispositivos móviles */
+@media (max-width: 600px) {
+  .modal-container-venta {
+    width: 90%;
+    margin-right: 5%;
+  }
+
+  .productos-table-header,
+  .productos-table-row {
+    grid-template-columns: 1.5fr 0.6fr 0.6fr 0.8fr;
+    font-size: 0.8rem;
+  }
+}

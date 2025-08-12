@@ -121,6 +121,7 @@ const CrudCategorias = () => {
                   <BotonEditar
                     onClick={() => handleEditar(cat)}
                     small={true}
+                    className={"boton-editar-chico"}
                   >
                     Editar
                   </BotonEditar>

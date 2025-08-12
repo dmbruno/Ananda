@@ -194,3 +194,14 @@
 .sidebar:not(.sidebar-expanded) .sidebar-footer .sidebar-item .sidebar-label {
   display: none;
 }
+
+.dropdown-categorias-item {
+  font-size: 0.75rem;
+  color: #888;
+  font-family: "Poppins", sans-serif;
+  font-weight: 500;
+  transition: background 0.2s, color 0.2s;
+  border-radius: 0.5rem; /* 8px */
+  text-shadow: 0 4px 16px rgba(44, 62, 80, 0.22),
+    0 1.5px 4px rgba(0, 0, 0, 0.05);
+}

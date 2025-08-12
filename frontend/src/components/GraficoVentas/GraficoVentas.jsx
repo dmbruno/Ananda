@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { fetchVentas } from "../../store/ventasSlice";
 import {
@@ -13,6 +13,7 @@ import {
 } from "chart.js";
 import { Line } from "react-chartjs-2";
 import "./GraficoVentas.css";
+import BuscadorPorFechas from "../Buscador/BuscadorPorFechas";
 
 ChartJS.register(
   CategoryScale,
@@ -24,9 +25,11 @@ ChartJS.register(
   Legend
 );
 
-const GraficoVentas = ({ fechaInicio, fechaFin }) => {
+const GraficoVentas = ({ fechaInicio, fechaFin, showBuscadorPorFechas = false }) => {
   const dispatch = useDispatch();
   const { items: ventas, status } = useSelector((state) => state.ventas);
+  const [desde, setDesde] = useState("");
+  const [hasta, setHasta] = useState("");
 
   useEffect(() => {
     if (status === "idle") {
@@ -34,26 +37,51 @@ const GraficoVentas = ({ fechaInicio, fechaFin }) => {
     }
   }, [dispatch, status]);
 
-  // Procesar los últimos 10 días o rango de fechas
-  const getLastTenDaysData = () => {
+  // Definir filtroDesde y filtroHasta en el scope principal
+  const filtroDesde = showBuscadorPorFechas ? desde : fechaInicio;
+  const filtroHasta = showBuscadorPorFechas ? hasta : fechaFin;
+
+  // Generar array de fechas entre dos fechas (inclusive)
+  function getDateRangeArray(start, end) {
+    const arr = [];
+    let dt = new Date(start);
+    const endDt = new Date(end);
+    while (dt <= endDt) {
+      arr.push(new Date(dt));
+      dt.setDate(dt.getDate() + 1);
+    }
+    return arr;
+  }
+
+  // Procesar datos según rango seleccionado o últimos 10 días
+  const getRangoData = () => {
     let ventasFiltradas = ventas;
-    if (fechaInicio && fechaFin) {
-      const inicio = new Date(fechaInicio).toISOString().split('T')[0];
-      const fin = new Date(fechaFin).toISOString().split('T')[0];
+    let days = [];
+    if (filtroDesde && filtroHasta) {
+      const inicio = new Date(filtroDesde);
+      const fin = new Date(filtroHasta);
       ventasFiltradas = ventas.filter((venta) => {
         const fecha = venta.fecha_venta?.split("T")[0];
-        return fecha >= inicio && fecha <= fin;
+        return fecha >= inicio.toISOString().split('T')[0] && fecha <= fin.toISOString().split('T')[0];
       });
-    }
-    const today = new Date();
-    const days = [];
-    for (let i = 9; i >= 0; i--) {
-      const d = new Date(today);
-      d.setDate(today.getDate() - i);
-      days.push({
+      days = getDateRangeArray(inicio, fin).map((d) => ({
         date: d.toISOString().split("T")[0],
-        label: `${d.getDate()}`,
         total: 0,
+      }));
+    } else {
+      // Últimos 10 días por defecto
+      const today = new Date();
+      for (let i = 9; i >= 0; i--) {
+        const d = new Date(today);
+        d.setDate(today.getDate() - i);
+        days.push({
+          date: d.toISOString().split("T")[0],
+          total: 0,
+        });
+      }
+      ventasFiltradas = ventas.filter((venta) => {
+        const fecha = venta.fecha_venta?.split("T")[0];
+        return days.some((d) => d.date === fecha);
       });
     }
     // Sumar ventas por día
@@ -67,7 +95,7 @@ const GraficoVentas = ({ fechaInicio, fechaFin }) => {
     return days;
   };
 
-  const datos = getLastTenDaysData();
+  const datos = getRangoData();
   const totalVentas = datos.reduce((sum, d) => sum + d.total, 0);
 
   const chartData = {
@@ -77,7 +105,7 @@ const GraficoVentas = ({ fechaInicio, fechaFin }) => {
     }),
     datasets: [
       {
-        label: "Last 10 days",
+        label: filtroDesde && filtroHasta ? `Ventas diarias` : "Últimos 10 días",
         data: datos.map((d) => d.total),
         fill: true,
         borderColor: "#5A6ACF",
@@ -122,16 +150,36 @@ const GraficoVentas = ({ fechaInicio, fechaFin }) => {
   if (status === "loading") return <div className="grafico-loading">Cargando ventas...</div>;
   if (status === "failed") return <div className="grafico-error">Error al cargar ventas</div>;
 
+  // Mostrar botón de descarga si hay fechas seleccionadas
+  const mostrarDescarga = !!(filtroDesde && filtroHasta);
+
   return (
     <div className="grafico-ventas-card">
       <div className="grafico-ventas-header">
         <div className="grafico-ventas-header-content">
           <h2 className="grafico-ventas-amount">Ventas ${totalVentas.toLocaleString()}</h2>
-          <p className="grafico-ventas-subtitle">Ultimos 10 días</p>
+          <p className="grafico-ventas-subtitle">{(filtroDesde && filtroHasta) ? `Del ${filtroDesde} al ${filtroHasta}` : "Ultimos 10 días"}</p>
         </div>
-        <button className="grafico-ventas-action" title="Ver ventas">
-          Ventas <span className="arrow">→</span>
-        </button>
+        {showBuscadorPorFechas ? (
+          <div className="ultimos-vendidos-buscador">
+            <BuscadorPorFechas
+              desde={desde}
+              hasta={hasta}
+              onChangeDesde={setDesde}
+              onChangeHasta={setHasta}
+              onBuscar={() => {}}
+              onDescargarCSV={() => {
+                setDesde("");
+                setHasta("");
+              }}
+              mostrarDescarga={mostrarDescarga}
+            />
+          </div>
+        ) : (
+          <button className="grafico-ventas-action" title="Ver ventas">
+            Ventas <span className="arrow">→</span>
+          </button>
+        )}
       </div>
       <div className="grafico-ventas-chart-container">
         <Line data={chartData} options={chartOptions} height={224} />

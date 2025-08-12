@@ -8,6 +8,8 @@ import CategoriasPage from './pages/CategoriasPage';
 import StockPage from './pages/StockPage';
 import "./components/SidebarCategorias/DropdownCategoriasSidebar.css";
 import { Routes, Route, useNavigate } from "react-router-dom";
+import VentasPage from "./pages/VentasPage";
+import ClientePage from "./pages/ClientePage";
 
 function App() {
   const navigate = useNavigate();
@@ -102,8 +104,8 @@ function App() {
           <Route path="/dashboard" element={<DashboardPage />} />
           <Route path="/categorias" element={<CategoriasPage />} />
           <Route path="/ventas/nueva" element={<div>Nueva Venta - En desarrollo</div>} />
-          <Route path="/ventas" element={<div>Ventas - En desarrollo</div>} />
-          <Route path="/clientes" element={<div>Clientes - En desarrollo</div>} />
+          <Route path="/ventas" element={<VentasPage />} />
+          <Route path="/clientes" element={<ClientePage />} />
           <Route path="/cumpleanos" element={<div>Cumpleaños - En desarrollo</div>} />
           <Route path="/usuarios" element={<div>Usuarios - En desarrollo</div>} />
           <Route path="/carrito" element={<div>Carrito - En desarrollo</div>} />

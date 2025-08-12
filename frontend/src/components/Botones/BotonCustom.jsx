@@ -7,11 +7,12 @@ const BotonCustom = ({
   disabled = false,
   variant = "primary", // primary, secondary, success, info
   icon = null,
-  size = "medium" // small, medium, large
+  size = "medium", // small, medium, large
+  className = ""
 }) => {
   return (
     <button 
-      className={`boton-custom boton-custom--${variant} boton-custom--${size}`}
+      className={`boton-custom boton-custom--${variant} boton-custom--${size} ${className}`.trim()}
       onClick={onClick}
       disabled={disabled}
     >

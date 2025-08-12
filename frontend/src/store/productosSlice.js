@@ -20,6 +20,12 @@ const productosSlice = createSlice({
     addProducto: (state, action) => {
       state.items.push(action.payload);
     },
+    updateProducto: (state, action) => {
+      const idx = state.items.findIndex(p => p.id === action.payload.id);
+      if (idx !== -1) {
+        state.items[idx] = { ...state.items[idx], ...action.payload };
+      }
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -27,6 +33,7 @@ const productosSlice = createSlice({
         state.status = "loading";
       })
       .addCase(fetchProductos.fulfilled, (state, action) => {
+        console.log('Datos recuperados del backend:', action.payload);
         state.status = "succeeded";
         state.items = action.payload;
       })
@@ -37,5 +44,5 @@ const productosSlice = createSlice({
   },
 });
 
-export const { addProducto } = productosSlice.actions;
+export const { addProducto, updateProducto } = productosSlice.actions;
 export default productosSlice.reducer;

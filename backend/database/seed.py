@@ -71,7 +71,7 @@ with app.app_context():
     for i, subcat in enumerate(subcategorias):
         cat = subcat.categoria
         for k in range(3):  # 3 productos por subcategoría
-            nombre = f'Producto {cat.nombre}-{subcat.nombre}-{k+1}'
+            nombre = f'Producto {k+1}'
             talle = talles[(i + k) % len(talles)]
             codigo = f'P{i+1:03d}{k+1}'
             color = colores[(i + k) % len(colores)]
@@ -89,42 +89,50 @@ with app.app_context():
                 precio_venta=precio_venta,
                 stock_actual=stock_actual,
                 categoria=cat,
-                subcategoria=subcat
+                subcategoria=subcat,
+                temporada='Primavera-Verano',  # Temporada ficticia
+                fecha_ingreso=datetime.now().strftime('%Y-%m-%d'),  # Fecha de ingreso actual
+                imagen_url=f'https://picsum.photos/seed/{i*10+k}/100'
             ))
     db.session.add_all(productos)
 
-    # Venta y detalle
-    v1 = Venta(cliente=c1, usuario=u1, fecha_venta=datetime.now(), total=9000, metodo_pago='FT', descuento=10)
-    db.session.add(v1)
-    db.session.flush()
-    # Usar los primeros 6 productos para los detalles de venta inicial
-    for i in range(6):
-        prod = productos[i]
-        cantidad = 1 + (i % 3)
-        detalle = DetalleVenta(venta_id=v1.id, producto_id=prod.id, cantidad=cantidad, precio_unitario=prod.costo, subtotal=prod.costo*cantidad)
-        db.session.add(detalle)
 
-    # Ventas y detalles de los últimos 10 días (incluyendo todos los productos)
+
+    # Generar ventas distribuidas en los últimos 60 días con datos variados y realistas
+    import random
     metodos = ['FT', 'TC', 'TB']
-    for i in range(10):
-        fecha = datetime.now() - timedelta(days=9-i)
-        metodo = metodos[i % 3]
-        venta = Venta(cliente=c1, usuario=u1, fecha_venta=fecha, total=5000 + i*500, metodo_pago=metodo, descuento=5)
-        db.session.add(venta)
-        db.session.flush()
-        for j, prod in enumerate(productos[:12]):  # Solo los primeros 12 productos para no generar demasiados detalles
-            cantidad = 1 + ((i+j) % 3)  # 1 a 3 unidades
-            detalle = DetalleVenta(venta_id=venta.id, producto_id=prod.id, cantidad=cantidad, precio_unitario=prod.costo, subtotal=prod.costo*cantidad)
-            db.session.add(detalle)
-
-    # Agregar ventas del día de hoy con todos los métodos de pago
-    for metodo in metodos:
-        venta = Venta(cliente=c1, usuario=u1, fecha_venta=datetime.now(), total=7000, metodo_pago=metodo, descuento=0)
-        db.session.add(venta)
-        db.session.flush()
-        for prod in productos[:12]:
-            detalle = DetalleVenta(venta_id=venta.id, producto_id=prod.id, cantidad=1, precio_unitario=prod.costo, subtotal=prod.costo)
-            db.session.add(detalle)
+    clientes = Cliente.query.all()
+    base_fecha = datetime.now()
+    dias_a_generar = 60
+    ventas_por_dia = 4
+    productos_ids = [p.id for p in productos]
+    for dia in range(dias_a_generar):
+        fecha_venta = base_fecha - timedelta(days=dia)
+        for v in range(ventas_por_dia):
+            cliente = random.choice(clientes)
+            metodo = random.choice(metodos)
+            # Elegir entre 1 y 3 productos distintos para la venta
+            prods_vendidos = random.sample(productos, k=random.randint(1, 3))
+            total_venta = 0
+            detalles = []
+            for prod in prods_vendidos:
+                cantidad = random.randint(1, 4)
+                subtotal = prod.precio_venta * cantidad
+                total_venta += subtotal
+                detalles.append((prod.id, prod.precio_venta, cantidad, subtotal))
+            # Pequeño descuento aleatorio en algunas ventas (como porcentaje)
+            descuento = 0
+            if random.random() < 0.15:
+                # Descuento entre 5% y 20%
+                descuento = random.randint(5, 20)
+                descuento_valor = total_venta * (descuento / 100)
+                total_venta = max(0, total_venta - descuento_valor)
+            venta = Venta(cliente=cliente, usuario=u1, fecha_venta=fecha_venta, total=total_venta, metodo_pago=metodo, descuento=descuento)
+            db.session.add(venta)
+            db.session.flush()
+            for prod_id, precio_unitario, cantidad, subtotal in detalles:
+                detalle = DetalleVenta(venta_id=venta.id, producto_id=prod_id, cantidad=cantidad, precio_unitario=precio_unitario, subtotal=subtotal)
+                db.session.add(detalle)
 
     db.session.commit()
     print('Datos ficticios cargados correctamente.')

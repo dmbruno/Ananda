@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { fetchVentas } from "../../store/ventasSlice";
 import {
@@ -9,6 +9,7 @@ import {
 } from "chart.js";
 import { Doughnut } from "react-chartjs-2";
 import "./MetodoDePago.css";
+import BuscadorPorFechas from "../Buscador/BuscadorPorFechas";
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
@@ -20,9 +21,11 @@ const METODOS = {
 
 const COLORS = ["#4F46E5", "#A5B4FC", "#818CF8"];
 
-const MetodoDePago = ({ fechaInicio, fechaFin }) => {
+const MetodoDePago = ({ fechaInicio, fechaFin, className = "", chartWidth = 200, chartHeight = 200, showBuscadorPorFechas = false }) => {
   const dispatch = useDispatch();
   const { items: ventas, status } = useSelector((state) => state.ventas);
+  const [desde, setDesde] = useState("");
+  const [hasta, setHasta] = useState("");
 
   useEffect(() => {
     if (status === "idle") {
@@ -32,9 +35,9 @@ const MetodoDePago = ({ fechaInicio, fechaFin }) => {
 
   // Filtrar ventas por rango de fechas si se proveen, si no, solo hoy
   let ventasFiltradas = ventas;
-  if (fechaInicio && fechaFin) {
-    const inicio = new Date(fechaInicio).toISOString().split('T')[0];
-    const fin = new Date(fechaFin).toISOString().split('T')[0];
+  if (desde && hasta) {
+    const inicio = new Date(desde).toISOString().split('T')[0];
+    const fin = new Date(hasta).toISOString().split('T')[0];
     ventasFiltradas = ventas.filter((venta) => {
       const fecha = (typeof venta.fecha_venta === 'string') ? venta.fecha_venta.split('T')[0] : '';
       return fecha >= inicio && fecha <= fin;
@@ -111,18 +114,27 @@ const MetodoDePago = ({ fechaInicio, fechaFin }) => {
   };
 
   return (
-    <div className="grafico-metodo-card">
+    <div className={`grafico-metodo-card ${className}`}>
       <div className="grafico-metodo-header">
         <div className="grafico-metodo-header-content">
           <h2 className="grafico-metodo-title">Ventas realizadas</h2>
           <p className="grafico-metodo-subtitle">{new Date().toLocaleDateString()}</p>
         </div>
-        <button className="grafico-metodo-action" title="Ver ventas">
-          Ventas <span className="arrow">→</span>
-        </button>
+        {showBuscadorPorFechas ? (
+          <div className="grafico-metodo-buscador-center">
+            <BuscadorPorFechas
+              desde={desde}
+              hasta={hasta}
+              onChangeDesde={setDesde}
+              onChangeHasta={setHasta}
+              mostrarDescarga={false}
+              onBuscar={() => {}}
+            />
+          </div>
+        ) : null}
       </div>
       <div className="grafico-metodo-chart-container">
-        <Doughnut data={data} options={options} height={200} width={200} plugins={[shadowPlugin]} />
+        <Doughnut data={data} options={options} height={chartHeight} width={chartWidth} plugins={[shadowPlugin]} />
       </div>
       <div className="grafico-metodo-legend">
         <div className="legend-item">

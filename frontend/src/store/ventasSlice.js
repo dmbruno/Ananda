@@ -1,9 +1,12 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
+import { enriquecerVentasConDatosDeCliente } from "../api/ventasUtils";
 
 export const fetchVentas = createAsyncThunk("ventas/fetchVentas", async () => {
   const response = await axios.get("/api/ventas/");
-  return response.data;
+  // Enriquecer las ventas con datos completos del cliente
+  const ventasEnriquecidas = await enriquecerVentasConDatosDeCliente(response.data);
+  return ventasEnriquecidas;
 });
 
 const ventasSlice = createSlice({

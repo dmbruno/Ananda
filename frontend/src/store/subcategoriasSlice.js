@@ -84,4 +84,7 @@ export const selectSubcategoriasByCategoria = (state, categoriaId) =>
     (s) => String(s.categoria_id) === String(categoriaId)
   );
 
+// Selector para obtener todas las subcategorías
+export const selectAllSubcategorias = (state) => state.subcategorias.items;
+
 export default subcategoriasSlice.reducer;

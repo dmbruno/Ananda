@@ -1,0 +1,145 @@
+/* ModalNuevoCliente.css */
+
+.modal-cliente-backdrop {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  background: rgba(0, 0, 0, 0.18);
+  z-index: 3000;
+  display: flex;
+  justify-content: flex-end;
+  align-items: flex-start;
+}
+
+.modal-cliente-container {
+  margin-top: 2.5rem; /* tamaño vertical del modal */
+  margin-right: 2.5rem; /* separación derecha del modal */
+  background: #fff;
+  border-radius: 0.6rem; /* radio de borde reducido */
+  box-shadow: 0 4px 16px 0 rgba(0, 0, 0, 0.18), 0 1px 4px 0 rgba(0, 0, 0, 0.1);
+  padding: 1.25rem 1.25rem 1rem 1.25rem; /* padding reducido */
+  display: flex;
+  flex-direction: column;
+  min-width: 175px; /* ancho mínimo reducido */
+  width: 310px; /* ancho reducido */
+  max-width: 98vw;
+  max-height: 57.5vh; /* alto máximo reducido */
+  overflow-y: auto;
+  font-family: "Rajdhani", Arial, sans-serif;
+  animation: modal-slide-in 0.45s cubic-bezier(0.6, -0.01, 0.45, 0.99) forwards;
+  position: relative;
+}
+
+@keyframes modal-slide-in {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes modal-slide-out {
+  from {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+}
+
+.modal-cliente-container.modal-cliente-exit {
+  animation: modal-slide-out 0.45s cubic-bezier(0.6, -0.01, 0.45, 0.99) forwards;
+}
+
+.modal-cliente-form {
+  display: flex;
+  flex-direction: column;
+}
+
+.modal-cliente-form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.modal-cliente-label {
+  font-size: 1.1rem; /* tamaño de fuente reducido */
+  font-family: "Rajdhani", Arial, sans-serif;
+  font-weight: 500;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+  align-items: flex-start;
+}
+
+.particular {
+  gap: 10px;
+}
+
+.modal-cliente-input {
+  width: 100%;
+  font-size: 1.1rem; /* tamaño de fuente reducido */
+  font-family: "Rajdhani", Arial, sans-serif;
+  border: none;
+  border-bottom: 1px solid #222; /* grosor reducido */
+  background: transparent;
+  padding: 0.35rem 0.1rem 0.35rem 0.1rem; /* padding reducido */
+  margin-top: -5px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.fecha-cliente-input {
+  width: 275px; /* ancho reducido */
+  height: 10px; /* alto reducido */
+  /* Otros estilos personalizados */
+  
+  
+}
+
+.modal-cliente-input:focus {
+  border-bottom: 1px solid #4caf50; /* grosor reducido */
+}
+
+.modal-cliente-input[type="date"] {
+  background: #e0e0e0;
+  border-radius: 5px; /* radio reducido */
+  border: none;
+  padding: 0.55rem 1.25rem; /* padding reducido */
+  font-size: 1.1rem; /* tamaño de fuente reducido */
+  margin-top: 0.25rem; /* margen superior reducido */
+  margin-bottom: 0.1rem; /* margen inferior reducido */
+}
+
+.modal-cliente-form-group svg {
+  display: block;
+  margin: 0 auto 0.75rem auto; /* margen reducido */
+  width: 50px; /* ancho reducido */
+  height: 40px; /* alto reducido */
+}
+
+.modal-cliente-footer {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px;
+}
+
+@media (max-width: 600px) {
+  .modal-cliente-container {
+    width: 98vw;
+    min-width: unset;
+    padding: 0.6rem 0.25rem 0.5rem 0.25rem; /* padding reducido */
+  }
+  .modal-cliente-title {
+    font-size: 0.6rem; /* tamaño de fuente reducido */
+    margin-left: 0.25rem;
+  }
+}

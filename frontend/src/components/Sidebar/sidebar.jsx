@@ -10,7 +10,6 @@ const items = [
   { label: "Stock", icon: <FaBox /> }, // Sin route para evitar navegación automática
   { label: "Categorías", icon: <FaTags />, route: "/categorias" },
   { label: "Clientes", icon: <FaUsers />, route: "/clientes" },
-  { label: "Cumpleaños", icon: <FaBirthdayCake />, route: "/cumpleanos" },
   { label: "Usuarios", icon: <FaUser />, route: "/usuarios" },
 ];
 

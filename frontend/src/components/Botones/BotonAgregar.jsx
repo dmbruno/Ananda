@@ -1,6 +1,8 @@
 import React from "react";
 import "./BotonAgregar.css";
 
+import "./BotonAgregar.css";
+
 const BotonAgregar = ({ onClick, children, disabled }) => (
   <button 
     className="boton-agregar" 

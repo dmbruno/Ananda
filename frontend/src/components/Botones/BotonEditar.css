@@ -1,0 +1,54 @@
+.boton-editar-producto {
+  height: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: 4px;
+  padding: 0.5rem 0.55rem;
+  margin-top: 15px;
+  font-size: 1rem;
+  box-sizing: border-box;
+  cursor: pointer;
+  transition: background 0.2s, box-shadow 0.2s;
+  gap: 0.25rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15), 0 2px 4px rgba(0, 0, 0, 0.1);
+  background: #9d70eb;         /* Gris oscuro */
+  color: #fff;  
+  
+
+}
+
+
+.boton-editar-producto:active,
+.boton-editar-chico:active {
+  background: #7b4aca !important;      /* Más oscuro al presionar */
+  box-shadow: 0 2px 4px rgba(0,0,0,0.10), 0 1px 2px rgba(0,0,0,0.08) !important;
+  transform: translateY(3px) scale(0.96);
+}
+
+
+.boton-editar-producto:hover {
+  background: #6d28d9;         /* Más oscuro al hacer hover */
+}
+
+
+
+.boton-editar-producto-icon circle {
+  fill: #fff;               /* Icono fondo blanco */
+}
+
+.boton-editar-producto-icon path {
+  stroke: #6d28d9;             /* Detalles del icono en gris oscuro */
+}
+
+
+.boton-editar-chico {
+  height: 1.4rem !important;
+  padding: 0.2rem 0.7rem !important;
+  font-size: 0.92rem !important;
+  margin-top: 16px;
+  font-size: 0.82rem !important;
+}
+
+

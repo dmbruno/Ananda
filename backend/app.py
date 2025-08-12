@@ -1,5 +1,5 @@
 # Punto de entrada de la aplicación Flask
-from flask import Flask
+from flask import Flask, send_from_directory
 from database.db import db
 from routes.usuario import usuarios_bp
 from routes.cliente import clientes_bp
@@ -14,6 +14,10 @@ from flask_cors import CORS
 
 def create_app():
     app = Flask(__name__)
+    # Servir archivos de la carpeta uploads
+    @app.route('/uploads/<filename>')
+    def uploaded_file(filename):
+        return send_from_directory('uploads', filename)
     app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///ananda.db'
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     db.init_app(app)

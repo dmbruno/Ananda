@@ -27,7 +27,16 @@ def crear_detalle_venta():
 def listar_detalles_venta():
     detalles = DetalleVenta.query.all()
     return jsonify([
-        {'id': d.id, 'venta_id': d.venta_id, 'producto_id': d.producto_id, 'cantidad': d.cantidad, 'precio_unitario': d.precio_unitario, 'subtotal': d.subtotal}
+        {
+            'id': d.id,
+            'venta_id': d.venta_id,
+            'producto_id': d.producto_id,
+            'cantidad': d.cantidad,
+            'precio_unitario': d.precio_unitario,
+            'subtotal': d.subtotal,
+            'fecha_venta': d.venta.fecha_venta.isoformat() if d.venta and d.venta.fecha_venta else None,
+            'metodo_pago': d.venta.metodo_pago if d.venta and hasattr(d.venta, 'metodo_pago') else None
+        }
         for d in detalles
     ])
 
@@ -35,7 +44,16 @@ def listar_detalles_venta():
 @detalle_ventas_bp.route('/<int:id>', methods=['GET'])
 def obtener_detalle_venta(id):
     d = DetalleVenta.query.get_or_404(id)
-    return jsonify({'id': d.id, 'venta_id': d.venta_id, 'producto_id': d.producto_id, 'cantidad': d.cantidad, 'precio_unitario': d.precio_unitario, 'subtotal': d.subtotal})
+    producto_nombre = d.producto.nombre if d.producto else None
+    return jsonify({
+        'id': d.id, 
+        'venta_id': d.venta_id, 
+        'producto_id': d.producto_id,
+        'producto_nombre': producto_nombre,
+        'cantidad': d.cantidad, 
+        'precio_unitario': d.precio_unitario, 
+        'subtotal': d.subtotal
+    })
 
 # Actualizar detalle de venta
 @detalle_ventas_bp.route('/<int:id>', methods=['PUT'])

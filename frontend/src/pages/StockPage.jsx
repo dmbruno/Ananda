@@ -6,7 +6,10 @@ import Sidebar from '../components/Sidebar/sidebar';
 import HeaderUserBar from '../components/HeaderUserBar/HeaderUserBar';
 import TablaStock from '../components/TablaStock/TablaStock';
 import { exportarStockAExcel } from '../utils/exportarExcel';
+
 import BotonCustom from '../components/Botones/BotonCustom';
+
+import ModalNuevoProducto from '../components/Modals/ModalNuevoProducto';
 import './StockPage.css';
 
 const StockPage = () => {
@@ -24,6 +27,8 @@ const StockPage = () => {
 
   // Estado para modo stock a la fecha
   const [modoStockFecha, setModoStockFecha] = useState(false);
+  // Estado para modal nuevo producto
+  const [modalNuevoOpen, setModalNuevoOpen] = useState(false);
 
   // Fetch productos al montar el componente
   useEffect(() => {
@@ -32,18 +37,22 @@ const StockPage = () => {
     }
   }, [dispatch, status]);
 
-  // Filtrar productos según categoría y subcategoría (solo si no es modo stock fecha)
+
+ 
+  
+
   const productosParaMostrar = modoStockFecha 
     ? productos // Mostrar todos los productos
     : productos.filter(producto => {
         // Filtrar por categoría y subcategoría si están definidas
         const coincideCategoria = !categoriaFinal || categoriaFinal === 'Categoría' || 
-          producto.categoria_nombre?.toLowerCase().includes(categoriaFinal.toLowerCase());
+          producto.categoria_nombre?.toLowerCase() === categoriaFinal.toLowerCase();
         const coincideSubcategoria = !subcategoriaFinal || 
-          producto.subcategoria_nombre?.toLowerCase().includes(subcategoriaFinal.toLowerCase()) ||
-          producto.nombre?.toLowerCase().includes(subcategoriaFinal.toLowerCase());
+          producto.subcategoria_nombre?.toLowerCase() === subcategoriaFinal.toLowerCase();
         return coincideCategoria && coincideSubcategoria;
       });
+
+  console.log("Productos mostrados en la tabla después de filtrar:", productosParaMostrar); // Log para depurar
 
   // Función para exportar a Excel
   const handleExportarExcel = () => {
@@ -81,7 +90,7 @@ const StockPage = () => {
                     <path d="M12 5v14M5 12h14" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"/>
                   </svg>
                 }
-                onClick={() => console.log('Agregar producto')}
+                onClick={() => setModalNuevoOpen(true)}
               >
                 Producto
               </BotonCustom>
@@ -127,6 +136,8 @@ const StockPage = () => {
             error={error}
           />
         </div>
+        {/* Modal para nuevo producto */}
+        <ModalNuevoProducto open={modalNuevoOpen} onClose={() => setModalNuevoOpen(false)} />
       </div>
     </div>
   );
