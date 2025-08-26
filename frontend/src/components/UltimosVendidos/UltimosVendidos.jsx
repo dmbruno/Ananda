@@ -56,13 +56,13 @@ const UltimosVendidos = () => {
 
   // CSV export logic
   const handleDescargarCSV = () => {
-    const encabezado = ["Fecha/Hora", "Cliente", "Producto/s", "Total", "Método de pago"];
+    const encabezado = ["Fecha/Hora", "Cliente", "Productos", "Total", "Método de pago"];
     const filas = ventasFiltradas.map((venta) => [
       venta.fecha_venta
         ? new Date(venta.fecha_venta).toLocaleDateString("es-AR", { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" })
         : "-",
       venta.cliente_nombre || "-",
-      venta.producto || "-",
+      venta.cantidad_productos || "0",
       venta.total ? venta.total.toLocaleString("es-AR") : "-",
       metodoPagoLabel[venta.metodo_pago] || venta.metodo_pago || "-"
     ]);
@@ -113,7 +113,7 @@ const UltimosVendidos = () => {
         <div className="ultimos-vendidos-table-header">
           <span>Fecha/Hora</span>
           <span>Cliente</span>
-          <span>Producto</span>
+          <span>Productos</span>
           <span>Total</span>
           <span>Método de pago</span>
         </div>
@@ -132,7 +132,7 @@ const UltimosVendidos = () => {
                 : "-"
             }</span>
             <span>{venta.cliente_nombre || "-"}</span>
-            <span>{venta.producto || "-"}</span>
+            <span>{venta.cantidad_productos || "0"}</span>
             <span>${venta.total ? venta.total.toLocaleString("es-AR") : "-"}</span>
             <span>{metodoPagoLabel[venta.metodo_pago] || venta.metodo_pago || "-"}</span>
           </div>

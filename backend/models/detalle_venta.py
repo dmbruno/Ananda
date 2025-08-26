@@ -14,3 +14,28 @@ class DetalleVenta(db.Model):
     # Relaciones
     venta = db.relationship('Venta', back_populates='detalles')
     producto = db.relationship('Producto', back_populates='detalles_venta')
+    
+    def to_dict(self):
+        """Convertir objeto DetalleVenta a diccionario"""
+        producto_data = None
+        if self.producto:
+            if hasattr(self.producto, 'to_dict'):
+                producto_data = self.producto.to_dict()
+            else:
+                producto_data = {
+                    'id': self.producto.id,
+                    'nombre': getattr(self.producto, 'nombre', 'Producto'),
+                    'codigo': getattr(self.producto, 'codigo', None),
+                    'talle': getattr(self.producto, 'talle', None),
+                    'color': getattr(self.producto, 'color', None)
+                }
+        
+        return {
+            'id': self.id,
+            'venta_id': self.venta_id,
+            'producto_id': self.producto_id,
+            'cantidad': self.cantidad,
+            'precio_unitario': self.precio_unitario,
+            'subtotal': self.subtotal,
+            'producto': producto_data
+        }

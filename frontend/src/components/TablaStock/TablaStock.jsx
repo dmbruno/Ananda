@@ -5,6 +5,7 @@ import axios from 'axios';
 import ModalVerProducto from '../Modals/ModalVerProducto';
 import { useDispatch } from 'react-redux';
 import { updateProducto } from '../../store/productosSlice';
+import { agregarAlCarrito } from '../../store/carritoSlice';
 
 // Recibe productos y loading por props desde StockPage
 const TablaStock = ({ productos = [], loading = false, error = null }) => {
@@ -46,6 +47,45 @@ const TablaStock = ({ productos = [], loading = false, error = null }) => {
     } catch (error) {
       console.error('Error al eliminar el producto:', error);
       alert('Hubo un error al intentar eliminar el producto');
+    }
+  };
+
+  const handleAgregarAlCarrito = (producto) => {
+    // Validar que el producto tenga stock
+    if (producto.stock_actual <= 0) {
+      return; // Sin mensaje, ya está deshabilitado visualmente
+    }
+
+    if (!producto.activo) {
+      return; // Sin mensaje, ya está deshabilitado visualmente
+    }
+
+    // Preparar el item para el carrito
+    const itemCarrito = {
+      id: producto.id,
+      nombre: producto.nombre,
+      precio: producto.precio_venta,
+      cantidad: 1,
+      stock: producto.stock_actual,
+      imagen: producto.imagen || null,
+      categoria: producto.categoria_nombre || '',
+      subcategoria: producto.subcategoria_nombre || '',
+      codigo: producto.codigo || '',
+      talle: producto.talle || '',
+      color: producto.color || '',
+      marca: producto.marca || ''
+    };
+
+    console.log('🛒 Agregando producto al carrito desde tabla stock:', itemCarrito);
+    dispatch(agregarAlCarrito(itemCarrito));
+
+    // Efecto visual de éxito en el botón
+    const button = document.querySelector(`[data-producto-id="${producto.id}"]`);
+    if (button) {
+      button.classList.add('btn-carrito-success');
+      setTimeout(() => {
+        button.classList.remove('btn-carrito-success');
+      }, 1000);
     }
   };
 
@@ -155,25 +195,35 @@ const TablaStock = ({ productos = [], loading = false, error = null }) => {
                     </td>
                     <td className="ingreso-cell" onClick={() => handleRowClick(producto)}>{producto.fecha_ingreso || '-'}</td>
                     <td className="acciones-cell">
-                      <div className="acciones-cell">
-                        <button className="btn-carrito" title="Agregar al carrito">
-                          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <button 
+                          className={`btn-carrito ${producto.stock_actual <= 0 || !producto.activo ? 'btn-carrito-disabled' : ''}`}
+                          data-producto-id={producto.id}
+                          title={
+                            producto.stock_actual <= 0 ? 'Sin stock disponible' : 
+                            !producto.activo ? 'Producto inactivo' : 
+                            'Agregar al carrito'
+                          }
+                          onClick={e => { 
+                            e.stopPropagation(); 
+                            handleAgregarAlCarrito(producto); 
+                          }}
+                          disabled={producto.stock_actual <= 0 || !producto.activo}
+                        >
+                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                             <circle cx="9" cy="21" r="1"/>
                             <circle cx="20" cy="21" r="1"/>
-                            <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
-                            <line x1="16" y1="5" x2="22" y2="5"/>
-                            <line x1="19" y1="2" x2="19" y2="8"/>
+                            <path d="M1 1h2l.4 2M7 13h10l4-8H5.4"/>
+                            <path d="M7 13L5.4 5M7 13l-2 4h13"/>
                           </svg>
                         </button>
                         <button className="btn-eliminar" title="Eliminar producto" onClick={e => { e.stopPropagation(); handleEliminarProducto(producto.id); }}>
-                          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                             <polyline points="3 6 5 6 21 6"/>
                             <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
                             <line x1="10" y1="11" x2="10" y2="17"/>
                             <line x1="14" y1="11" x2="14" y2="17"/>
                           </svg>
                         </button>
-                      </div>
                     </td>
                   </tr>
                 ))

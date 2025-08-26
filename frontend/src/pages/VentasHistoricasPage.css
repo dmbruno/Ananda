@@ -1,0 +1,138 @@
+.ventas-historicas-content {
+  flex: 1;
+  padding: 25px;
+  overflow: hidden; /* Evitar scroll doble */
+  width: calc(100% - 100px); /* Ajustado para dar espacio a la sidebar (240px + margen) */
+  margin-left: auto;
+  margin-right: 20px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  height: 100vh; /* Usar toda la altura disponible */
+}
+
+.ventas-historicas-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.ventas-historicas-title {
+  
+  font-size: 2rem;
+  font-weight: 800; /* Menos bold */
+  letter-spacing: 0.25px;
+  line-height: 1.2;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  color: black;
+  margin: 0 0 1rem 0;
+  font-family: "Rajdhani", Arial, sans-serif;
+  padding-left: 1rem;
+  padding-top: 1rem;
+  text-align: start;
+
+}
+
+.dashboard-title {
+  font-size: 2rem;
+  font-weight: 800;
+  letter-spacing: 0.25px;
+  line-height: 1.2;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  color: black;
+  margin: 0 0 1rem 0;
+  font-family: "Rajdhani", Arial, sans-serif;
+  padding-left: 1rem;
+  padding-top: 1rem;
+  text-align: start;
+}
+
+.ventas-historicas-search-container {
+  margin-bottom: 20px;
+}
+
+.ventas-historicas-search-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.ventas-historicas-clear-filters {
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 8px 16px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  margin-left: 12px;
+  color: #475569;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1), 
+              0 1px 2px rgba(0, 0, 0, 0.06);
+  position: relative;
+  user-select: none;
+}
+
+.ventas-historicas-clear-filters:hover {
+  background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+  color: #334155;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15), 
+              0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.ventas-historicas-clear-filters:active {
+  transform: translateY(0px);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1), 
+              0 0px 1px rgba(0, 0, 0, 0.06);
+  background: linear-gradient(135deg, #e2e8f0 0%, #cbd5e1 100%);
+}
+
+.ventas-historicas-loading {
+  display: flex;
+  justify-content: center;
+  padding: 32px 0;
+  color: #64748b;
+}
+
+.ventas-historicas-error {
+  display: flex;
+  justify-content: center;
+  padding: 32px 0;
+  color: #ef4444;
+}
+
+/* Estilos responsive */
+@media (max-width: 1200px) {
+  .ventas-historicas-content {
+    width: calc(100% - 240px);
+    margin-right: 10px;
+    padding: 20px;
+  }
+}
+
+/* Estilos específicos para el buscador por fechas solo en esta página */
+.ventas-historicas-content .buscador-fechas-bar {
+  box-shadow: 0 1px 4px rgba(0,0,0,0.4) !important;
+}
+
+@media (max-width: 992px) {
+  .ventas-historicas-search-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .ventas-historicas-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .header-userbar {
+    margin-top: 16px;
+    align-self: flex-end;
+  }
+}

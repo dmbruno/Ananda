@@ -2,6 +2,7 @@
 from flask import Blueprint, request, jsonify
 from models.usuario import Usuario
 from database.db import db
+from datetime import datetime
 
 usuarios_bp = Blueprint('usuarios', __name__, url_prefix='/api/usuarios')
 
@@ -48,10 +49,62 @@ def actualizar_usuario(id):
     db.session.commit()
     return jsonify({'msg': 'Usuario actualizado'})
 
-# Eliminar usuario
+# Eliminar usuario (Soft Delete)
 @usuarios_bp.route('/<int:id>', methods=['DELETE'])
 def eliminar_usuario(id):
-    usuario = Usuario.query.get_or_404(id)
-    usuario.activo = False
-    db.session.commit()
-    return jsonify({'msg': 'Usuario eliminado (borrado lógico)'})
+    try:
+        usuario = Usuario.query.get_or_404(id)
+        
+        # Verificar si el usuario ya está eliminado
+        if not usuario.activo:
+            return jsonify({'error': 'El usuario ya está eliminado'}), 400
+        
+        # Soft delete: marcar como inactivo y establecer fecha de eliminación
+        usuario.activo = False
+        usuario.fecha_eliminacion = datetime.utcnow()
+        
+        db.session.commit()
+        
+        return jsonify({
+            'message': 'Usuario eliminado exitosamente (borrado lógico)',
+            'usuario_id': id,
+            'fecha_eliminacion': usuario.fecha_eliminacion.isoformat()
+        }), 200
+        
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'error': f'Error al eliminar usuario: {str(e)}'}), 500
+
+# Reactivar usuario (opcional - para deshacer el soft delete)
+@usuarios_bp.route('/<int:id>/reactivar', methods=['PUT'])
+def reactivar_usuario(id):
+    try:
+        usuario = Usuario.query.get_or_404(id)
+        
+        # Verificar si el usuario está eliminado
+        if usuario.activo:
+            return jsonify({'error': 'El usuario ya está activo'}), 400
+        
+        # Reactivar usuario
+        usuario.activo = True
+        usuario.fecha_eliminacion = None
+        
+        db.session.commit()
+        
+        return jsonify({
+            'message': 'Usuario reactivado exitosamente',
+            'usuario_id': id
+        }), 200
+        
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'error': f'Error al reactivar usuario: {str(e)}'}), 500
+
+# Obtener usuarios eliminados (para auditoría)
+@usuarios_bp.route('/eliminados', methods=['GET'])
+def listar_usuarios_eliminados():
+    try:
+        usuarios_eliminados = Usuario.query.filter_by(activo=False).all()
+        return jsonify([usuario.to_dict() for usuario in usuarios_eliminados]), 200
+    except Exception as e:
+        return jsonify({'error': f'Error al obtener usuarios eliminados: {str(e)}'}), 500

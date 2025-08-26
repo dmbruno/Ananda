@@ -36,15 +36,15 @@
   background: #f3f4f6;
   border: none;
   border-radius: 6px;
-  padding: 0.3rem 0.7rem;
-  font-size: 1.1rem;
+  padding: 0.25rem 0.7rem;
+  font-size: 1rem;
   cursor: pointer;
   color: #6366f1;
   transition: background 0.15s;
   margin-left: 0.5rem;
-box-shadow: 0 4px 16px 0 rgba(0, 0, 0, 0.08),
+  box-shadow: 0 4px 16px 0 rgba(0, 0, 0, 0.08),
     0 1.5px 4px 0 rgba(0, 0, 0, 0.04);
-  
+  height: auto;
 }
 .buscador-fechas-buscar:active {
   background: #e0e7ff;
@@ -55,8 +55,8 @@ box-shadow: 0 4px 16px 0 rgba(0, 0, 0, 0.08),
   background: #e0f2fe;
   border: none;
   border-radius: 6px;
-  padding: 0.3rem 0.7rem;
-  font-size: 1.1rem;
+  padding: 0.25rem 0.7rem;
+  font-size: 1rem;
   cursor: pointer;
   color: #059669;
   font-weight: 700;
@@ -65,6 +65,7 @@ box-shadow: 0 4px 16px 0 rgba(0, 0, 0, 0.08),
   align-items: center;
   gap: 0.3rem;
   transition: background 0.15s;
+  height: auto;
 }
 .buscador-fechas-csv:active {
   background: #bae6fd;

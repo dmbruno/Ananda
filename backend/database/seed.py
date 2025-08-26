@@ -23,12 +23,17 @@ with app.app_context():
     # Usuarios
     u1 = Usuario(nombre='Ana', apellido='García', is_admin=True, email='ana@demo.com')
     u2 = Usuario(nombre='Luis', apellido='Pérez', is_admin=False, email='luis@demo.com')
-    db.session.add_all([u1, u2])
-
-    # Clientes (corregido: fecha_nacimiento como objeto date)
-    c1 = Cliente(nombre='Carlos', apellido='López', telefono='123456789', fecha_nacimiento=datetime.strptime('1990-01-01', '%Y-%m-%d').date())
-    c2 = Cliente(nombre='María', apellido='Martínez', telefono='987654321', fecha_nacimiento=datetime.strptime('1985-05-10', '%Y-%m-%d').date())
-    db.session.add_all([c1, c2])
+    u3 = Usuario(nombre='Carlos', apellido='Mendoza', is_admin=False, email='carlos@demo.com')
+    u4 = Usuario(nombre='María', apellido='Rodríguez', is_admin=True, email='maria@demo.com')
+    u5 = Usuario(nombre='Diego', apellido='Fernández', is_admin=False, email='diego@demo.com')
+    u6 = Usuario(nombre='Laura', apellido='González', is_admin=False, email='laura@demo.com')
+    u7 = Usuario(nombre='Pablo', apellido='Martín', is_admin=False, email='pablo@demo.com')
+    u8 = Usuario(nombre='Sofía', apellido='López', is_admin=True, email='sofia@demo.com')
+    u9 = Usuario(nombre='Andrés', apellido='Ruiz', is_admin=False, email='andres@demo.com')
+    u10 = Usuario(nombre='Valentina', apellido='Silva', is_admin=False, email='valentina@demo.com')
+    u11 = Usuario(nombre='Sebastián', apellido='Torres', is_admin=False, email='sebastian@demo.com')
+    u12 = Usuario(nombre='Camila', apellido='Vargas', is_admin=True, email='camila@demo.com')
+    db.session.add_all([u1, u2, u3, u4, u5, u6, u7, u8, u9, u10, u11, u12])
 
     # Clientes con cumpleaños en distintas fechas (hoy, mañana, pasado, etc)
     hoy = datetime.now().date()

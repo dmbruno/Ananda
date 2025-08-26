@@ -58,7 +58,14 @@ def crear_cliente():
 def listar_clientes():
     clientes = Cliente.query.filter_by(activo=True).all()
     return jsonify([
-        {'id': c.id, 'nombre': c.nombre, 'apellido': c.apellido, 'telefono': c.telefono, 'fecha_nacimiento': str(c.fecha_nacimiento) if c.fecha_nacimiento else None}
+        {
+            'id': c.id, 
+            'nombre': c.nombre, 
+            'apellido': c.apellido, 
+            'telefono': c.telefono, 
+            'fecha_nacimiento': str(c.fecha_nacimiento) if c.fecha_nacimiento else None,
+            'ultimo_saludo': str(c.ultimo_saludo) if c.ultimo_saludo else None
+        }
         for c in clientes
     ])
 
@@ -66,7 +73,14 @@ def listar_clientes():
 @clientes_bp.route('/<int:id>', methods=['GET'])
 def obtener_cliente(id):
     cliente = Cliente.query.get_or_404(id)
-    return jsonify({'id': cliente.id, 'nombre': cliente.nombre, 'apellido': cliente.apellido, 'telefono': cliente.telefono, 'fecha_nacimiento': str(cliente.fecha_nacimiento) if cliente.fecha_nacimiento else None})
+    return jsonify({
+        'id': cliente.id, 
+        'nombre': cliente.nombre, 
+        'apellido': cliente.apellido, 
+        'telefono': cliente.telefono, 
+        'fecha_nacimiento': str(cliente.fecha_nacimiento) if cliente.fecha_nacimiento else None,
+        'ultimo_saludo': str(cliente.ultimo_saludo) if cliente.ultimo_saludo else None
+    })
 
 # Actualizar cliente
 @clientes_bp.route('/<int:id>', methods=['PUT'])
@@ -100,3 +114,45 @@ def eliminar_cliente(id):
     cliente.activo = False
     db.session.commit()
     return jsonify({"message": "Cliente eliminado correctamente"}), 200
+
+# Marcar cliente como saludado (endpoint nuevo para el dashboard)
+@clientes_bp.route('/<int:cliente_id>/marcar-saludado', methods=['PUT'])
+def marcar_cliente_saludado_dashboard(cliente_id):
+    """Marca un cliente como saludado desde el dashboard"""
+    try:
+        cliente = Cliente.query.get_or_404(cliente_id)
+        from datetime import date
+        
+        cliente.ultimo_saludo = date.today()
+        db.session.commit()
+        
+        return jsonify({
+            'success': True,
+            'message': 'Cliente marcado como saludado',
+            'ultimo_saludo': cliente.ultimo_saludo.isoformat()
+        }), 200
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'error': str(e)}), 500
+    
+# Marcar cliente como saludado
+@clientes_bp.route('/<int:id>/saludar', methods=['POST'])
+def marcar_cliente_saludado(id):
+    """Marca un cliente como saludado registrando la fecha actual"""
+    try:
+        cliente = Cliente.query.get_or_404(id)
+        from datetime import date
+        
+        # Actualizar la fecha de último saludo
+        cliente.ultimo_saludo = date.today()
+        db.session.commit()
+        
+        return jsonify({
+            "message": f"Cliente {id} marcado como saludado",
+            "fecha": cliente.ultimo_saludo.isoformat(),
+            "cliente": cliente.nombre + " " + cliente.apellido
+        }), 200
+    except Exception as e:
+        db.session.rollback()
+        print(f"Error al marcar cliente {id} como saludado: {str(e)}")
+        return jsonify({"error": f"Error al marcar cliente como saludado: {str(e)}"}), 500

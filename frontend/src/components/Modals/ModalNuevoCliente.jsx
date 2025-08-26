@@ -15,7 +15,7 @@ const camposIniciales = {
   activo: true,
 };
 
-const ModalNuevoCliente = ({ open, onClose, onSubmit, cliente }) => {
+const ModalNuevoCliente = ({ open, onClose, onSubmit, cliente, soloLectura = false, onClienteGuardado }) => {
   const [campos, setCampos] = useState(cliente || camposIniciales);
   const [exiting, setExiting] = useState(false);
   const timeoutRef = useRef();
@@ -45,6 +45,13 @@ const ModalNuevoCliente = ({ open, onClose, onSubmit, cliente }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
+    // Si es solo lectura, solo cerrar el modal
+    if (soloLectura) {
+      handleClose();
+      return;
+    }
+    
     try {
       if (campos.id) {
         // Edición: PUT
@@ -93,7 +100,13 @@ const ModalNuevoCliente = ({ open, onClose, onSubmit, cliente }) => {
           autoComplete="off"
         >
           <div className="modal-cliente-form-group">
-            {campos.id ? (
+            {soloLectura ? (
+              <MdPerson
+                size={48}
+                color="#222"
+                style={{ display: "block", margin: "0 auto 0.75rem auto" }}
+              />
+            ) : campos.id ? (
               <MdPerson
                 size={48}
                 color="#222"
@@ -114,6 +127,7 @@ const ModalNuevoCliente = ({ open, onClose, onSubmit, cliente }) => {
                 value={campos.nombre}
                 onChange={handleChange}
                 autoFocus
+                readOnly={soloLectura}
               />
             </label>
             <label className="modal-cliente-label">
@@ -123,6 +137,7 @@ const ModalNuevoCliente = ({ open, onClose, onSubmit, cliente }) => {
                 name="apellido"
                 value={campos.apellido}
                 onChange={handleChange}
+                readOnly={soloLectura}
               />
             </label>
             <label className="modal-cliente-label">
@@ -132,6 +147,7 @@ const ModalNuevoCliente = ({ open, onClose, onSubmit, cliente }) => {
                 name="telefono"
                 value={campos.telefono}
                 onChange={handleChange}
+                readOnly={soloLectura}
               />
             </label>
             <label className="modal-cliente-label particular">
@@ -142,6 +158,7 @@ const ModalNuevoCliente = ({ open, onClose, onSubmit, cliente }) => {
                 type="date"
                 value={campos.fecha_nacimiento}
                 onChange={handleChange}
+                readOnly={soloLectura}
               />
             </label>
           </div>
@@ -150,9 +167,11 @@ const ModalNuevoCliente = ({ open, onClose, onSubmit, cliente }) => {
               e.preventDefault();
               handleClose();
             }}>
-              Atras
+              {soloLectura ? "Cerrar" : "Atras"}
             </BotonCancelar>
-            <BotonEnviar type="submit">Guardar</BotonEnviar>
+            {!soloLectura && (
+              <BotonEnviar type="submit">Guardar</BotonEnviar>
+            )}
           </div>
         </form>
       </div>

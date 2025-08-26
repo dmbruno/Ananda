@@ -207,3 +207,38 @@ def reasignar_categoria_subcategoria(id):
         producto.subcategoria_id = subcategoria_id
     db.session.commit()
     return jsonify({'msg': 'Producto reasignado correctamente'})
+
+# Obtener el último número de SKU para una base específica
+@productos_bp.route('/ultimo-sku', methods=['GET'])
+def obtener_ultimo_sku():
+    """
+    Obtiene el número secuencial del último SKU con la base proporcionada
+    
+    El SKU tiene el formato: [BASE][NÚMERO]
+    Ejemplo: REM001 donde "REM" es la base y "001" es el número secuencial
+    
+    Query params:
+    - base: La base del SKU para buscar (ej. "REMVAZ")
+    """
+    base = request.args.get('base', '')
+    if not base:
+        return jsonify({'error': 'Se requiere el parámetro "base"'}), 400
+    
+    # Buscar productos con códigos que comiencen con la base especificada
+    # y extraer el número secuencial al final
+    import re
+    productos = Producto.query.filter(Producto.codigo.like(f"{base}%")).all()
+    
+    ultimo_numero = 0
+    
+    for producto in productos:
+        if not producto.codigo:
+            continue
+            
+        # Extraer el número al final del código
+        match = re.search(f'^{re.escape(base)}(\d+)$', producto.codigo)
+        if match:
+            numero = int(match.group(1))
+            ultimo_numero = max(ultimo_numero, numero)
+    
+    return jsonify({'ultimoNumero': ultimo_numero})

@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { fetchCategorias } from "../../store/categoriasSlice";
 import { fetchSubcategorias } from "../../store/subcategoriasSlice";
@@ -11,7 +11,7 @@ const DropdownCategoriasSidebar = ({ onSelectSubcategoria, visible, onClose }) =
   const navigate = useNavigate();
   const categorias = useSelector((state) => state.categorias.items);
   const subcategorias = useSelector((state) => state.subcategorias.items);
-  const [openCategoriaId, setOpenCategoriaId] = React.useState(null);
+  const [openCategoriaId, setOpenCategoriaId] = useState(null);
   const sidebarRef = useRef(null);
 
   useEffect(() => {
@@ -55,7 +55,13 @@ const DropdownCategoriasSidebar = ({ onSelectSubcategoria, visible, onClose }) =
   if (!visible) return null;
 
   return (
-    <aside className="dropdown-categorias-sidebar" ref={sidebarRef} style={{ fontFamily: 'Rajdhani, sans-serif' }}>
+    <aside 
+      className="dropdown-categorias-sidebar" 
+      ref={sidebarRef} 
+      style={{ 
+        fontFamily: 'Rajdhani, sans-serif'
+      }}
+    >
       <div className="dropdown-categorias-content">
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <h3 className="dropdown-categorias-title">Categorías</h3>

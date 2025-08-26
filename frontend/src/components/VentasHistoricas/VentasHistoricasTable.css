@@ -1,0 +1,124 @@
+.ventas-historicas-table-container {
+  width: 100%;
+  background: white;
+  border-radius: 8px 8px 0 0;
+  margin-top: 0;
+  max-width: 100%;
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  max-height: calc(100vh - 220px);
+  overflow: auto;
+  position: relative;
+  padding: 0;
+}
+
+.ventas-historicas-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+  margin: 0; /* Elimina cualquier margen */
+  border-spacing: 0; /* Elimina espaciado entre celdas */
+  display: table; /* Forzar comportamiento de tabla */
+}
+
+.ventas-historicas-table th,
+.ventas-historicas-table td {
+  padding: 12px 16px;
+  text-align: left;
+  border-bottom: 1px solid #edf2f7;
+}
+
+.ventas-historicas-table th {
+  background-color: #f3f4f8; /* Un gris claro */
+  color: #64748b; /* Restaurado al color original */
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 12px;
+  position: sticky; /* Hace que el encabezado permanezca fijo */
+  top: 0; /* Fija el encabezado en la parte superior */
+  z-index: 10; /* Asegura que el encabezado esté por encima del contenido */
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 2); /* Sombra sutil hacia abajo */
+  margin: 0;
+  padding-top: 10px; /* Eliminar padding superior */
+  border-bottom: 1px solid #e5e7eb; /* Línea inferior para el encabezado */
+}
+
+
+
+.ventas-historicas-table tr:hover {
+  background-color: #f1f5f9;
+}
+
+.ventas-historicas-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.ventas-historicas-action-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  padding: 4px;
+  border-radius: 4px;
+  transition: background-color 0.2s;
+}
+
+.ventas-historicas-action-btn:hover {
+  background-color: #e2e8f0;
+}
+
+.ventas-historicas-action-btn.view-btn {
+  color: #3b82f6;
+}
+
+.ventas-historicas-action-btn.delete-btn {
+  color: #ef4444;
+}
+
+.ventas-historicas-no-results {
+  padding: 24px;
+  text-align: center;
+  color: #64748b;
+}
+
+/* Estilos para el contenedor de tabla con scroll */
+.ventas-historicas-table-wrapper {
+  flex: 1;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  min-height: 400px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+  border-radius: 8px;
+}
+
+.ventas-historicas-summary {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  padding: 12px 16px;
+  background-color: #f3f4f8;
+  border-top: 1px solid #edf2f7;
+  border-radius: 0 0 8px 8px;
+  min-height: 28px;
+  flex-shrink: 0;
+  
+}
+
+
+
+.registros-info {
+  color: #64748b;
+  font-size: 14px;
+  font-weight: 500;
+  
+}
+
+/* Estilo para los números en la información de registros */
+.registros-info strong {
+  font-weight: 600;
+  color: #4a5568;
+}

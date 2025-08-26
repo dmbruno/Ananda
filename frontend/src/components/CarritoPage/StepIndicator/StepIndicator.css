@@ -1,0 +1,144 @@
+.step-indicator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  gap: 16px;
+  padding-top: 10px;
+  margin-right: 15rem;
+}
+
+.step-indicator-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  opacity: 0.5;
+  transition: all 0.3s ease;
+}
+
+.step-indicator-step.step-indicator-active {
+  opacity: 1;
+}
+
+.step-indicator-step.step-indicator-current {
+  opacity: 1;
+  transform: scale(1.05);
+}
+
+.step-indicator-circle {
+  position: relative;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: #e9ecef;
+  border: 2px solid #dee2e6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+}
+
+.step-indicator-active .step-indicator-circle {
+  background-color: #e3f2fd;
+  border-color: #2196f3;
+}
+
+.step-indicator-current .step-indicator-circle {
+  background-color: #2196f3;
+  border-color: #1976d2;
+  box-shadow: 0 0 0 3px rgba(33, 150, 243, 0.2);
+}
+
+.step-indicator-icon {
+  font-size: 18px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.step-indicator-current .step-indicator-icon {
+  color: white;
+}
+
+.step-indicator-number {
+  font-size: 10px;
+  font-weight: 600;
+  color: #6c757d;
+  position: absolute;
+  bottom: -1px;
+  right: -1px;
+  background: white;
+  border: 1px solid #dee2e6;
+  border-radius: 50%;
+  width: 16px;
+  height: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.step-indicator-current .step-indicator-number {
+  background: #1976d2;
+  border-color: #1976d2;
+  color: white;
+}
+
+.step-indicator-title {
+  font-size: 11px;
+  font-weight: 500;
+  color: #6c757d;
+  text-align: center;
+}
+
+.step-indicator-active .step-indicator-title {
+  color: #2196f3;
+}
+
+.step-indicator-current .step-indicator-title {
+  color: #1976d2;
+  font-weight: 600;
+}
+
+.step-indicator-connector {
+  width: 40px;
+  height: 2px;
+  background-color: #dee2e6;
+  transition: background-color 0.3s ease;
+}
+
+.step-indicator-connector.step-indicator-connector-active {
+  background-color: #2196f3;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .step-indicator {
+    gap: 12px;
+    padding: 0;
+  }
+  
+  .step-indicator-circle {
+    width: 36px;
+    height: 36px;
+  }
+  
+  .step-indicator-icon {
+    font-size: 16px;
+  }
+  
+  .step-indicator-number {
+    width: 14px;
+    height: 14px;
+    font-size: 9px;
+  }
+  
+  .step-indicator-title {
+    font-size: 10px;
+  }
+  
+  .step-indicator-connector {
+    width: 30px;
+  }
+}

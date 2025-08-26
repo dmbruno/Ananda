@@ -17,6 +17,22 @@ export const addClienteAsync = createAsyncThunk(
   }
 );
 
+export const updateClienteAsync = createAsyncThunk(
+  "clientes/updateClienteAsync",
+  async ({ id, ...clienteData }) => {
+    const response = await axios.put(`/api/clientes/${id}`, clienteData);
+    return response.data.cliente;
+  }
+);
+
+export const marcarClienteSaludado = createAsyncThunk(
+  'clientes/marcarSaludado',
+  async (clienteId) => {
+    const response = await axios.put(`/api/clientes/${clienteId}/marcar-saludado`);
+    return { clienteId, ultimo_saludo: response.data.ultimo_saludo };
+  }
+);
+
 const clientesSlice = createSlice({
   name: "clientes",
   initialState: {
@@ -44,6 +60,19 @@ const clientesSlice = createSlice({
       })
       .addCase(addClienteAsync.fulfilled, (state, action) => {
         state.items.push(action.payload);
+      })
+      .addCase(updateClienteAsync.fulfilled, (state, action) => {
+        const index = state.items.findIndex(cliente => cliente.id === action.payload.id);
+        if (index !== -1) {
+          state.items[index] = action.payload;
+        }
+      })
+      .addCase(marcarClienteSaludado.fulfilled, (state, action) => {
+        const { clienteId, ultimo_saludo } = action.payload;
+        const cliente = state.items.find(c => c.id === clienteId);
+        if (cliente) {
+          cliente.ultimo_saludo = ultimo_saludo;
+        }
       });
   },
 });

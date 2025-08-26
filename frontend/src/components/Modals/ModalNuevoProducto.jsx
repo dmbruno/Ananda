@@ -15,7 +15,7 @@ const camposIniciales = {
   costo: "",
   precio_venta: "",
   talle: "",
-  sku: "",
+  codigo: "", // Cambiado de "sku" a "codigo" para mantener consistencia con el backend
   marca: "",
   stock: "",
   stock_minimo: "",
@@ -33,6 +33,8 @@ const ModalNuevoProducto = ({ open, onClose }) => {
   const [exiting, setExiting] = useState(false);
   const timeoutRef = useRef();
   const [campos, setCampos] = useState(camposIniciales);
+  const [skuBase, setSkuBase] = useState("");
+  const [isGeneratingSku, setIsGeneratingSku] = useState(false);
 
   const subcategorias = useSelector((state) => selectSubcategoriasByCategoria(state, campos.categoria)); // Revertir al selector anterior
 
@@ -61,6 +63,77 @@ const ModalNuevoProducto = ({ open, onClose }) => {
       dispatch(fetchSubcategorias(campos.categoria));
     }
   }, [campos.categoria, dispatch]);
+  
+  // Función para obtener la abreviatura de la categoría (3 letras)
+  const getCategoriaCode = (categoriaId) => {
+    const categoria = categorias.find(cat => String(cat.id) === String(categoriaId));
+    if (!categoria) return "";
+    return categoria.nombre.substring(0, 3).toUpperCase();
+  };
+
+  // Función para obtener la abreviatura de la subcategoría (2 letras)
+  const getSubcategoriaCode = (subcategoriaId) => {
+    const subcategoria = subcategorias.find(sub => String(sub.id) === String(subcategoriaId));
+    if (!subcategoria) return "";
+    return subcategoria.nombre.substring(0, 2).toUpperCase();
+  };
+
+  // Generación de la base del SKU según las reglas especificadas
+  useEffect(() => {
+    // Solo generar SKU si todos los campos requeridos están completos
+    if (campos.categoria && campos.subcategoria && campos.nombre && campos.color && campos.talle) {
+      // 1. Abreviatura de la categoría (3 letras)
+      const catCode = getCategoriaCode(campos.categoria);
+      
+      // 2. Abreviatura de la subcategoría (2 letras)
+      const subCode = getSubcategoriaCode(campos.subcategoria);
+      
+      // 3. Primeras 3 letras del nombre o modelo del producto
+      const modelCode = campos.nombre.substring(0, 3).toUpperCase();
+      
+      // 4. Abreviatura del color (3 letras)
+      const colorCode = campos.color.substring(0, 3).toUpperCase();
+      
+      // 5. Talle tal cual se seleccione
+      const talleCode = campos.talle.toUpperCase();
+      
+      // Generar base del SKU
+      const newSkuBase = catCode + subCode + modelCode + colorCode + talleCode;
+      setSkuBase(newSkuBase);
+      
+      // 6. Buscar el último SKU y obtener número secuencial
+      if (catCode && subCode && modelCode && colorCode && talleCode && !isGeneratingSku) {
+        setIsGeneratingSku(true);
+        obtenerSecuencialSKU(newSkuBase);
+      }
+    }
+  }, [campos.categoria, campos.subcategoria, campos.nombre, campos.color, campos.talle, categorias, subcategorias]);
+
+  // Función para obtener el número secuencial del SKU
+  const obtenerSecuencialSKU = async (base) => {
+    try {
+      console.log("Obteniendo secuencial para base:", base);
+      
+      // Llamada a la API para buscar el último SKU que coincida con la base
+      const response = await axios.get(`/api/productos/ultimo-sku?base=${base}`);
+      const ultimoNumero = response.data.ultimoNumero || 0;
+      const nuevoNumero = String(ultimoNumero + 1).padStart(3, "0");
+      const nuevoSku = base + nuevoNumero;
+      
+      console.log(`SKU generado: ${nuevoSku} (último número: ${ultimoNumero}, nuevo: ${nuevoNumero})`);
+      
+      // El campo en el backend es "codigo", pero en el frontend lo manejamos como "sku"
+      setCampos(prev => ({ ...prev, codigo: nuevoSku }));
+    } catch (error) {
+      console.error("Error al obtener el último SKU:", error);
+      // En caso de error, usar 001 como secuencial predeterminado
+      const nuevoSku = base + "001";
+      console.log(`Error generando SKU, usando predeterminado: ${nuevoSku}`);
+      setCampos(prev => ({ ...prev, codigo: nuevoSku }));
+    } finally {
+      setIsGeneratingSku(false);
+    }
+  };
 
 
 
@@ -81,8 +154,8 @@ const ModalNuevoProducto = ({ open, onClose }) => {
     formData.append('costo', campos.costo);
     formData.append('precio_venta', campos.precio_venta);
     formData.append('talle', campos.talle);
-    formData.append('codigo', campos.sku);
     formData.append('color', campos.color);
+    formData.append('codigo', campos.codigo); // Cambiado de campos.sku a campos.codigo
     formData.append('marca', campos.marca);
     formData.append('stock_actual', campos.stock);
     formData.append('stock_minimo', campos.stock_minimo);
@@ -181,12 +254,6 @@ const ModalNuevoProducto = ({ open, onClose }) => {
             <input type="number" value={campos.precio_venta} onChange={e => setCampos({ ...campos, precio_venta: e.target.value })} />
           </div>
           <div className="modal-nuevo-row">
-            <label>SKU:</label>
-            <input type="text" value={campos.sku} onChange={e => setCampos({ ...campos, sku: e.target.value })} />
-            <label>Marca:</label>
-            <input type="text" value={campos.marca} onChange={e => setCampos({ ...campos, marca: e.target.value })} />
-          </div>
-          <div className="modal-nuevo-row">
             <label>Stock:</label>
             <input type="number" value={campos.stock} onChange={e => setCampos({ ...campos, stock: e.target.value })} />
             <label>Stock-Mínimo:</label>
@@ -199,14 +266,26 @@ const ModalNuevoProducto = ({ open, onClose }) => {
             <input type="text" value={campos.temporada} onChange={e => setCampos({ ...campos, temporada: e.target.value })} />
           </div>
           <div className="modal-nuevo-row">
+            <label>Marca:</label>
+            <input type="text" value={campos.marca} onChange={e => setCampos({ ...campos, marca: e.target.value })} />
             <label>Estado:</label>
             <select value={campos.estado} onChange={e => setCampos({ ...campos, estado: e.target.value })}>
               <option value="activa">Activa</option>
               <option value="sinStock">Sin Stock</option>
               <option value="inactiva">Inactiva</option>
             </select>
+          </div>
+          <div className="modal-nuevo-row">
             <label>Ingreso:</label>
             <input type="date" value={campos.ingreso} onChange={e => setCampos({ ...campos, ingreso: e.target.value })} />
+            <label>SKU:</label>
+            <input 
+              type="text" 
+              value={campos.codigo || ""} 
+              readOnly 
+              placeholder={isGeneratingSku ? "Generando SKU..." : "Se generará automáticamente"}
+              style={{ backgroundColor: "#f5f5f5", cursor: "not-allowed" }}
+            />
           </div>
         </form>
         <div className="modal-nuevo-actions">

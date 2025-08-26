@@ -33,23 +33,23 @@ const TopMasVendidos = ({ showSmallImage = false, showBuscadorPorFechas = false 
 
   // Filtrar detalles según el rango activo o por defecto
   let detallesFiltrados = detalles;
-  if (showBuscadorPorFechas && rangoActivo && desde && hasta) {
+  if (showBuscadorPorFechas && desde && hasta) {
     // Asegurar formato YYYY-MM-DD en todas las comparaciones
     const desdeStr = typeof desde === 'string' ? desde : new Date(desde).toISOString().split('T')[0];
     const hastaStr = typeof hasta === 'string' ? hasta : new Date(hasta).toISOString().split('T')[0];
-    console.log('DEBUG TopMasVendidos: desde input:', desde, 'hasta input:', hasta, 'desdeStr:', desdeStr, 'hastaStr:', hastaStr);
-    detallesFiltrados = detalles.filter((d) => {
-      if (!d.fecha_venta) return false;
-      const fecha = typeof d.fecha_venta === 'string' ? d.fecha_venta.split('T')[0] : '';
-      if (!fecha) return false;
-      if (fecha >= desdeStr && fecha <= hastaStr) {
-        console.log('DEBUG TopMasVendidos: venta incluida', {fecha, desdeStr, hastaStr, d});
+    
+    // Si hay rango activo, filtrar por fechas
+    if (rangoActivo) {
+      detallesFiltrados = detalles.filter((d) => {
+        if (!d.fecha_venta) return false;
+        const fecha = typeof d.fecha_venta === 'string' ? d.fecha_venta.split('T')[0] : '';
+        if (!fecha) return false;
+        return fecha >= desdeStr && fecha <= hastaStr;
+      });
+      
+      if (detallesFiltrados.length === 0) {
+        console.log('No hay ventas en el rango seleccionado.');
       }
-      return fecha >= desdeStr && fecha <= hastaStr;
-    });
-    if (detallesFiltrados.length === 0) {
-      console.log('DEBUG TopMasVendidos: No hay ventas en el rango seleccionado. Detalles completos:', detalles);
-      console.log('DEBUG TopMasVendidos: Todas las fechas_venta:', detalles.map(d => d.fecha_venta));
     }
   } else if (!showBuscadorPorFechas || (showBuscadorPorFechas && !rangoActivo)) {
     // Si no hay buscador o no se presionó la lupa, mostrar ranking por defecto
@@ -82,6 +82,8 @@ const TopMasVendidos = ({ showSmallImage = false, showBuscadorPorFechas = false 
     }
   }
 
+  // Limpiar los logs de consola innecesarios
+  
   // Sumar cantidades por producto
   const ranking = {};
   detallesFiltrados.forEach((d) => {
@@ -128,7 +130,11 @@ const TopMasVendidos = ({ showSmallImage = false, showBuscadorPorFechas = false 
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
-    window.alert("El reporte fue enviado para descarga");
+  };
+
+  // Función para manejar la búsqueda que actualiza inmediatamente
+  const handleBuscar = () => {
+    setRangoActivo(true);
   };
 
   return (
@@ -152,7 +158,7 @@ const TopMasVendidos = ({ showSmallImage = false, showBuscadorPorFechas = false 
             onChangeDesde={setDesde}
             onChangeHasta={setHasta}
             mostrarDescarga={rangoActivo && !!(desde && hasta)}
-            onBuscar={() => setRangoActivo(true)}
+            onBuscar={handleBuscar}
             onDescargarCSV={handleDescargarCSV}
           />
         </div>

@@ -1,22 +1,34 @@
 /* Scroll para la tabla de clientes, muestra 7-8 filas y el resto con scroll */
 .tabla-clientes-table-wrapper {
-  max-height: 480px; /* Ajusta según el alto de tus filas para 7-8 visibles */
+  height: calc(100vh - 180px); /* Altura más alta para ocupar toda la pantalla */
   overflow-y: auto;
-
   background: transparent;
   border-radius: 18px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
   margin-left: 3rem;
+  display: flex;
+  flex-direction: column;
 }
+
+.tabla-clientes-table-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.tabla-clientes-scroll-container {
+  flex: 1;
+  overflow-y: auto;
+}
+
+
 .tabla-clientes {
   width: 100%;
   border-collapse: separate;
-
   background: transparent;
   font-family: "Rajdhani", Arial, sans-serif;
-
-  
 }
+
 
 .tabla-clientes-header-row {
   background: #f3f4f8;
@@ -26,17 +38,25 @@
 }
 
 .tabla-clientes-th {
-  font-size: 1rem;
-  font-weight: 700;
-  color: #222;
+  font-size: 12px;
+  font-family: "Rajdhani", Arial, sans-serif;
+  font-weight: 600;
+  color: #64748b; /* Restaurado al color original */
   padding: .8rem 0.5rem;
   text-align: center;
-  background: #f3f4f8;
+  background-color: #f3f4f8;
   border: none;
   position: sticky;
+  text-transform: uppercase;
   top: 0;
   z-index: 2;
 }
+
+
+ 
+  
+  
+  
 
 .tabla-clientes-row {
   background: #fff;
@@ -45,8 +65,17 @@
   transition: background 0.15s;
 }
 
+.tabla-clientes-row:hover {
+  background-color: rgba(0, 0, 0, 0.05); /* Gris sutil */
+  cursor: pointer;
+}
+
 .tabla-clientes-row-alt {
   background: #f3f4f8;
+}
+
+.tabla-clientes-row-alt:hover {
+  background-color: rgba(0, 0, 0, 0.08); /* Un poco más oscuro para las filas alternadas */
 }
 
 .tabla-clientes-td {
@@ -67,7 +96,7 @@
 .tabla-clientes-cumple {
   font-family: "Rajdhani", Arial, sans-serif;
   font-weight: 600;
-  font-size: 1.1rem;
+  font-size: 0.9rem; /* Mismo tamaño que las demás celdas */
 }
 .cumple-proximo {
   color: #4caf50;
@@ -142,6 +171,229 @@
   margin-left: 4rem;
 }
 
+.tabla-clientes-filtros {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin-right: auto;
+  margin-left: 20px;
+}
+
+.toggle-cumple {
+  display: flex;
+  align-items: center;
+  font-size: 0.9rem;
+  gap: 8px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.toggle-cumple input {
+  cursor: pointer;
+}
+
 .boton-clientes-page {
   height: 50px;
+}
+
+  /* Leyenda de colores */
+.leyenda-cumpleanios {
+  display: flex;
+  gap: 15px;
+  margin-bottom: 10px;
+  padding: 10px;
+  border-radius: 4px;
+  background-color: #f9f9f9;
+}
+
+.leyenda-item {
+  display: flex;
+  align-items: center;
+  font-size: 0.85rem;
+  padding: 5px 10px;
+  border-radius: 3px;
+}
+
+.leyenda-item::before {
+  content: "";
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  margin-right: 5px;
+}
+
+.cumple-status-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.leyenda-hoy-no-saludado { color: #e01b1b; }
+.leyenda-hoy-no-saludado-bold { color: #e01b1b; font-weight: bold; }
+
+.leyenda-hoy-saludado { color: #e54545; font-weight: bold; }
+
+.leyenda-proximo-no-saludado { color: #d9ac00; }
+.leyenda-proximo-no-saludado-bold { color: #d9ac00; font-weight: bold; }
+
+.leyenda-proximo-saludado { color: #d9ac00; font-weight: bold; }
+
+.leyenda-lejano { color: #0b7d17; }
+.leyenda-lejano-saludado { color: #0b7d17; font-weight: bold; }
+
+.cliente-saludado {
+  font-weight: bold; 
+}
+
+.leyenda-hoy-no-saludado::before { background-color: #e01b1b; }
+.leyenda-hoy-saludado::before { background-color: #e54545; }
+.leyenda-proximo-no-saludado::before { background-color: #d9ac00; }
+.leyenda-lejano::before { background-color: #0b7d17; }
+
+/* Estilos de celdas según estado de cumpleaños */
+.cumple-hoy-no-saludado {
+  color: #e01b1b !important;
+  font-weight: bold;
+  font-size: 0.9rem;
+  display: inline-block;
+}
+
+.cumple-hoy-saludado {
+  color: #e54545 !important;
+  font-weight: bold;
+  font-size: 0.9rem;
+  display: inline-block;
+}
+
+.cumple-maniana-no-saludado {
+  color: #d91515 !important;
+  font-weight: bold;
+  font-size: 0.9rem;
+  display: inline-block;
+}
+
+.cumple-maniana-saludado {
+  color: #d91515 !important;
+  font-weight: bold;
+  font-size: 0.9rem;
+  display: inline-block;
+}
+
+.cumple-proximo-no-saludado {
+  color: #d9ac00 !important;
+  font-weight: bold;
+  font-size: 0.9rem;
+  display: inline-block;
+}
+
+.cumple-proximo-saludado {
+  color: #e0b412 !important;
+  font-weight: bold;
+  font-size: 0.9rem;
+  display: inline-block;
+}
+
+.cumple-lejano {
+  color: #0b7d17 !important;
+  font-weight: 600;
+  font-size: 0.9rem;
+  display: inline-block;
+}
+
+.cumple-sin-fecha {
+  color: #999;
+  font-style: italic;
+  font-size: 0.9rem;
+  display: inline-block;
+}
+
+/* Botón marcar como saludado */
+.btn-marcar-saludado {
+  background: none;
+  border: none;
+  color: #3367d6;
+  cursor: pointer;
+  padding: 5px;
+  border-radius: 50%;
+  transition: background-color 0.2s;
+}
+
+.btn-marcar-saludado:hover {
+  background-color: rgba(51, 103, 214, 0.1);
+}
+
+.cliente-saludado-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 5px;
+  border-radius: 50%;
+  opacity: 1;
+  flex-shrink: 0;
+  margin-right: 20px;
+  margin-bottom: 5px;
+}
+
+.tabla-clientes-estado-cumple {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  padding: 0 10px;
+  position: relative;
+  width: 100%;
+}
+
+.tabla-clientes-buscador{
+  display: flex;
+  align-items: center;
+  width: 60%;
+  justify-content: space-between;
+}
+
+/* Footer con conteo de clientes */
+.tabla-clientes-summary {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  padding: 4px 8px;
+  background-color: #f3f4f8;
+  border-top: 1px solid #edf2f7;
+  border-radius: 0 0 18px 18px;
+  min-height: 48px;
+  flex-shrink: 0;
+  position: sticky;
+  bottom: 0;
+  z-index: 3;
+  box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.registros-info {
+  color: #64748b;
+  font-size: 14px;
+  font-weight: 500;
+  font-family: "Rajdhani", Arial, sans-serif;
+  margin-right: 10px;
+}
+
+/* Estilo para los números en la información de registros */
+.registros-info strong {
+  font-weight: 600;
+  color: #4a5568;
+}
+
+/* Estilos para el título del dashboard */
+.dashboard-title {
+  font-size: 2rem;
+  font-weight: 800;
+  letter-spacing: 0.25px;
+  line-height: 1.2;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  color: black;
+  margin: 0 0 1rem 0;
+  font-family: "Rajdhani", Arial, sans-serif;
+  padding-left: 1rem;
+  padding-top: 1rem;
+  text-align: start;
 }

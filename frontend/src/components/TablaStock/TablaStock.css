@@ -285,44 +285,98 @@
   border: none;
   color: #222;
   box-shadow: none;
-  width: 24px;
-  height: 24px;
+  width: 20px;
+  height: 20px;
   padding: 0;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
   transition: color 0.15s, transform 0.1s;
-  border-radius: 6px;
-  
-  
-  
+  border-radius: 4px;
+  margin-bottom: 15px; /* Asegurar que no hay márgenes */
 }
 
 .btn-carrito:hover,
 .btn-eliminar:hover {
   color: #111;
-  
+  transform: none; /* Quitar transform en hover general */
 }
 
-.btn-carrito:active,
-.btn-eliminar:active {
-  transform: translateY(2px) scale(0.97);
-}
+
 
 .btn-carrito svg,
 .btn-eliminar svg {
-  width: 18px;
-  height: 18px;
+  width: 16px;
+  height: 16px;
   display: block;
   filter: drop-shadow(0 2px 6px rgba(0,0,0,0.13));
   transition: filter 0.15s;
-  margin-bottom: 40px;
 }
 
 .btn-carrito:active svg,
 .btn-eliminar:active svg {
   filter: drop-shadow(0 1px 2px rgba(0,0,0,0.10));
+}
+
+/* Botón carrito deshabilitado */
+.btn-carrito-disabled {
+  color: #9ca3af !important;
+  cursor: not-allowed !important;
+  opacity: 0.5;
+}
+
+.btn-carrito-disabled:hover {
+  color: #9ca3af !important;
+  transform: none !important;
+}
+
+.btn-carrito-disabled:active {
+  transform: none !important;
+}
+
+.btn-carrito-disabled svg {
+  filter: none !important;
+}
+
+/* Mejorar el estilo del botón carrito cuando está habilitado */
+.btn-carrito:hover:not(.btn-carrito-disabled) {
+  color: #3b82f6;
+  background-color: rgba(59, 130, 246, 0.1);
+  border-radius: 4px;
+}
+
+.btn-carrito:active:not(.btn-carrito-disabled) {
+  transform: scale(0.95);
+}
+
+/* Mejorar el estilo del botón eliminar */
+.btn-eliminar:hover {
+  color: #ef4444;
+  background-color: rgba(239, 68, 68, 0.1);
+  border-radius: 4px;
+}
+
+.btn-eliminar:active {
+  transform: scale(0.95);
+}
+
+/* Efecto simple cuando se agrega al carrito */
+.btn-carrito-success {
+  background-color: #10b981 !important;
+  color: white !important;
+  border-radius: 4px;
+}
+
+/* Botones de acción más simples y limpios */
+.acciones-cell {
+  position: relative;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  justify-content: center;
+  padding: 0.6rem 0.3rem !important; /* Mismo padding que las otras celdas */
+  vertical-align: middle;
 }
 
 /* Loading */

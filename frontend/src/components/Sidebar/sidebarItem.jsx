@@ -6,7 +6,7 @@ const SidebarItem = ({ label, icon, route, active, notification, onClick, classN
   const isStock = label === "Stock";
   const computedClass =
     (isCart ? "sidebar-cart-btn" : "sidebar-item") +
-    ((active ? " active" : ""));
+    (active ? " active" : "");
 
   // Si es Stock, usar div en lugar de NavLink para evitar navegación automática
   if (isStock) {

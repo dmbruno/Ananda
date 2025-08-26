@@ -29,7 +29,8 @@
 }
 
 .sidebar:hover .boton-carrito-btn,
-.sidebar.sidebar-expanded .boton-carrito-btn {
+.sidebar.sidebar-expanded .boton-carrito-btn,
+.sidebar.sidebar-stock-active .boton-carrito-btn {
   flex-direction: row !important;
   justify-content: center;
   align-items: center;
@@ -102,7 +103,7 @@
   overflow: hidden;
 }
 
-.sidebar:not(.sidebar-expanded):not(:hover)
+.sidebar:not(.sidebar-expanded):not(:hover):not(.sidebar-stock-active)
   .boton-carrito-btn
   .boton-carrito-label {
   opacity: 0 !important;
@@ -114,7 +115,8 @@
 }
 
 .sidebar:hover .boton-carrito-btn .boton-carrito-label,
-.sidebar.sidebar-expanded .boton-carrito-btn .boton-carrito-label {
+.sidebar.sidebar-expanded .boton-carrito-btn .boton-carrito-label,
+.sidebar.sidebar-stock-active .boton-carrito-btn .boton-carrito-label {
   opacity: 1 !important;
   min-width: 3.5rem !important;
   width: 3.5rem !important;

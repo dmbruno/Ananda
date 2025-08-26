@@ -1,0 +1,237 @@
+.buscador-producto {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.buscador-producto-titulo {
+  margin: 0;
+  color: #2c3e50;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.buscador-producto-input-container {
+  position: relative;
+}
+
+.buscador-producto-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.buscador-producto-icono {
+  position: absolute;
+  left: 12px;
+  color: #6c757d;
+  font-size: 16px;
+  z-index: 1;
+}
+
+.buscador-producto-input {
+  width: 100%;
+  padding: 12px 12px 12px 40px;
+  border: 1px solid #dee2e6;
+  border-radius: 8px;
+  font-size: 14px;
+  transition: all 0.2s ease;
+  background: white;
+}
+
+.buscador-producto-input:focus {
+  outline: none;
+  border-color: #28a745;
+  box-shadow: 0 0 0 3px rgba(40, 167, 69, 0.1);
+}
+
+.buscador-producto-limpiar {
+  position: absolute;
+  right: 8px;
+  background: none;
+  border: none;
+  color: #6c757d;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+  font-size: 16px;
+  line-height: 1;
+  z-index: 1;
+}
+
+.buscador-producto-limpiar:hover {
+  background: #f8f9fa;
+  color: #495057;
+}
+
+.buscador-producto-sugerencias {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: white;
+  border: 1px solid #dee2e6;
+  border-top: none;
+  border-radius: 0 0 8px 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  z-index: 100;
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.buscador-producto-lista {
+  display: flex;
+  flex-direction: column;
+}
+
+.buscador-producto-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  border-bottom: 1px solid #f1f3f4;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.buscador-producto-item:hover:not(.buscador-producto-item-sin-stock) {
+  background: #f8f9fa;
+}
+
+.buscador-producto-item:last-child {
+  border-bottom: none;
+}
+
+.buscador-producto-item-sin-stock {
+  opacity: 0.6;
+  cursor: not-allowed;
+  background: #f8f9fa;
+}
+
+.buscador-producto-item-imagen {
+  width: 40px;
+  height: 40px;
+  border-radius: 6px;
+  overflow: hidden;
+  flex-shrink: 0;
+  background: #f8f9fa;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.buscador-producto-imagen {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.buscador-producto-imagen-placeholder {
+  font-size: 20px;
+  color: #6c757d;
+}
+
+.buscador-producto-item-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.buscador-producto-item-principal {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.buscador-producto-item-nombre {
+  font-weight: 600;
+  color: #2c3e50;
+  font-size: 14px;
+}
+
+.buscador-producto-item-precio {
+  font-weight: 700;
+  color: #28a745;
+  font-size: 14px;
+}
+
+.buscador-producto-item-detalles {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.buscador-producto-item-codigo,
+.buscador-producto-item-stock,
+.buscador-producto-item-categoria {
+  font-size: 11px;
+  color: #6c757d;
+  background: #f8f9fa;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.buscador-producto-stock-cero {
+  background: #f8d7da !important;
+  color: #721c24 !important;
+}
+
+.buscador-producto-item-accion {
+  color: #28a745;
+  font-size: 20px;
+  font-weight: bold;
+  flex-shrink: 0;
+}
+
+.buscador-producto-item-sin-stock-badge {
+  background: #dc3545;
+  color: white;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  flex-shrink: 0;
+}
+
+.buscador-producto-sin-resultados {
+  padding: 30px 20px;
+  text-align: center;
+  color: #6c757d;
+}
+
+.buscador-producto-sin-resultados-icono {
+  font-size: 32px;
+  margin-bottom: 10px;
+}
+
+.buscador-producto-sin-resultados p {
+  margin: 0;
+  font-size: 14px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .buscador-producto-item {
+    padding: 10px 12px;
+  }
+  
+  .buscador-producto-item-imagen {
+    width: 35px;
+    height: 35px;
+  }
+  
+  .buscador-producto-item-nombre,
+  .buscador-producto-item-precio {
+    font-size: 13px;
+  }
+  
+  .buscador-producto-item-detalles {
+    gap: 6px;
+  }
+  
+  .buscador-producto-sugerencias {
+    max-height: 300px;
+  }
+}

@@ -6,6 +6,8 @@ import { Provider } from 'react-redux'
 import store from './store'
 import { BrowserRouter } from 'react-router-dom'
 import '@fortawesome/fontawesome-free/css/all.min.css'
+// Import axios configuration
+import './utils/axios'
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>

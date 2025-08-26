@@ -6,4 +6,5 @@ default_imports = [
     'producto',
     'venta',
     'detalle_venta',
+    'caja',
 ]

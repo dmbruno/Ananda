@@ -1,14 +1,15 @@
-# Rutas CRUD para Ventas, incluye lógica de descuento
 from flask import Blueprint, request, jsonify
 from models.venta import Venta
 from models.detalle_venta import DetalleVenta
+from models.producto import Producto
+from models.caja import Caja
 from database.db import db
 from datetime import datetime, timedelta
 from sqlalchemy import func, and_
 
 ventas_bp = Blueprint('ventas', __name__, url_prefix='/api/ventas')
 
-# Crear venta (con lógica de descuento y detalle)
+# Rutas CRUD 
 @ventas_bp.route('/', methods=['POST'])
 def crear_venta():
     data = request.get_json()
@@ -20,9 +21,16 @@ def crear_venta():
     for d in detalles:
         total_bruto += d['precio_unitario'] * d['cantidad']
     total_final = total_bruto * (1 - descuento / 100)
+    
+    # Obtener la caja actual
+    caja_abierta = Caja.query.filter_by(estado='abierta').first()
+    if not caja_abierta:
+        return jsonify({'error': 'No hay una caja abierta para registrar la venta'}), 400
+    
     venta = Venta(
         cliente_id=data['cliente_id'],
         usuario_id=data['usuario_id'],
+        caja_id=caja_abierta.id,  # Asociar con la caja abierta
         fecha_venta=datetime.now(),
         total=total_final,
         metodo_pago=data['metodo_pago'],
@@ -42,6 +50,141 @@ def crear_venta():
     db.session.commit()
     return jsonify({'id': venta.id, 'total': total_final}), 201
 
+# Procesar venta completa (crear venta, descontar stock, actualizar caja)
+@ventas_bp.route('/procesar-completa', methods=['POST'])
+def procesar_venta_completa():
+    try:
+        print("🚀 [BACKEND] Iniciando procesamiento de venta completa...")
+        data = request.get_json()
+        print(f"📦 [BACKEND] Datos recibidos: {data}")
+        
+        # Validaciones
+        if not data.get('cliente_id'):
+            print("❌ [BACKEND] Error: Falta cliente_id")
+            return jsonify({'error': 'Falta cliente_id'}), 400
+        if not data.get('items') or len(data['items']) == 0:
+            print("❌ [BACKEND] Error: Falta items")
+            return jsonify({'error': 'Falta items'}), 400
+        if not data.get('metodo_pago'):
+            print("❌ [BACKEND] Error: Falta metodo_pago")
+            return jsonify({'error': 'Falta metodo_pago'}), 400
+        if not data.get('caja_id'):
+            print("❌ [BACKEND] Error: Falta caja_id")
+            return jsonify({'error': 'Falta caja_id'}), 400
+        
+        print("✅ [BACKEND] Validaciones básicas pasaron")
+        
+        # Obtener caja actual
+        caja = Caja.query.get(data['caja_id'])
+        if not caja or caja.estado != 'abierta':
+            print(f"❌ [BACKEND] Error: Caja {data['caja_id']} no encontrada o cerrada (estado: {caja.estado if caja else 'N/A'})")
+            return jsonify({'error': 'Caja no encontrada o cerrada'}), 400
+        
+        print(f"✅ [BACKEND] Caja encontrada: {caja.id}")
+        
+        # Verificar stock disponible
+        for item in data['items']:
+            producto = Producto.query.get(item['producto_id'])
+            if not producto:
+                print(f"❌ [BACKEND] Error: Producto {item['producto_id']} no encontrado")
+                return jsonify({'error': f'Producto {item["producto_id"]} no encontrado'}), 400
+            if producto.stock_actual < item['cantidad']:
+                print(f"❌ [BACKEND] Error: Stock insuficiente para {producto.nombre}")
+                return jsonify({'error': f'Stock insuficiente para {producto.nombre}. Disponible: {producto.stock_actual}, Solicitado: {item["cantidad"]}'}), 400
+        
+        print("✅ [BACKEND] Verificación de stock completada")
+        
+        # Calcular totales
+        total_bruto = sum(item['precio_unitario'] * item['cantidad'] for item in data['items'])
+        descuento_porcentaje = data.get('descuento', 0)
+        monto_descuento = total_bruto * (descuento_porcentaje / 100)
+        total_final = total_bruto - monto_descuento
+        
+        print(f"🧮 [BACKEND] Cálculos: bruto={total_bruto}, descuento={descuento_porcentaje}%, final={total_final}")
+        
+        # 1. Crear la venta
+        print("💾 [BACKEND] Creando venta...")
+        # Asegurarnos de que caja_id sea un entero válido
+        caja_id = int(data['caja_id']) if data['caja_id'] else None
+        print(f"💾 [BACKEND] Asociando venta a caja_id: {caja_id}")
+        
+        venta = Venta(
+            cliente_id=data['cliente_id'],
+            usuario_id=1,  # TODO: Obtener del usuario logueado
+            caja_id=caja_id,  # Asociar la venta con la caja
+            fecha_venta=datetime.now(),
+            total=total_final,
+            metodo_pago=data['metodo_pago'],
+            descuento=descuento_porcentaje
+        )
+        db.session.add(venta)
+        db.session.flush()  # Para obtener el id de la venta
+        print(f"✅ [BACKEND] Venta creada con ID: {venta.id}, asociada a caja ID: {venta.caja_id}")
+        
+        # 2. Crear detalles de venta y descontar stock
+        print("📋 [BACKEND] Creando detalles y descontando stock...")
+        for item in data['items']:
+            # Crear detalle
+            detalle = DetalleVenta(
+                venta_id=venta.id,
+                producto_id=item['producto_id'],
+                cantidad=item['cantidad'],
+                precio_unitario=item['precio_unitario'],
+                subtotal=item['subtotal']
+            )
+            db.session.add(detalle)
+            print(f"📄 [BACKEND] Detalle creado para producto {item['producto_id']}")
+            
+            # Descontar stock
+            producto = Producto.query.get(item['producto_id'])
+            stock_anterior = producto.stock_actual
+            producto.stock_actual -= item['cantidad']
+            print(f"📦 [BACKEND] Stock actualizado para {producto.nombre}: {stock_anterior} -> {producto.stock_actual}")
+        
+        # 3. Actualizar caja según método de pago
+        print(f"💰 [BACKEND] Actualizando caja con método: {data['metodo_pago']}")
+        metodo_pago = data['metodo_pago'].upper()
+        
+        # Actualizar el monto final de la caja (simple tracking del total)
+        if caja.monto_final is None:
+            caja.monto_final = caja.monto_inicial + total_final
+        else:
+            caja.monto_final += total_final
+            
+        print(f"💵 [BACKEND] Caja actualizada con +{total_final}. Monto final: {caja.monto_final}")
+        
+        # Guardar todos los cambios
+        print("💾 [BACKEND] Guardando cambios en base de datos...")
+        db.session.commit()
+        print("✅ [BACKEND] Todos los cambios guardados exitosamente")
+        
+        # Respuesta exitosa
+        response_data = {
+            'mensaje': 'Venta procesada exitosamente',
+            'venta': {
+                'id': venta.id,
+                'total': venta.total,
+                'fecha': venta.fecha_venta.isoformat(),
+                'metodo_pago': venta.metodo_pago
+            },
+            'caja_actualizada': {
+                'id': caja.id,
+                'monto_inicial': caja.monto_inicial,
+                'monto_final': caja.monto_final,
+                'estado': caja.estado
+            }
+        }
+        print(f"🎉 [BACKEND] Respuesta exitosa: {response_data}")
+        return jsonify(response_data), 201
+        
+    except Exception as e:
+        print(f"🔥 [BACKEND] Error inesperado: {str(e)}")
+        print(f"🔥 [BACKEND] Tipo de error: {type(e)}")
+        import traceback
+        print(f"🔥 [BACKEND] Stack trace: {traceback.format_exc()}")
+        db.session.rollback()
+        return jsonify({'error': f'Error interno: {str(e)}'}), 500
+
 # Obtener todas las ventas
 @ventas_bp.route('/', methods=['GET'])
 def listar_ventas():
@@ -49,19 +192,25 @@ def listar_ventas():
     resultado = []
     for v in ventas:
         cliente_nombre = v.cliente.nombre + ' ' + v.cliente.apellido if v.cliente else None
-        for d in v.detalles:
-            producto_nombre = d.producto.nombre if d.producto else None
-            resultado.append({
-                'id': v.id,
-                'cliente_id': v.cliente_id,
-                'cliente_nombre': cliente_nombre,
-                'usuario_id': v.usuario_id,
-                'fecha_venta': v.fecha_venta.isoformat(),
-                'total': v.total,
-                'metodo_pago': v.metodo_pago,
-                'descuento': v.descuento,
-                'producto': producto_nombre
-            })
+        vendedor_nombre = v.usuario.nombre if v.usuario else 'Admin'
+        
+        # Contar la cantidad total de productos en esta venta
+        cantidad_productos = sum(d.cantidad for d in v.detalles)
+        
+        # Un registro por venta (no por producto)
+        resultado.append({
+            'id': v.id,
+            'cliente_id': v.cliente_id,
+            'cliente_nombre': cliente_nombre,
+            'usuario_id': v.usuario_id,
+            'vendedor_nombre': vendedor_nombre,
+            'fecha_venta': v.fecha_venta.isoformat(),
+            'total': v.total,
+            'metodo_pago': v.metodo_pago,
+            'descuento': v.descuento,
+            'cantidad_productos': cantidad_productos,
+            'estado': 'completada'  # Por ahora todas las ventas están completadas
+        })
     return jsonify(resultado)
 
 # Obtener venta por id

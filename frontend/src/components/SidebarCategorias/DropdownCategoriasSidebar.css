@@ -2,7 +2,7 @@
 .dropdown-categorias-sidebar {
   position: fixed;
   top: 0;
-  left: 240px; /* sidebar expandida: 240px */
+  left: 240px; /* sidebar expandida: 240px por defecto */
   width: 220px;
   height: 100vh;
   background: #f1f2f7;
@@ -14,6 +14,7 @@
   border-radius: 0 1.2rem 1.2rem 0;
   animation: slideInSidebarRight 0.35s cubic-bezier(0.4, 0, 0.2, 1);
   overflow: hidden;
+  transition: left 0.2s ease; /* Transición suave para el cambio de posición */
 }
 
 .modal-categorias-panel {
@@ -58,7 +59,34 @@
   background: #f1f2f7;
 }
 .dropdown-subcategorias-item {
-  background: #f1f2f7;
+  display: block;
+  width: 100%;
+  padding: 6px 8px;
+  margin-left: 20px; /* Indentación más sutil */
+  margin-bottom: 2px;
+  font-size: 0.75rem; /* Igual que categorías */
+  font-weight: 500; /* Igual que categorías */
+  color: #666; /* Color más fuerte para subcategorías */
+  text-align: left;
+  border: none;
+  background: none; /* Sin fondo */
+  border-radius: 0;
+  transition: color 0.2s ease;
+  cursor: pointer;
+  font-family: "Poppins", sans-serif; /* Igual que categorías */
+  list-style: none;
+  text-shadow: 0 4px 16px rgba(44, 62, 80, 0.22), 0 1.5px 4px rgba(0, 0, 0, 0.05); /* Igual que categorías */
+}
+
+.dropdown-subcategorias-item:hover {
+  color: #444; /* Color más fuerte al hover */
+}
+
+/* Eliminar viñetas de la lista de subcategorías */
+.dropdown-subcategorias-dropdown {
+  list-style: none;
+  padding: 0;
+  margin: 0;
 }
 
 .dropdown-categorias-item {

@@ -27,3 +27,24 @@ class Producto(db.Model):
     subcategoria = db.relationship('Subcategoria', back_populates='productos')
     # Relación con detalle de ventas
     detalles_venta = db.relationship('DetalleVenta', back_populates='producto')
+    
+    def to_dict(self):
+        """Convertir objeto Producto a diccionario"""
+        return {
+            'id': self.id,
+            'nombre': self.nombre,
+            'talle': self.talle,
+            'codigo': self.codigo,
+            'color': self.color,
+            'marca': self.marca,
+            'stock_minimo': self.stock_minimo,
+            'costo': self.costo,
+            'precio_venta': self.precio_venta,
+            'imagen_url': self.imagen_url,
+            'stock_actual': self.stock_actual,
+            'categoria_id': self.categoria_id,
+            'subcategoria_id': self.subcategoria_id,
+            'activo': self.activo,
+            'temporada': self.temporada,
+            'fecha_ingreso': self.fecha_ingreso
+        }

@@ -19,6 +19,11 @@
   width: 15rem; /* 240px */
 }
 
+/* Mantener sidebar expandida cuando Stock está activo y dropdown visible */
+.sidebar.sidebar-stock-active {
+  width: 15rem; /* 240px */
+}
+
 .sidebar-header {
   font-family: "Reenie Beanie", sans-serif;
   font-size: 1.875rem; /* 30px */
@@ -44,12 +49,13 @@
 }
 
 .sidebar:hover .sidebar-header,
-.sidebar.sidebar-expanded .sidebar-header {
+.sidebar.sidebar-expanded .sidebar-header,
+.sidebar.sidebar-stock-active .sidebar-header {
   opacity: 1;
 }
 
 .sidebar-nav {
-  margin-top: 3.125rem; /* 50px */
+  margin-top: 1.125rem; /* 50px */
 }
 
 .sidebar-item {
@@ -76,7 +82,8 @@
   text-shadow: 0 2px 8px rgba(44, 62, 80, 0.18), 0 1px 2px rgba(0, 0, 0, 0.1);
 }
 .sidebar:hover .sidebar-item .sidebar-label,
-.sidebar.sidebar-expanded .sidebar-item .sidebar-label {
+.sidebar.sidebar-expanded .sidebar-item .sidebar-label,
+.sidebar.sidebar-stock-active .sidebar-item .sidebar-label {
   opacity: 1;
   margin-left: 1rem;
   display: inline;
@@ -171,7 +178,8 @@
   text-align: center;
   display: none;
 }
-.sidebar:hover .sidebar-footer .sidebar-item .sidebar-label {
+.sidebar:hover .sidebar-footer .sidebar-item .sidebar-label,
+.sidebar.sidebar-stock-active .sidebar-footer .sidebar-item .sidebar-label {
   opacity: 1;
   margin-left: 0.7rem;
   display: inline;
@@ -185,14 +193,11 @@
   z-index: 2;
 }
 
-.sidebar:not(.sidebar-expanded) .sidebar-footer .sidebar-item {
+/* Footer en estado contraído */
+.sidebar.sidebar-collapsed .sidebar-footer .sidebar-item {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-}
-
-.sidebar:not(.sidebar-expanded) .sidebar-footer .sidebar-item .sidebar-label {
-  display: none;
 }
 
 .dropdown-categorias-item {
@@ -205,3 +210,5 @@
   text-shadow: 0 4px 16px rgba(44, 62, 80, 0.22),
     0 1.5px 4px rgba(0, 0, 0, 0.05);
 }
+
+

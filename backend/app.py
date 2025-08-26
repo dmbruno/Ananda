@@ -7,7 +7,7 @@ from routes.categoria import categorias_bp
 from routes.producto import productos_bp
 from routes.venta import ventas_bp
 from routes.detalle_venta import detalle_ventas_bp
-
+from routes.caja import caja_bp
 from routes.subcategoria import subcategorias_bp
 
 from flask_cors import CORS
@@ -29,10 +29,15 @@ def create_app():
     app.register_blueprint(productos_bp)
     app.register_blueprint(ventas_bp)
     app.register_blueprint(detalle_ventas_bp)
-    
+    app.register_blueprint(caja_bp)
     app.register_blueprint(subcategorias_bp)
     
-    CORS(app, resources={r"/api/*": {"origins": "*"}}, supports_credentials=True)
+    # Configure CORS with more specific settings
+    CORS(app, 
+         resources={r"/api/*": {"origins": ["http://localhost:5173", "http://127.0.0.1:5173"]}}, 
+         supports_credentials=True,
+         allow_headers=["Content-Type", "Authorization"],
+         methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"])
 
     return app
 

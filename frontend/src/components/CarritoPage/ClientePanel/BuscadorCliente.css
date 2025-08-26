@@ -1,0 +1,230 @@
+.buscador-cliente {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.buscador-cliente-titulo {
+  margin: 0;
+  color: #2c3e50;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.buscador-cliente-input-container {
+  position: relative;
+}
+
+.buscador-cliente-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.buscador-cliente-icono {
+  position: absolute;
+  left: 12px;
+  color: #6c757d;
+  font-size: 16px;
+  z-index: 1;
+}
+
+.buscador-cliente-input {
+  width: 100%;
+  padding: 12px 12px 12px 40px;
+  border: 1px solid #dee2e6;
+  border-radius: 8px;
+  font-size: 14px;
+  transition: all 0.2s ease;
+  background: white;
+}
+
+.buscador-cliente-input:focus {
+  outline: none;
+  border-color: #2196f3;
+  box-shadow: 0 0 0 3px rgba(33, 150, 243, 0.1);
+}
+
+.buscador-cliente-input:disabled {
+  background: #f8f9fa;
+  color: #6c757d;
+  cursor: not-allowed;
+}
+
+.buscador-cliente-limpiar {
+  position: absolute;
+  right: 8px;
+  background: none;
+  border: none;
+  color: #6c757d;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+  font-size: 16px;
+  line-height: 1;
+  z-index: 1;
+}
+
+.buscador-cliente-limpiar:hover {
+  background: #f8f9fa;
+  color: #495057;
+}
+
+.buscador-cliente-sugerencias {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: white;
+  border: 1px solid #dee2e6;
+  border-top: none;
+  border-radius: 0 0 8px 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  z-index: 100;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.buscador-cliente-cargando {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 20px;
+  color: #6c757d;
+  justify-content: center;
+}
+
+.buscador-cliente-spinner {
+  width: 20px;
+  height: 20px;
+  border: 2px solid #e9ecef;
+  border-top: 2px solid #2196f3;
+  border-radius: 50%;
+  animation: buscador-cliente-spin 1s linear infinite;
+}
+
+@keyframes buscador-cliente-spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.buscador-cliente-lista {
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.buscador-cliente-item {
+  padding: 12px 16px;
+  border-bottom: 1px solid #f1f3f4;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.buscador-cliente-item:hover {
+  background: #f8f9fa;
+}
+
+.buscador-cliente-item:last-child {
+  border-bottom: none;
+}
+
+.buscador-cliente-item-principal {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 4px;
+}
+
+.buscador-cliente-item-nombre {
+  font-weight: 600;
+  color: #2c3e50;
+}
+
+.buscador-cliente-item-id {
+  font-size: 12px;
+  color: #6c757d;
+  background: #f8f9fa;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.buscador-cliente-item-detalles {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.buscador-cliente-item-detalle {
+  font-size: 12px;
+  color: #6c757d;
+}
+
+.buscador-cliente-sin-resultados {
+  padding: 30px 20px;
+  text-align: center;
+  color: #6c757d;
+}
+
+.buscador-cliente-sin-resultados-icono {
+  font-size: 32px;
+  margin-bottom: 10px;
+}
+
+.buscador-cliente-sin-resultados p {
+  margin: 0 0 15px;
+  font-size: 14px;
+}
+
+.buscador-cliente-crear-btn {
+  padding: 8px 16px;
+  background: #28a745;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.buscador-cliente-crear-btn:hover {
+  background: #218838;
+  transform: translateY(-1px);
+}
+
+.buscador-cliente-acciones {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.buscador-cliente-btn-crear {
+  padding: 10px 16px;
+  background: #28a745;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.buscador-cliente-btn-crear:hover {
+  background: #218838;
+  transform: translateY(-1px);
+  box-shadow: 0 3px 8px rgba(40, 167, 69, 0.3);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .buscador-cliente-item-detalles {
+    gap: 4px;
+  }
+  
+  .buscador-cliente-item-detalle {
+    font-size: 11px;
+  }
+  
+  .buscador-cliente-sugerencias {
+    max-height: 250px;
+  }
+}

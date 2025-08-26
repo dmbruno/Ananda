@@ -1,0 +1,143 @@
+.carrito-page {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background-color: #f8f9fa;
+  height: 100vh;
+  overflow: hidden;
+  margin-left: 4rem;
+}
+
+.carrito-page-loading {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #f8f9fa;
+}
+
+.loading-spinner {
+  font-size: 18px;
+  color: #6c757d;
+}
+
+.carrito-page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 30px;
+  background: white;
+  border-bottom: 1px solid #e9ecef;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  gap: 20px;
+}
+
+.carrito-page-title-section .carrito-page-title {
+  margin: 0;
+  color: #2c3e50;
+  font-size: 28px;
+  font-weight: 600;
+}
+
+.carrito-page-caja-info {
+  margin-top: 5px;
+  color: #27ae60;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.carrito-page-steps-header {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.carrito-page-steps {
+  padding: 10px 30px 0;
+  background: white;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.carrito-page-layout {
+  display: grid;
+  grid-template-columns: 400px 1fr;
+  gap: 20px;
+  padding: 15px 30px;
+  height: calc(100vh - 80px);
+  overflow: hidden;
+}
+
+.carrito-page-cliente-column {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.carrito-page-carrito-column {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Estilos para el título del dashboard */
+.dashboard-title {
+  font-size: 2rem;
+  font-weight: 800;
+  letter-spacing: 0.25px;
+  line-height: 1.2;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  color: black;
+  margin: 0 0 1rem 0;
+  font-family: "Rajdhani", Arial, sans-serif;
+  padding-left: 1rem;
+  padding-top: 1rem;
+  text-align: start;
+}
+
+/* Responsive */
+@media (max-width: 1200px) {
+  .carrito-page-layout {
+    grid-template-columns: 350px 1fr;
+  }
+}
+
+@media (max-width: 900px) {
+  .carrito-page-layout {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto 1fr;
+    gap: 15px;
+  }
+  
+  .carrito-page-cliente-column {
+    max-height: 300px;
+  }
+  
+  .carrito-page-header {
+    padding: 15px 20px;
+  }
+  
+  .carrito-page-steps {
+    padding: 15px 20px 0;
+  }
+  
+  .carrito-page-layout {
+    padding: 15px 20px;
+  }
+}
+
+@media (max-width: 768px) {
+  .carrito-page-title-section .carrito-page-title {
+    font-size: 24px;
+  }
+  
+  .carrito-page-layout {
+    height: calc(100vh - 120px);
+  }
+}

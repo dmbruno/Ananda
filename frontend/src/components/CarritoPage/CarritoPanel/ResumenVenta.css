@@ -1,0 +1,255 @@
+.resumen-venta {
+  background: white;
+  border: 1px solid #e9ecef;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.resumen-venta-titulo {
+  margin: 0;
+  padding: 16px 20px;
+  background: #f8f9fa;
+  border-bottom: 1px solid #e9ecef;
+  color: #2c3e50;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.resumen-venta-contenido {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.resumen-venta-seccion {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.resumen-venta-label {
+  color: #495057;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.resumen-venta-metodos-pago {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+.resumen-venta-metodo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 12px 8px;
+  border: 1px solid #dee2e6;
+  background: white;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 12px;
+}
+
+.resumen-venta-metodo:hover {
+  border-color: #adb5bd;
+  background: #f8f9fa;
+}
+
+.resumen-venta-metodo-activo {
+  border-color: #28a745 !important;
+  background: #e8f5e8 !important;
+  color: #155724;
+}
+
+.resumen-venta-metodo-icono {
+  font-size: 20px;
+}
+
+.resumen-venta-metodo-texto {
+  font-weight: 600;
+  text-align: center;
+  line-height: 1.2;
+}
+
+.resumen-venta-descuento-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.resumen-venta-descuento-input {
+  width: 100%;
+  padding: 10px 35px 10px 12px;
+  border: 1px solid #dee2e6;
+  border-radius: 8px;
+  font-size: 14px;
+  transition: all 0.2s ease;
+}
+
+.resumen-venta-descuento-input:focus {
+  outline: none;
+  border-color: #28a745;
+  box-shadow: 0 0 0 3px rgba(40, 167, 69, 0.1);
+}
+
+.resumen-venta-descuento-simbolo {
+  position: absolute;
+  right: 12px;
+  color: #6c757d;
+  font-weight: 600;
+  pointer-events: none;
+}
+
+.resumen-venta-calculos {
+  background: #f8f9fa;
+  padding: 16px;
+  border-radius: 8px;
+  border: 1px solid #e9ecef;
+}
+
+.resumen-venta-linea {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 0;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.resumen-venta-linea:last-child {
+  border-bottom: none;
+}
+
+.resumen-venta-concepto {
+  color: #495057;
+  font-size: 14px;
+}
+
+.resumen-venta-valor {
+  font-weight: 600;
+  color: #2c3e50;
+  font-size: 14px;
+}
+
+.resumen-venta-descuento .resumen-venta-concepto,
+.resumen-venta-descuento .resumen-venta-valor {
+  color: #dc3545;
+}
+
+.resumen-venta-total {
+  padding-top: 12px !important;
+  margin-top: 8px;
+  border-top: 2px solid #28a745 !important;
+  border-bottom: none !important;
+}
+
+.resumen-venta-total .resumen-venta-concepto {
+  color: #2c3e50;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.resumen-venta-total .resumen-venta-valor {
+  color: #28a745;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.resumen-venta-acciones {
+  margin-top: 8px;
+}
+
+.resumen-venta-btn-procesar {
+  width: 100%;
+  padding: 16px 24px;
+  background: linear-gradient(135deg, #28a745, #20914a);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.resumen-venta-btn-procesar:hover:not(:disabled) {
+  background: linear-gradient(135deg, #20914a, #1c7c41);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(40, 167, 69, 0.4);
+}
+
+.resumen-venta-btn-procesar:disabled {
+  background: #6c757d;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.resumen-venta-spinner {
+  width: 20px;
+  height: 20px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top: 2px solid white;
+  border-radius: 50%;
+  animation: resumen-venta-spin 1s linear infinite;
+}
+
+@keyframes resumen-venta-spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .resumen-venta-metodos-pago {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+  
+  .resumen-venta-metodo {
+    flex-direction: row;
+    justify-content: center;
+    padding: 10px 16px;
+  }
+  
+  .resumen-venta-metodo-icono {
+    font-size: 18px;
+  }
+  
+  .resumen-venta-contenido {
+    padding: 16px;
+    gap: 16px;
+  }
+  
+  .resumen-venta-total .resumen-venta-concepto {
+    font-size: 15px;
+  }
+  
+  .resumen-venta-total .resumen-venta-valor {
+    font-size: 17px;
+  }
+}
+
+@media (max-width: 480px) {
+  .resumen-venta-btn-procesar {
+    padding: 14px 20px;
+    font-size: 15px;
+  }
+  
+  .resumen-venta-calculos {
+    padding: 12px;
+  }
+  
+  .resumen-venta-linea {
+    padding: 4px 0;
+  }
+}
