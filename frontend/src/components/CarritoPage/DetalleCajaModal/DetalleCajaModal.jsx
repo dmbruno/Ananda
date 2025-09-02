@@ -37,6 +37,7 @@ const DetalleCajaModal = ({ caja, onClose }) => {
   const formatFecha = (fechaStr) => {
     if (!fechaStr) return '-';
     const fecha = new Date(fechaStr);
+    fecha.setHours(fecha.getHours() - 3);
     return fecha.toLocaleString('es-AR', {
       year: 'numeric',
       month: '2-digit',

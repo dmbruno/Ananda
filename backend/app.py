@@ -39,6 +39,8 @@ def create_app():
     jwt = JWTManager(app)
     db.init_app(app)
 
+
+
     # Registrar blueprints
     app.register_blueprint(usuarios_bp)
     app.register_blueprint(clientes_bp)
@@ -46,7 +48,7 @@ def create_app():
     app.register_blueprint(productos_bp)
     app.register_blueprint(ventas_bp)
     app.register_blueprint(detalle_ventas_bp)
-    app.register_blueprint(caja_bp)
+    app.register_blueprint(caja_bp, url_prefix="/api/caja")
     app.register_blueprint(subcategorias_bp)
     app.register_blueprint(auth_bp, url_prefix='/api/auth')
     app.register_blueprint(ajuste_precios_bp, url_prefix='/api/productos')

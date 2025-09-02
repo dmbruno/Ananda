@@ -10,7 +10,7 @@ from utils.auth_utils import require_auth, get_current_user_from_token
 
 caja_bp = Blueprint('caja', __name__)
 
-@caja_bp.route('/api/caja/listar', methods=['GET', 'OPTIONS'])
+@caja_bp.route('/listar', methods=['GET', 'OPTIONS'])
 def listar_cajas():
     """Lista cajas con filtros opcionales: fecha_inicio (YYYY-MM-DD), fecha_fin (YYYY-MM-DD), usuario_id, estado"""
     try:
@@ -66,7 +66,7 @@ def listar_cajas():
         return jsonify({'error': str(e)}), 500
 
 
-@caja_bp.route('/api/caja/actual', methods=['GET'])
+@caja_bp.route('/actual', methods=['GET'])
 @jwt_required()  # Proteger con JWT
 def obtener_caja_actual():
     """Obtiene la caja actualmente abierta"""
@@ -136,7 +136,7 @@ def obtener_caja_actual():
             'error': f"Error al verificar caja: {str(e)}"
         }), 500  # Usar 500 para errores reales
 
-@caja_bp.route('/api/caja/abrir', methods=['POST'])
+@caja_bp.route('/abrir', methods=['POST'])
 @jwt_required()  # Usar jwt_required en lugar de require_auth para consistencia
 def abrir_caja():
     """Abre una nueva caja del día"""
@@ -216,7 +216,7 @@ def abrir_caja():
             'traceback': error_traceback
         }), 500
 
-@caja_bp.route('/api/caja/cerrar', methods=['POST'])
+@caja_bp.route('/cerrar', methods=['POST'])
 @jwt_required()  # Usar jwt_required en lugar de require_auth para consistencia
 def cerrar_caja():
     """Cierra la caja actual"""
@@ -281,7 +281,29 @@ def cerrar_caja():
             'error': str(e)
         }), 500
 
-@caja_bp.route('/api/caja/marcar-controlada', methods=['POST','OPTIONS'])
+@caja_bp.route('/<int:caja_id>', methods=['GET'])
+@jwt_required()
+def obtener_caja_por_id(caja_id):
+    try:
+        caja = Caja.query.get(caja_id)
+        if not caja:
+            return jsonify({'error': 'Caja no encontrada'}), 404
+
+        # Traer ventas asociadas
+        ventas = Venta.query.filter_by(caja_id=caja.id).all()
+        total_ventas = sum(venta.total for venta in ventas)
+
+        caja_dict = caja.to_dict()
+        caja_dict['ventas_total'] = total_ventas
+        caja_dict['ventas_cantidad'] = len(ventas)
+        caja_dict['ventas'] = [venta.to_dict_simple() for venta in ventas]
+
+        return jsonify(caja_dict), 200
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@caja_bp.route('/marcar-controlada', methods=['POST','OPTIONS'])
 def marcar_caja_controlada():
     """Marca una caja como controlada (solo administradores). Responde OPTIONS para preflight sin requerir JWT."""
     try:

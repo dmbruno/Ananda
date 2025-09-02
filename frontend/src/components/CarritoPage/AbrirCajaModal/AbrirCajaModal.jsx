@@ -27,7 +27,7 @@ const AbrirCajaModal = ({ onCajaAbierta }) => {
   // Usar una dependencia adicional cajaVerificada.current para evitar doble ejecución
   useEffect(() => {
     if (estado === 'abierta' && cajaActual && onCajaAbierta) {
-      console.log('🟢 Detectada caja ya abierta, redirigiendo:', cajaActual);
+      
       onCajaAbierta();
     }
   }, [estado, cajaActual, onCajaAbierta]);
@@ -36,7 +36,7 @@ const AbrirCajaModal = ({ onCajaAbierta }) => {
   useEffect(() => {
     if (error && error.includes('Usuario no autenticado')) {
       setLocalError('Error de autenticación. Intente iniciar sesión nuevamente.');
-      console.log('🔴 Error de autenticación detectado, redirigiendo a login...');
+      
       // Podríamos redirigir a login, pero por ahora solo mostramos el error
     }
   }, [error]);
@@ -47,7 +47,7 @@ const AbrirCajaModal = ({ onCajaAbierta }) => {
     try {
       // Si ya hay una caja abierta, simplemente notificar al padre
       if (estado === 'abierta' && cajaActual && onCajaAbierta) {
-        console.log('🟢 Utilizando caja ya abierta:', cajaActual);
+        
         onCajaAbierta();
         return;
       }
@@ -55,14 +55,14 @@ const AbrirCajaModal = ({ onCajaAbierta }) => {
       setLocalError(''); // Limpiar error local
       const monto = parseFloat(montoInicial) || 0;
 
-      console.log('🔍 Intentando abrir caja con monto:', monto, typeof monto);
+      
       setOpening(true);
       const resultado = await dispatch(abrirCaja(monto)).unwrap();
-      console.log('✅ Caja abierta con éxito:', resultado);
+      
 
       // Llamar a la función de callback después de abrir la caja exitosamente
       if (onCajaAbierta) {
-        console.log('✅ Llamando al callback onCajaAbierta');
+        
         onCajaAbierta();
       }
     } catch (error) {
@@ -70,7 +70,7 @@ const AbrirCajaModal = ({ onCajaAbierta }) => {
 
       // Si el error es que ya existe una caja abierta, intentar usarla
       if (error?.error?.includes('Ya hay una caja abierta') && error?.caja) {
-        console.log('🟠 Ya existe una caja abierta, intentando usarla:', error.caja);
+        
 
         // Simplemente usar la caja que ya tenemos en el error
         if (onCajaAbierta) {

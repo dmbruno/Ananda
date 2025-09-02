@@ -17,7 +17,7 @@ const CerrarCajaModal = ({ cajaActual: cajaProp, onCajaCerrada, onCancel }) => {
   useEffect(() => {
     // Calcular monto del sistema al cargar
     if (cajaDatos) {
-      console.log('Datos de caja para cerrar:', cajaDatos);
+      
       
       // Obtener las ventas asociadas a esta caja
       let totalVentas = 0;
@@ -25,11 +25,11 @@ const CerrarCajaModal = ({ cajaActual: cajaProp, onCajaCerrada, onCancel }) => {
       
       if (cajaDatos.ventas && Array.isArray(cajaDatos.ventas)) {
         ventas = cajaDatos.ventas;
-        console.log('DEBUG - Array de ventas encontrado con', ventas.length, 'elementos');
+        
         
         // Verificar cada venta para asegurarnos que son válidas
         ventas.forEach((venta, index) => {
-          console.log(`DEBUG - Venta ${index}:`, venta);
+          
           if (venta && typeof venta.total === 'number') {
             totalVentas += venta.total;
           } else {
@@ -37,31 +37,31 @@ const CerrarCajaModal = ({ cajaActual: cajaProp, onCajaCerrada, onCancel }) => {
           }
         });
         
-        console.log('Ventas encontradas en cajaDatos.ventas:', ventas.length, 'Total calculado:', totalVentas);
+        
       } else if (cajaDatos.ventas_total) {
         totalVentas = cajaDatos.ventas_total;
-        console.log('Total ventas del backend (cajaDatos.ventas_total):', totalVentas);
+        
       } else {
         // Si no tenemos ventas ni total de ventas, pero tenemos monto_final y monto_inicial
         // podemos calcular el total de ventas como la diferencia entre ambos
         if (cajaDatos.monto_final !== null && cajaDatos.monto_inicial !== null) {
           totalVentas = cajaDatos.monto_final - cajaDatos.monto_inicial;
-          console.log('Total ventas calculado a partir de monto_final - monto_inicial:', totalVentas);
+          
         } else {
-          console.log('No se encontraron ventas para esta caja ni forma de calcularlas');
+          
         }
       }
       
-      console.log('Total ventas calculado final:', totalVentas);
+      
       const montoSistemaCaja = parseFloat(cajaDatos.monto_inicial || 0) + totalVentas;
-      console.log('Monto sistema calculado:', montoSistemaCaja);
+      
       
       setMontoSistema(montoSistemaCaja);
       setMontoDeclarado(montoSistemaCaja.toString()); // Predefinir con el monto del sistema
       
       // Si no hay ventas pero hay monto_final, actualizar totalVentas para mostrar correctamente en el UI
       if (ventas.length === 0 && totalVentas > 0) {
-        console.log('Actualizando totalVentas para UI con:', totalVentas);
+        
       }
     } else {
       console.error('No se recibió información de la caja para cerrar');
@@ -78,10 +78,7 @@ const CerrarCajaModal = ({ cajaActual: cajaProp, onCajaCerrada, onCancel }) => {
     e.preventDefault();
     
     try {
-      console.log('Cerrando caja con datos:', {
-        notas,
-        monto_declarado: parseFloat(montoDeclarado)
-      });
+      
       
       await dispatch(cerrarCaja({
         notas,
@@ -110,40 +107,33 @@ const CerrarCajaModal = ({ cajaActual: cajaProp, onCajaCerrada, onCancel }) => {
   let cantidadVentas = 0;
   let ventasList = [];
   
-  console.log('DEBUG - Datos completos de la caja:', cajaDatos);
+  
   
   if (cajaDatos.ventas && Array.isArray(cajaDatos.ventas) && cajaDatos.ventas.length > 0) {
-    console.log('Calculando desde el array de ventas:', cajaDatos.ventas);
+    
     ventasList = cajaDatos.ventas;
     totalVentas = cajaDatos.ventas.reduce((sum, venta) => {
       const ventaTotal = venta && typeof venta.total === 'number' ? venta.total : 0;
       return sum + ventaTotal;
     }, 0);
     cantidadVentas = cajaDatos.ventas.length;
-    console.log(`DEBUG - Procesadas ${ventasList.length} ventas con total ${totalVentas}`);
+    
   } else {
-    console.log('Usando valores totales del backend:', {
-      ventas_total: cajaDatos.ventas_total,
-      ventas_cantidad: cajaDatos.ventas_cantidad
-    });
+    
     totalVentas = cajaDatos.ventas_total || 0;
     cantidadVentas = cajaDatos.ventas_cantidad || 0;
-    console.log('DEBUG - No se encontró array de ventas, usando totales alternativos');
+    
     
     // Intentar calcular la diferencia si no hay ventas
     if (cajaDatos.monto_final && cajaDatos.monto_inicial) {
       const calculoAlternativo = cajaDatos.monto_final - cajaDatos.monto_inicial;
-      console.log(`DEBUG - Cálculo alternativo de ventas: ${calculoAlternativo}`);
+      
     }
   }
   
-  console.log('DEBUG - Lista final de ventas:', ventasList);
   
-  console.log('Totales finales para mostrar:', {
-    cantidad: cantidadVentas,
-    total: totalVentas,
-    montoSistema: montoSistema
-  });
+  
+ 
   
   // Determinar el tipo de diferencia para el estilo
   const diferenciaType = diferencia === 0 ? 'igual' : (diferencia > 0 ? 'positiva' : 'negativa');

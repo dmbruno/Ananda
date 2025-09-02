@@ -30,7 +30,7 @@ const CrudSubcategorias = () => {
   const handleAgregar = async () => {
     if (!nuevaSubcategoria.trim()) return;
     try {
-      console.log("Intentando agregar subcategoría:", nuevaSubcategoria);
+      
       console.log("Respuesta de agregar subcategoría:", await dispatch(addSubcategoria({
         nombre: nuevaSubcategoria,
         categoriaId: categoriaSeleccionada,

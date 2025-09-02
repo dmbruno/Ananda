@@ -39,14 +39,23 @@ class Caja(db.Model):
             'monto_final': self.monto_final,
             'monto_sistema': self.monto_sistema,
             'diferencia': self.diferencia,
+
+        # IDs (por compatibilidad con el frontend actual)
             'usuario_apertura_id': self.usuario_apertura_id,
             'usuario_cierre_id': self.usuario_cierre_id,
             'usuario_control_id': self.usuario_control_id if hasattr(self, 'usuario_control_id') else None,
+
+        # Objetos usuario (para mostrar nombres y apellidos)
+            'usuario_apertura': self.usuario_apertura.to_dict() if self.usuario_apertura else None,
+            'usuario_cierre': self.usuario_cierre.to_dict() if self.usuario_cierre else None,
+            'usuario_control': self.usuario_control.to_dict() if self.usuario_control else None,
+
             'fecha_control': self.fecha_control.isoformat() if self.fecha_control else None,
             'estado': self.estado,
             'notas_apertura': self.notas_apertura,
             'notas_cierre': self.notas_cierre
-        }
+    }
+
     
     def __repr__(self):
         return f'<Caja {self.id} - {self.estado}>'

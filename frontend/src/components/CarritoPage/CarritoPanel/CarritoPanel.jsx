@@ -1,21 +1,35 @@
-import React, { useState, useEffect } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
-import { setPaso, setDescuento, setMetodoPago, procesarVenta, reiniciarVenta } from '../../../store/ventaProcesoSlice';
-import { fetchProductos } from '../../../store/productosSlice';
-import { vaciarCarrito } from '../../../store/carritoSlice';
-import { obtenerCajaActual } from '../../../store/cajaSlice';
-import BuscadorProducto from './BuscadorProducto';
-import ProductoItem from './ProductoItem';
-import ResumenVenta from './ResumenVenta';
-import './CarritoPanel.css';
+import React, { useState, useEffect } from "react";
+import { useSelector, useDispatch } from "react-redux";
+import {
+  setPaso,
+  setDescuento,
+  setMetodoPago,
+  procesarVenta,
+  reiniciarVenta,
+} from "../../../store/ventaProcesoSlice";
+import { fetchProductos } from "../../../store/productosSlice";
+import { vaciarCarrito } from "../../../store/carritoSlice";
+import { obtenerCajaActual } from "../../../store/cajaSlice";
+import BuscadorProducto from "./BuscadorProducto";
+import ProductoItem from "./ProductoItem";
+import ResumenVenta from "./ResumenVenta";
+import "./CarritoPanel.css";
 
 export default function CarritoPanel() {
   const dispatch = useDispatch();
-  const { cliente, paso, descuentoPorcentaje, metodoPago, procesando, error, ventaExitosa } = useSelector(state => state.ventaProceso);
-  const { items = [], total } = useSelector(state => state.carrito);
-  const { items: productos = [] } = useSelector(state => state.productos);
-  
-  const [busquedaProducto, setBusquedaProducto] = useState('');
+  const {
+    cliente,
+    paso,
+    descuentoPorcentaje,
+    metodoPago,
+    procesando,
+    error,
+    ventaExitosa,
+  } = useSelector((state) => state.ventaProceso);
+  const { items = [], total } = useSelector((state) => state.carrito);
+  const { items: productos = [] } = useSelector((state) => state.productos);
+
+  const [busquedaProducto, setBusquedaProducto] = useState("");
 
   useEffect(() => {
     // Cargar productos si no están cargados
@@ -40,73 +54,55 @@ export default function CarritoPanel() {
 
   const handleProcesarVenta = async () => {
     try {
-      console.log('🛒 Iniciando proceso de venta desde CarritoPanel...');
-      console.log('👤 Cliente:', cliente);
-      console.log('🛍️ Items:', items);
-      console.log('💳 Método de pago:', metodoPago);
-      console.log('💰 Descuento:', descuentoPorcentaje);
-      
       // Validaciones previas
       if (!cliente) {
-        console.log('❌ Error: No hay cliente');
-        alert('Debe seleccionar un cliente');
+        alert("Debe seleccionar un cliente");
         return;
       }
-      
+
       if (items.length === 0) {
-        console.log('❌ Error: No hay productos');
-        alert('Debe agregar al menos un producto');
+        alert("Debe agregar al menos un producto");
         return;
       }
-      
+
       if (!metodoPago) {
-        console.log('❌ Error: No hay método de pago');
-        alert('Debe seleccionar un método de pago');
+        alert("Debe seleccionar un método de pago");
         return;
       }
-      
+
       // Calcular totales
-      const subtotal = items.reduce((sum, item) => sum + (item.precio * item.cantidad), 0);
+      const subtotal = items.reduce(
+        (sum, item) => sum + item.precio * item.cantidad,
+        0
+      );
       const montoDescuento = (subtotal * descuentoPorcentaje) / 100;
       const totalFinal = subtotal - montoDescuento;
-      
-      console.log('🧮 Cálculos:', {
-        subtotal,
-        descuentoPorcentaje,
-        montoDescuento,
-        totalFinal
-      });
-      
+
       // Preparar datos de la venta
       const ventaData = {
         items: items,
-        total: totalFinal
+        total: totalFinal,
       };
-      
-      console.log('📦 VentaData preparada:', ventaData);
-      
+
       // Procesar venta
-      console.log('🚀 Enviando al Redux thunk...');
+
       const resultado = await dispatch(procesarVenta(ventaData)).unwrap();
-      
-      console.log('✅ Resultado exitoso:', resultado);
-      
+
       // Si todo salió bien, limpiar carrito y actualizar caja
       dispatch(vaciarCarrito());
       dispatch(obtenerCajaActual());
-      
+
       // Mostrar mensaje de éxito
       alert(`¡Venta procesada exitosamente! 
 Número de venta: ${resultado.venta.id}
-Total: $${totalFinal.toLocaleString('es-AR')}`);
-      
+Total: $${totalFinal.toLocaleString("es-AR")}`);
+
       // Reiniciar proceso después de 2 segundos
       setTimeout(() => {
         dispatch(reiniciarVenta());
       }, 2000);
-      
     } catch (error) {
-      console.error('🔥 Error en handleProcesarVenta:', error);
+      console.error("🔥 Error en handleProcesarVenta:", error);
       alert(`Error al procesar la venta: ${error}`);
     }
   };
@@ -132,10 +128,14 @@ Total: $${totalFinal.toLocaleString('es-AR')}`);
         <h2 className="carrito-panel-title">🛒 Carrito de Compras</h2>
         <div className="carrito-panel-pasos">
           {paso === 2 && (
-            <span className="carrito-panel-step-badge carrito-panel-step-current">Paso 2</span>
+            <span className="carrito-panel-step-badge carrito-panel-step-current">
+              Paso 2
+            </span>
           )}
           {paso === 3 && (
-            <span className="carrito-panel-step-badge carrito-panel-step-completed">✓ Completado</span>
+            <span className="carrito-panel-step-badge carrito-panel-step-completed">
+              ✓ Completado
+            </span>
           )}
         </div>
       </div>
@@ -146,13 +146,16 @@ Total: $${totalFinal.toLocaleString('es-AR')}`);
           <div className="carrito-panel-sin-cliente">
             <div className="carrito-panel-sin-cliente-icono">👤</div>
             <h3>Selecciona un cliente primero</h3>
-            <p>Para agregar productos al carrito, primero debes seleccionar un cliente en el panel izquierdo.</p>
+            <p>
+              Para agregar productos al carrito, primero debes seleccionar un
+              cliente en el panel izquierdo.
+            </p>
           </div>
         ) : (
           <div className="carrito-panel-layout">
             {/* Sección superior: Buscador */}
             <div className="carrito-panel-buscador-seccion">
-              <BuscadorProducto 
+              <BuscadorProducto
                 productos={productos}
                 busqueda={busquedaProducto}
                 onBusquedaChange={setBusquedaProducto}
@@ -168,21 +171,20 @@ Total: $${totalFinal.toLocaleString('es-AR')}`);
                     🛒 Productos en el Carrito ({items.length})
                   </h3>
                 </div>
-                
+
                 <div className="carrito-panel-items-container">
                   {items.length === 0 ? (
                     <div className="carrito-panel-vacio">
                       <div className="carrito-panel-vacio-icono">🛒</div>
                       <p>El carrito está vacío</p>
-                      <span>Busca y agrega productos usando el buscador de arriba</span>
+                      <span>
+                        Busca y agrega productos usando el buscador de arriba
+                      </span>
                     </div>
                   ) : (
                     <div className="carrito-panel-lista">
-                      {items.map(item => (
-                        <ProductoItem 
-                          key={item.id} 
-                          item={item}
-                        />
+                      {items.map((item) => (
+                        <ProductoItem key={item.id} item={item} />
                       ))}
                     </div>
                   )}
@@ -192,7 +194,7 @@ Total: $${totalFinal.toLocaleString('es-AR')}`);
               {/* Resumen de la venta - solo si hay productos */}
               {items.length > 0 && (
                 <div className="carrito-panel-resumen-seccion">
-                  <ResumenVenta 
+                  <ResumenVenta
                     items={items}
                     total={total}
                     descuento={descuentoPorcentaje}
@@ -211,42 +213,44 @@ Total: $${totalFinal.toLocaleString('es-AR')}`);
       {cliente && (
         <div className="carrito-panel-footer">
           <div className="carrito-panel-navegacion">
-            <button 
-              className="carrito-panel-btn-volver"
-              onClick={handleVolver}
-            >
+            <button className="carrito-panel-btn-volver" onClick={handleVolver}>
               ← Volver al Cliente
             </button>
-            
-            <button 
+
+            <button
               className={`carrito-panel-btn-continuar ${
-                !puedeAvanzar || procesando ? 'carrito-panel-btn-deshabilitado' : 
-                ventaExitosa ? 'carrito-panel-btn-exito' : ''
+                !puedeAvanzar || procesando
+                  ? "carrito-panel-btn-deshabilitado"
+                  : ventaExitosa
+                  ? "carrito-panel-btn-exito"
+                  : ""
               }`}
               onClick={ventaExitosa ? handleNuevaVenta : handleContinuar}
               disabled={!puedeAvanzar || procesando}
             >
               <span className="carrito-panel-boton-icono">
-                {procesando ? '⏳' : ventaExitosa ? '✅' : '💰'}
+                {procesando ? "⏳" : ventaExitosa ? "✅" : "💰"}
               </span>
-              {procesando ? 'Procesando...' : 
-               ventaExitosa ? 'Nueva Venta' : 
-               paso === 3 ? 'Procesar Venta' : 'Finalizar Venta →'}
+              {procesando
+                ? "Procesando..."
+                : ventaExitosa
+                ? "Nueva Venta"
+                : paso === 3
+                ? "Procesar Venta"
+                : "Finalizar Venta →"}
             </button>
           </div>
-          
+
           {!puedeAvanzar && !ventaExitosa && (
             <div className="carrito-panel-mensaje-ayuda">
               Agrega al menos un producto para continuar
             </div>
           )}
-          
+
           {error && (
-            <div className="carrito-panel-mensaje-error">
-              ❌ {error}
-            </div>
+            <div className="carrito-panel-mensaje-error">❌ {error}</div>
           )}
-          
+
           {ventaExitosa && (
             <div className="carrito-panel-mensaje-exito">
               ✅ ¡Venta procesada exitosamente! ID: {ventaExitosa.venta?.id}

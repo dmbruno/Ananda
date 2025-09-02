@@ -50,14 +50,14 @@ const BuscadorPorFechas = ({
   };
 
   const handleBuscar = () => {
-    console.log("BuscadorPorFechas - Click en botón buscar con fechas:", { localDesde, localHasta });
+    
     if (onBuscar) onBuscar(localDesde, localHasta);
     // Pasar a modo descarga inmediatamente si hay fechas válidas
     if (localDesde && localHasta) {
       setModoDescarga(true);
-      console.log("BuscadorPorFechas - Activando modo descarga");
+      
     } else {
-      console.log("BuscadorPorFechas - No se activó modo descarga: faltan fechas");
+      
     }
   };
 

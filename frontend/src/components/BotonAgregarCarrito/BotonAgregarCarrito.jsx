@@ -41,7 +41,7 @@ const BotonAgregarCarrito = ({
       subcategoria: producto.subcategoria?.nombre || ''
     };
 
-    console.log('🛒 Agregando al carrito:', itemCarrito);
+    
     dispatch(agregarAlCarrito(itemCarrito));
 
     // Ejecutar callback de éxito si se proporciona
