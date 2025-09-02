@@ -108,13 +108,40 @@
 }
 
 .abrir-caja-modal-error {
-  background: #fee;
-  border: 1px solid #f5c6cb;
-  color: #721c24;
-  padding: 12px;
-  border-radius: 8px;
-  margin-bottom: 20px;
+  margin: 15px 0;
+  padding: 15px;
+  background-color: #ffebeb;
+  border-left: 4px solid #ff4d4f;
+  color: #cf1322;
+  border-radius: 4px;
   font-size: 14px;
+  display: flex;
+  align-items: flex-start;
+  animation: errorPulse 2s ease-in-out;
+}
+
+@keyframes errorPulse {
+  0% { background-color: #ffebeb; }
+  50% { background-color: #ffd6d6; }
+  100% { background-color: #ffebeb; }
+}
+
+.abrir-caja-modal-error .error-icon {
+  font-size: 18px;
+  margin-right: 12px;
+  flex-shrink: 0;
+}
+
+.abrir-caja-modal-error .error-message {
+  flex: 1;
+  line-height: 1.5;
+}
+
+.abrir-caja-modal-error .error-suggestion {
+  margin-top: 8px;
+  font-size: 13px;
+  color: #777;
+  font-style: italic;
 }
 
 .abrir-caja-modal-actions {

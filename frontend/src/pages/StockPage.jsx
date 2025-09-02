@@ -7,10 +7,11 @@ import DropdownCategoriasSidebar from '../components/SidebarCategorias/DropdownC
 import HeaderUserBar from '../components/HeaderUserBar/HeaderUserBar';
 import TablaStock from '../components/TablaStock/TablaStock';
 import { exportarStockAExcel } from '../utils/exportarExcel';
-
+import Buscador from '../components/Buscador/Buscador';
 import BotonCustom from '../components/Botones/BotonCustom';
 
 import ModalNuevoProducto from '../components/Modals/ModalNuevoProducto';
+import ModalAjustePrecios from '../components/Modals/ModalAjustePrecios';
 import './StockPage.css';
 
 const StockPage = () => {
@@ -20,7 +21,12 @@ const StockPage = () => {
   const { subcategoria: subcategoriaParam } = useParams();
   const { categoria, subcategoria, subcategoriaId, categoriaId } = location.state || {};
 
- 
+  // Obtener información del usuario desde Redux
+  const user = useSelector(state => state.auth.user);
+  const isAdmin = user && user.is_admin === true;
+
+  // Estado para notificaciones
+  const [notification, setNotification] = useState(null);
 
   // Redux state
   const { items: productos, status, error } = useSelector(state => state.productos);
@@ -32,8 +38,18 @@ const StockPage = () => {
   // Estados del componente
   const [modoStockFecha, setModoStockFecha] = useState(false);
   const [modalNuevoOpen, setModalNuevoOpen] = useState(false);
+  const [modalAjustePreciosOpen, setModalAjustePreciosOpen] = useState(false);
   const [showDropdownCategorias, setShowDropdownCategorias] = useState(false);
   const [activeSidebarItem, setActiveSidebarItem] = useState("Stock");
+  const [searchTerm, setSearchTerm] = useState('');
+
+  // Función para mostrar notificaciones temporales
+  const showNotification = (message, type = 'error') => {
+    setNotification({ message, type });
+    setTimeout(() => {
+      setNotification(null);
+    }, 5000); // Desaparece después de 5 segundos
+  };
 
   // Establecer el item activo cuando se carga la página
   useEffect(() => {
@@ -46,6 +62,17 @@ const StockPage = () => {
       dispatch(fetchProductos());
     }
   }, [dispatch, status]);
+
+  // Efecto para debounce de la búsqueda
+  useEffect(() => {
+    // Implementamos un simple debounce para mejorar rendimiento
+    const timer = setTimeout(() => {
+      console.log("Aplicando filtro de búsqueda:", searchTerm);
+      // No hacemos nada aquí porque el término ya se aplica automáticamente en productosParaMostrar
+    }, 300);
+
+    return () => clearTimeout(timer);
+  }, [searchTerm]);
 
   // Detectar click en Stock
   const handleSidebarItemClick = (label) => {
@@ -91,21 +118,67 @@ const StockPage = () => {
  
   
 
+  // Función auxiliar para buscar en todos los campos
+  const buscarEnTodosLosCampos = (producto, searchTermLower) => {
+    // Lista de todos los campos que queremos incluir en la búsqueda
+    const camposBusqueda = [
+      producto.id?.toString(),
+      producto.nombre,
+      producto.codigo,
+      producto.categoria_nombre,
+      producto.subcategoria_nombre,
+      producto.descripcion,
+      producto.talle,
+      producto.color,
+      producto.marca,
+      producto.temporada,
+      producto.costo?.toString(),
+      producto.precio_venta?.toString(),
+      producto.stock_actual?.toString(),
+      producto.fecha_ingreso
+    ];
+
+    // Verificar si alguno de estos campos incluye el término de búsqueda
+    return camposBusqueda.some(campo => 
+      campo && campo.toLowerCase().includes(searchTermLower)
+    );
+  };
+
   const productosParaMostrar = modoStockFecha 
-    ? productos // Mostrar todos los productos
+    ? productos.filter(producto => {
+        // En modo stock fecha, solo filtrar por término de búsqueda si existe
+        if (!searchTerm) return true;
+        
+        const searchTermLower = searchTerm.toLowerCase();
+        return buscarEnTodosLosCampos(producto, searchTermLower);
+      })
     : productos.filter(producto => {
         // Filtrar por categoría y subcategoría si están definidas
         const coincideCategoria = !categoriaFinal || categoriaFinal === 'Categoría' || 
           producto.categoria_nombre?.toLowerCase() === categoriaFinal?.toLowerCase();
         const coincideSubcategoria = !subcategoriaFinal || 
           producto.subcategoria_nombre?.toLowerCase() === subcategoriaFinal?.toLowerCase();
-        return coincideCategoria && coincideSubcategoria;
+          
+        // Filtrar por término de búsqueda si existe
+        let coincideTermino = true;
+        if (searchTerm) {
+          const searchTermLower = searchTerm.toLowerCase();
+          coincideTermino = buscarEnTodosLosCampos(producto, searchTermLower);
+        }
+        
+        return coincideCategoria && coincideSubcategoria && coincideTermino;
       });
 
   console.log("Productos mostrados en la tabla después de filtrar:", productosParaMostrar); // Log para depurar
 
   // Función para exportar a Excel
   const handleExportarExcel = () => {
+    // Verificar si el usuario es administrador
+    if (!isAdmin) {
+      showNotification('Solo los administradores pueden exportar a Excel.', 'warning');
+      return;
+    }
+    
     const fecha = new Date().toLocaleDateString('es-AR').replace(/\//g, '-');
     const nombreArchivo = modoStockFecha 
       ? `stock-completo-${fecha}.xlsx`
@@ -129,6 +202,15 @@ const StockPage = () => {
       )}      
       <div className="stock-page-content">
         <HeaderUserBar />
+        
+        {/* Notificación */}
+        {notification && (
+          <div className={`notificacion notificacion-${notification.type}`}>
+            {notification.message}
+            <button className="notificacion-close" onClick={() => setNotification(null)}>×</button>
+          </div>
+        )}
+        
         <div className="stock-page-main">
           {/* Header con Breadcrumbs y Botones en la misma línea */}
           <div className="stock-header">
@@ -142,7 +224,7 @@ const StockPage = () => {
             </div>
 
             {/* Botones de acción */}
-            <div className="stock-actions">
+            <div className={`stock-actions ${modoStockFecha ? 'multiple-buttons' : ''}`}>
               <BotonCustom 
                 variant="success" 
                 size="medium"
@@ -155,6 +237,27 @@ const StockPage = () => {
               >
                 Producto
               </BotonCustom>
+
+              {/* Botón de exportar a Excel cuando modo stock fecha */}
+              {modoStockFecha && (
+                <BotonCustom
+                  variant="excel"
+                  size="medium"
+                  icon={
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <rect x="3" y="3" width="18" height="18" rx="2" stroke="#22c55e" strokeWidth="2" fill="none"/>
+                      <path d="M8 8l8 8M16 8l-8 8" stroke="#22c55e" strokeWidth="2" strokeLinecap="round"/>
+                    </svg>
+                  }
+                  onClick={handleExportarExcel}
+                  disabled={!isAdmin}
+                  title={!isAdmin ? "Solo disponible para administradores" : "Exportar a Excel"}
+                  className={!isAdmin ? "btn-disabled" : ""}
+                >
+                  Exportar Excel
+                  {!isAdmin && <span className="admin-only-icon">🔒</span>}
+                </BotonCustom>
+              )}
 
               <BotonCustom 
                 variant={modoStockFecha ? "secondary" : "info"}
@@ -170,21 +273,32 @@ const StockPage = () => {
               >
                 Stock a la fecha
               </BotonCustom>
+            </div>
+          </div>
 
-              {/* Botón de exportar a Excel solo en modo stock a la fecha */}
-              {modoStockFecha && (
-                <BotonCustom
-                  variant="excel"
+          {/* Buscador con botón de ajuste de precios */}
+          <div className="stock-search-container">
+            <div className="stock-search-wrapper">
+              <Buscador 
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                placeholder="Buscar en stock..."
+              />
+
+              {/* Botón de ajuste de precios junto al buscador - solo visible para admins */}
+              {isAdmin && (
+                <BotonCustom 
+                  variant="warning" 
                   size="medium"
                   icon={
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                      <rect x="3" y="3" width="18" height="18" rx="2" stroke="#22c55e" strokeWidth="2" fill="none"/>
-                      <path d="M8 8l8 8M16 8l-8 8" stroke="#22c55e" strokeWidth="2" strokeLinecap="round"/>
+                      <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                     </svg>
                   }
-                  onClick={handleExportarExcel}
+                  onClick={() => setModalAjustePreciosOpen(true)}
+                  className="ajustar-precios-btn"
                 >
-                  Exportar Excel
+                  Ajustar Precios
                 </BotonCustom>
               )}
             </div>
@@ -199,6 +313,15 @@ const StockPage = () => {
         </div>
         {/* Modal para nuevo producto */}
         <ModalNuevoProducto open={modalNuevoOpen} onClose={() => setModalNuevoOpen(false)} />
+        
+        {/* Modal para ajuste masivo de precios */}
+        <ModalAjustePrecios 
+          open={modalAjustePreciosOpen} 
+          onClose={() => setModalAjustePreciosOpen(false)} 
+          modoStockFecha={modoStockFecha}
+          categoriaActual={!modoStockFecha ? { id: categoriaId, nombre: categoriaFinal } : null}
+          subcategoriaActual={!modoStockFecha && subcategoriaFinal ? { id: subcategoriaId, nombre: subcategoriaFinal } : null}
+        />
       </div>
     </div>
   );

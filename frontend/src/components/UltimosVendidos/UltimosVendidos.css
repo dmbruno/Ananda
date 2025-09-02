@@ -67,7 +67,7 @@
 }
 .ultimos-vendidos-table {
   width: 100%;
-  max-height: 220px;
+  max-height: 260px;
   overflow-y: auto;
   position: relative;
 }
@@ -102,6 +102,8 @@
   font-family: 'Rajdhani', Arial, sans-serif;
   cursor: pointer;
   transition: background-color 0.2s;
+  
+  
 }
 
 .ultimos-vendidos-table-row:hover {

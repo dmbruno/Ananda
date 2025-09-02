@@ -5,14 +5,84 @@ from models.venta import Venta
 from models.usuario import Usuario
 from sqlalchemy import func, and_, extract
 from datetime import datetime, date, timedelta
+from flask_jwt_extended import jwt_required, get_jwt_identity, verify_jwt_in_request
+from utils.auth_utils import require_auth, get_current_user_from_token
 
 caja_bp = Blueprint('caja', __name__)
 
+@caja_bp.route('/api/caja/listar', methods=['GET', 'OPTIONS'])
+def listar_cajas():
+    """Lista cajas con filtros opcionales: fecha_inicio (YYYY-MM-DD), fecha_fin (YYYY-MM-DD), usuario_id, estado"""
+    try:
+        # Obtener query params
+        fecha_inicio = request.args.get('fecha_inicio')
+        fecha_fin = request.args.get('fecha_fin')
+        usuario_id = request.args.get('usuario_id')
+        estado = request.args.get('estado')
+
+        query = Caja.query
+
+        # Filtrar por rango de fechas sobre fecha_apertura
+        if fecha_inicio:
+            try:
+                start_dt = datetime.fromisoformat(fecha_inicio)
+            except Exception:
+                # Intentar parsear solo fecha si viene en formato YYYY-MM-DD
+                start_dt = datetime.fromisoformat(fecha_inicio + 'T00:00:00')
+            query = query.filter(Caja.fecha_apertura >= start_dt)
+
+        if fecha_fin:
+            try:
+                end_dt = datetime.fromisoformat(fecha_fin)
+            except Exception:
+                end_dt = datetime.fromisoformat(fecha_fin + 'T00:00:00')
+            # Incluir todo el día final
+            end_dt = end_dt + timedelta(days=1)
+            query = query.filter(Caja.fecha_apertura < end_dt)
+
+        # Filtrar por usuario si se provee
+        if usuario_id:
+            try:
+                uid = int(usuario_id)
+                query = query.filter((Caja.usuario_apertura_id == uid) | (Caja.usuario_cierre_id == uid) | (Caja.usuario_control_id == uid))
+            except ValueError:
+                pass
+
+        # Filtrar por estado simplificado
+        if estado:
+            if estado == 'abiertas' or estado == 'abierta':
+                query = query.filter(Caja.estado == 'abierta')
+            elif estado == 'cerradas' or estado == 'cerrada':
+                query = query.filter(Caja.estado == 'cerrada')
+            elif estado == 'controladas' or estado == 'controlada':
+                query = query.filter(Caja.fecha_control != None)
+
+        cajas = query.order_by(Caja.fecha_apertura.desc()).all()
+        resultado = [c.to_dict() for c in cajas]
+        return jsonify(resultado), 200
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        return jsonify({'error': str(e)}), 500
+
+
 @caja_bp.route('/api/caja/actual', methods=['GET'])
+@jwt_required()  # Proteger con JWT
 def obtener_caja_actual():
     """Obtiene la caja actualmente abierta"""
     try:
         print("====== INICIO OBTENER CAJA ACTUAL ======")
+        current_user_id = get_jwt_identity()
+        print(f"Usuario autenticado ID: {current_user_id}")
+        
+        if not current_user_id:
+            print("❌ Usuario no autenticado en obtener_caja_actual")
+            return jsonify({
+                'caja': None,
+                'estado': 'cerrada',
+                'error': 'Usuario no autenticado'
+            }), 401
+            
         caja_abierta = Caja.query.filter_by(estado='abierta').first()
         
         if caja_abierta:
@@ -27,7 +97,15 @@ def obtener_caja_actual():
             caja_dict = caja_abierta.to_dict()
             caja_dict['ventas_total'] = total_ventas
             caja_dict['ventas_cantidad'] = len(ventas)
-            caja_dict['ventas'] = [venta.to_dict() for venta in ventas]
+            
+            # Usamos to_dict_simple() para cada venta en la lista de ventas
+            try:
+                caja_dict['ventas'] = [venta.to_dict_simple() for venta in ventas]
+                print("✅ Ventas serializadas correctamente con to_dict_simple()")
+            except Exception as e:
+                print(f"❌ Error al serializar ventas: {str(e)}")
+                # Fallback con información básica si hay error
+                caja_dict['ventas'] = [{'id': venta.id, 'total': venta.total} for venta in ventas]
             
             resultado = {
                 'caja': caja_dict,
@@ -50,39 +128,61 @@ def obtener_caja_actual():
         print(f"ERROR al obtener caja actual: {str(e)}")
         print(f"Traceback: {error_traceback}")
         print("====== FIN OBTENER CAJA ACTUAL (ERROR) ======")
+        
+        # Devolver error real con código 500
         return jsonify({
-            'error': str(e),
-            'traceback': error_traceback
-        }), 500
+            'caja': None,
+            'estado': 'error',
+            'error': f"Error al verificar caja: {str(e)}"
+        }), 500  # Usar 500 para errores reales
 
 @caja_bp.route('/api/caja/abrir', methods=['POST'])
+@jwt_required()  # Usar jwt_required en lugar de require_auth para consistencia
 def abrir_caja():
     """Abre una nueva caja del día"""
     try:
         print("====== INICIO APERTURA CAJA ======")
-        print("Recibiendo solicitud de apertura de caja")
+        current_user_id = get_jwt_identity()
+        
+        if not current_user_id:
+            print("❌ Usuario no autenticado en abrir_caja")
+            return jsonify({
+                'error': 'Usuario no autenticado'
+            }), 401
+            
+        # Obtener el usuario completo
+        current_user = Usuario.query.filter_by(id=current_user_id, activo=True).first()
+        if not current_user:
+            print(f"❌ Usuario no encontrado o inactivo con ID: {current_user_id}")
+            return jsonify({
+                'error': 'Usuario no encontrado o inactivo'
+            }), 401
+            
+        print(f"Usuario autenticado: {current_user.nombre} {current_user.apellido} (ID: {current_user.id})")
         
         # Obtener datos del request
         data = request.get_json()
         print(f"Datos recibidos: {data}")
         
         monto_inicial = data.get('monto_inicial', 0.0)
-        usuario_id = data.get('usuario_id', 1)  # TODO: Obtener del usuario logueado
         notas = data.get('notas', '')
         
-        print(f"Monto inicial: {monto_inicial}, Usuario ID: {usuario_id}, Notas: {notas}")
+        print(f"Monto inicial: {monto_inicial}, Usuario ID: {current_user.id}, Notas: {notas}")
         
         # Verificar que no haya una caja abierta
         caja_abierta = Caja.query.filter_by(estado='abierta').first()
         if caja_abierta:
             print(f"Error: Ya existe una caja abierta con ID {caja_abierta.id}")
-            return jsonify({'error': 'Ya hay una caja abierta'}), 400
+            return jsonify({
+                'error': 'Ya hay una caja abierta',
+                'caja': caja_abierta.to_dict()
+            }), 400
         
         print("Creando nueva caja...")
         # Crear nueva caja
         nueva_caja = Caja(
             monto_inicial=float(monto_inicial),
-            usuario_apertura_id=usuario_id,
+            usuario_apertura_id=current_user.id,  # Usar el usuario autenticado
             estado='abierta',
             notas_apertura=notas,
             fecha_apertura=datetime.utcnow()
@@ -117,403 +217,115 @@ def abrir_caja():
         }), 500
 
 @caja_bp.route('/api/caja/cerrar', methods=['POST'])
+@jwt_required()  # Usar jwt_required en lugar de require_auth para consistencia
 def cerrar_caja():
     """Cierra la caja actual"""
     try:
+        current_user_id = get_jwt_identity()
+        
+        if not current_user_id:
+            return jsonify({
+                'error': 'Usuario no autenticado'
+            }), 401
+            
+        # Obtener el usuario completo
+        current_user = Usuario.query.filter_by(id=current_user_id, activo=True).first()
+        if not current_user:
+            return jsonify({
+                'error': 'Usuario no encontrado o inactivo'
+            }), 401
+            
         data = request.get_json()
         notas = data.get('notas', '')
-        usuario_id = data.get('usuario_id', 1)  # TODO: Obtener del usuario logueado
         monto_declarado = data.get('monto_declarado')  # Monto declarado por el usuario
+        
+        print(f"Usuario cerrando caja: {current_user.nombre} {current_user.apellido} (ID: {current_user.id})")
         
         # Buscar caja abierta
         caja_abierta = Caja.query.filter_by(estado='abierta').first()
+        
         if not caja_abierta:
-            return jsonify({'error': 'No hay una caja abierta'}), 400
+            return jsonify({
+                'error': 'No hay caja abierta para cerrar'
+            }), 400
+            
+        # Obtener ventas para esta caja
+        ventas = Venta.query.filter_by(caja_id=caja_abierta.id).all()
         
-        # Calcular monto final basado en ventas del día
-        ventas_del_dia = Venta.query.filter(
-            and_(
-                Venta.caja_id == caja_abierta.id,
-                func.date(Venta.fecha_venta) == date.today()
-            )
-        ).all()
-        
-        total_ventas = sum(venta.total for venta in ventas_del_dia)
-        monto_sistema = caja_abierta.monto_inicial + total_ventas
-        
-        # Usar el monto declarado si se proporcionó, de lo contrario usar el calculado
-        monto_final = monto_declarado if monto_declarado is not None else monto_sistema
-        
-        # Calcular diferencia
-        diferencia = monto_final - monto_sistema if monto_declarado is not None else 0
+        # Calcular totales de ventas
+        total_ventas = sum(venta.total for venta in ventas)
         
         # Actualizar caja
         caja_abierta.estado = 'cerrada'
         caja_abierta.fecha_cierre = datetime.utcnow()
-        caja_abierta.monto_final = monto_final
-        caja_abierta.monto_sistema = monto_sistema
-        caja_abierta.diferencia = diferencia
-        caja_abierta.usuario_cierre_id = usuario_id
+        caja_abierta.usuario_cierre_id = current_user.id
         caja_abierta.notas_cierre = notas
+        caja_abierta.monto_final = total_ventas + caja_abierta.monto_inicial
+        caja_abierta.monto_declarado = monto_declarado
+        
+        # Calcular diferencia (si hay monto declarado)
+        if monto_declarado is not None:
+            caja_abierta.diferencia = float(monto_declarado) - caja_abierta.monto_final
         
         db.session.commit()
         
         return jsonify({
             'success': True,
             'message': 'Caja cerrada exitosamente',
-            'caja': caja_abierta.to_dict(),
-            'resumen': {
-                'monto_inicial': caja_abierta.monto_inicial,
-                'total_ventas': total_ventas,
-                'monto_final': monto_final,
-                'cantidad_ventas': len(ventas_del_dia)
-            }
+            'caja': caja_abierta.to_dict()
         }), 200
         
     except Exception as e:
         db.session.rollback()
-        return jsonify({'error': str(e)}), 500
-
-@caja_bp.route('/api/caja/<int:caja_id>', methods=['GET'])
-def obtener_caja_por_id(caja_id):
-    """Obtiene una caja específica por su ID, incluyendo sus ventas"""
-    try:
-        print(f"====== INICIO OBTENER CAJA POR ID: {caja_id} ======")
-        caja = Caja.query.get(caja_id)
-        
-        if not caja:
-            print(f"Caja con ID {caja_id} no encontrada")
-            print("====== FIN OBTENER CAJA POR ID (ERROR) ======")
-            return jsonify({'error': f'No se encontró la caja con ID {caja_id}'}), 404
-            
-        print(f"Caja encontrada ID: {caja.id}, estado: {caja.estado}")
-        
-        # Obtener ventas para esta caja - MEJORADO para asegurar que devuelve todas las ventas
-        ventas = Venta.query.filter_by(caja_id=caja.id).all()
-        print(f"Número de ventas encontradas para caja ID {caja_id}: {len(ventas)}")
-        
-        if len(ventas) == 0:
-            print("⚠️ ADVERTENCIA: No se encontraron ventas para esta caja. Verificando si hay ventas sin asociar...")
-            # Verificar si hay ventas sin asociar a ninguna caja y mostrar alerta
-            ventas_sin_caja = Venta.query.filter_by(caja_id=None).count()
-            if ventas_sin_caja > 0:
-                print(f"⚠️ ADVERTENCIA: Se encontraron {ventas_sin_caja} ventas sin asociar a ninguna caja")
-        
-        # Imprimir detalles de cada venta para debugging
-        for venta in ventas:
-            print(f"  - Venta ID: {venta.id}, Cliente: {venta.cliente_id}, Total: {venta.total}, Fecha: {venta.fecha_venta}")
-        
-        # Calcular totales de ventas
-        total_ventas = sum(venta.total for venta in ventas)
-        print(f"Total ventas: {total_ventas}, Cantidad: {len(ventas)}")
-        
-        # Crear un diccionario completo con toda la información
-        caja_dict = caja.to_dict()
-        caja_dict['ventas_total'] = total_ventas
-        caja_dict['ventas_cantidad'] = len(ventas)
-        
-                # IMPORTANTE: Optimizar el objeto venta para reducir tamaño de respuesta
-        ventas_list = []
-        for venta in ventas:
-            # Crear un objeto simplificado de la venta con datos esenciales
-            try:
-                # Usar to_dict_simple si está disponible
-                if hasattr(venta, 'to_dict_simple'):
-                    venta_dict = venta.to_dict_simple()
-                    # Asegurar que cliente_nombre está definido
-                    if not 'cliente_nombre' in venta_dict and venta.cliente:
-                        venta_dict['cliente_nombre'] = f"{venta.cliente.nombre} {venta.cliente.apellido}"
-                else:
-                    # Crear un objeto básico si no hay to_dict_simple
-                    venta_dict = {
-                        'id': venta.id,
-                        'cliente_id': venta.cliente_id,
-                        'cliente_nombre': f"{venta.cliente.nombre} {venta.cliente.apellido}" if venta.cliente else f"Cliente #{venta.cliente_id}",
-                        'total': venta.total,
-                        'metodo_pago': venta.metodo_pago,
-                        'fecha_venta': venta.fecha_venta.isoformat() if venta.fecha_venta else None
-                    }
-                ventas_list.append(venta_dict)
-            except Exception as e:
-                print(f"Error al procesar venta {venta.id}: {str(e)}")
-                # Objeto mínimo en caso de error
-                ventas_list.append({
-                    'id': venta.id,
-                    'cliente_id': venta.cliente_id,
-                    'cliente_nombre': f"Cliente #{venta.cliente_id}",
-                    'total': venta.total if hasattr(venta, 'total') else 0,
-                    'metodo_pago': venta.metodo_pago if hasattr(venta, 'metodo_pago') else 'N/A',
-                    'fecha_venta': venta.fecha_venta.isoformat() if hasattr(venta, 'fecha_venta') and venta.fecha_venta else None
-                })
-            
-        caja_dict['ventas'] = ventas_list
-        print(f"Ventas procesadas correctamente: {len(ventas_list)}")
-        
-        print(f"Enviando respuesta con caja y {len(ventas_list)} ventas")
-        print("====== FIN OBTENER CAJA POR ID ======")
-        return jsonify(caja_dict), 200
-            
-    except Exception as e:
-        import traceback
-        error_traceback = traceback.format_exc()
-        print(f"ERROR al obtener caja por ID: {str(e)}")
-        print(f"Traceback: {error_traceback}")
-        print("====== FIN OBTENER CAJA POR ID (ERROR) ======")
         return jsonify({
-            'error': str(e),
-            'traceback': error_traceback
+            'error': str(e)
         }), 500
 
-@caja_bp.route('/api/caja/marcar-controlada', methods=['POST'])
+@caja_bp.route('/api/caja/marcar-controlada', methods=['POST','OPTIONS'])
 def marcar_caja_controlada():
-    """Marca una caja como controlada por el dueño/admin"""
+    """Marca una caja como controlada (solo administradores). Responde OPTIONS para preflight sin requerir JWT."""
     try:
-        data = request.get_json()
-        usuario_id = data.get('usuario_id', 1)  # Este debería ser el ID del dueño/admin
-        caja_id = data.get('caja_id')
-        
+        # Responder preflight sin validar JWT
+        if request.method == 'OPTIONS':
+            return jsonify({}), 200
+
+        # Verificar JWT para el POST
+        verify_jwt_in_request()
+        current_user_id = get_jwt_identity()
+        if not current_user_id:
+            return jsonify({'error': 'Usuario no autenticado'}), 401
+
+        current_user = Usuario.query.filter_by(id=current_user_id, activo=True).first()
+        if not current_user:
+            return jsonify({'error': 'Usuario no encontrado o inactivo'}), 401
+
+        # Comprobar permisos de administrador
+        if not getattr(current_user, 'is_admin', False):
+            return jsonify({'error': 'Permisos insuficientes'}), 403
+
+        data = request.get_json() or {}
+        caja_id = data.get('caja_id') or data.get('id')
         if not caja_id:
-            return jsonify({'error': 'Falta el ID de la caja'}), 400
-            
-        # Verificar que la caja exista
-        caja = Caja.query.get(caja_id)
+            return jsonify({'error': 'Se requiere caja_id'}), 400
+
+        caja = Caja.query.filter_by(id=int(caja_id)).first()
         if not caja:
-            return jsonify({'error': f'No se encontró la caja con ID {caja_id}'}), 404
-            
-        # Verificar que la caja esté cerrada
-        if caja.estado != 'cerrada':
-            return jsonify({'error': 'Solo se pueden marcar como controladas las cajas cerradas'}), 400
-        
-        # Actualizar la caja
-        caja.estado = 'controlada'
+            return jsonify({'error': 'Caja no encontrada'}), 404
+
+        # Sólo se puede marcar una caja que ya esté cerrada
+        if not caja.fecha_cierre:
+            return jsonify({'error': 'La caja debe estar cerrada antes de marcarla como controlada'}), 400
+
+        # Marcar como controlada
         caja.fecha_control = datetime.utcnow()
-        caja.usuario_control_id = usuario_id
-        
+        caja.usuario_control_id = current_user.id
+        caja.estado = 'controlada'
+
         db.session.commit()
-        
-        return jsonify({
-            'success': True,
-            'message': 'Caja marcada como controlada exitosamente',
-            'caja': caja.to_dict()
-        }), 200
+
+        return jsonify({'success': True, 'message': 'Caja marcada como controlada', 'caja': caja.to_dict()}), 200
     except Exception as e:
         db.session.rollback()
-        return jsonify({'error': str(e)}), 500
-
-@caja_bp.route('/api/caja/resumen-dia', methods=['GET'])
-def obtener_resumen_dia():
-    """Obtiene el resumen de ventas del día"""
-    try:
-        fecha_param = request.args.get('fecha')
-        if fecha_param:
-            fecha = datetime.strptime(fecha_param, '%Y-%m-%d').date()
-        else:
-            fecha = date.today()
-        
-        # Buscar caja del día
-        caja_del_dia = Caja.query.filter(
-            func.date(Caja.fecha_apertura) == fecha
-        ).first()
-        
-        if not caja_del_dia:
-            return jsonify({
-                'fecha': fecha.isoformat(),
-                'caja_id': None,
-                'monto_inicial': 0,
-                'total_ventas': 0,
-                'monto_final': 0,
-                'cantidad_ventas': 0,
-                'ventas_por_metodo': {},
-                'estado': 'sin_caja'
-            }), 200
-        
-        # Obtener ventas del día
-        ventas_del_dia = Venta.query.filter(
-            and_(
-                Venta.caja_id == caja_del_dia.id,
-                func.date(Venta.fecha_venta) == fecha
-            )
-        ).all()
-        
-        total_ventas = sum(venta.total for venta in ventas_del_dia)
-        
-        # Agrupar ventas por método de pago
-        ventas_por_metodo = {}
-        for venta in ventas_del_dia:
-            metodo = venta.metodo_pago
-            if metodo not in ventas_por_metodo:
-                ventas_por_metodo[metodo] = {'cantidad': 0, 'total': 0}
-            ventas_por_metodo[metodo]['cantidad'] += 1
-            ventas_por_metodo[metodo]['total'] += venta.total
-        
-        return jsonify({
-            'fecha': fecha.isoformat(),
-            'caja_id': caja_del_dia.id,
-            'monto_inicial': caja_del_dia.monto_inicial,
-            'total_ventas': total_ventas,
-            'monto_final': caja_del_dia.monto_final if caja_del_dia.estado == 'cerrada' else caja_del_dia.monto_inicial + total_ventas,
-            'cantidad_ventas': len(ventas_del_dia),
-            'ventas_por_metodo': ventas_por_metodo,
-            'estado': caja_del_dia.estado
-        }), 200
-        
-    except Exception as e:
-        return jsonify({'error': str(e)}), 500
-
-# Duplicar la ruta para mantener compatibilidad con ambas URLs
-@caja_bp.route('/api/caja/listar', methods=['GET'])
-@caja_bp.route('/api/cajas', methods=['GET'])
-def listar_cajas():
-    """Obtiene la lista de cajas con opciones de filtrado"""
-    try:
-        print("====== INICIO LISTAR CAJAS ======")
-        # Parámetros de filtrado
-        fecha_inicio_str = request.args.get('fecha_inicio')
-        fecha_fin_str = request.args.get('fecha_fin')
-        estado = request.args.get('estado')
-        usuario_id = request.args.get('usuario_id')
-        
-        print(f"Parámetros recibidos: fecha_inicio={fecha_inicio_str}, fecha_fin={fecha_fin_str}, estado={estado}, usuario_id={usuario_id}")
-        
-        # Construir la consulta base
-        query = Caja.query
-        
-        # Aplicar filtros
-        if fecha_inicio_str:
-            fecha_inicio = datetime.strptime(fecha_inicio_str, '%Y-%m-%d').date()
-            query = query.filter(func.date(Caja.fecha_apertura) >= fecha_inicio)
-        
-        if fecha_fin_str:
-            fecha_fin = datetime.strptime(fecha_fin_str, '%Y-%m-%d').date()
-            # Incluir todo el día hasta las 23:59:59
-            fecha_fin_completa = datetime.combine(fecha_fin, datetime.max.time())
-            query = query.filter(Caja.fecha_apertura <= fecha_fin_completa)
-        
-        if estado:
-            query = query.filter(Caja.estado == estado)
-        
-        if usuario_id:
-            query = query.filter(
-                (Caja.usuario_apertura_id == usuario_id) | 
-                (Caja.usuario_cierre_id == usuario_id) |
-                (Caja.usuario_control_id == usuario_id)
-            )
-        
-        # Si no hay filtros de fecha, limitar a los últimos 30 días por defecto
-        if not fecha_inicio_str and not fecha_fin_str:
-            fecha_inicio_default = date.today() - timedelta(days=30)
-            query = query.filter(func.date(Caja.fecha_apertura) >= fecha_inicio_default)
-        
-        # Ordenar por fecha de apertura (más reciente primero)
-        cajas = query.order_by(Caja.fecha_apertura.desc()).all()
-        print(f"Se encontraron {len(cajas)} cajas")
-        
-        # Enriquecer los datos con información adicional
-        cajas_con_usuarios = []
-        for caja in cajas:
-            print(f"Procesando caja ID: {caja.id}, estado: {caja.estado}")
-            caja_dict = caja.to_dict()
-            
-            # Añadir detalles de usuarios
-            if caja.usuario_apertura_id:
-                usuario_apertura = Usuario.query.get(caja.usuario_apertura_id)
-                if usuario_apertura:
-                    caja_dict['usuario_apertura'] = {
-                        'id': usuario_apertura.id,
-                        'nombre': usuario_apertura.nombre,
-                        'rol': 'admin' if usuario_apertura.is_admin else 'empleado'
-                    }
-            
-            if caja.usuario_cierre_id:
-                usuario_cierre = Usuario.query.get(caja.usuario_cierre_id)
-                if usuario_cierre:
-                    caja_dict['usuario_cierre'] = {
-                        'id': usuario_cierre.id,
-                        'nombre': usuario_cierre.nombre,
-                        'rol': 'admin' if usuario_cierre.is_admin else 'empleado'
-                    }
-            
-            if hasattr(caja, 'usuario_control_id') and caja.usuario_control_id:
-                usuario_control = Usuario.query.get(caja.usuario_control_id)
-                if usuario_control:
-                    caja_dict['usuario_control'] = {
-                        'id': usuario_control.id,
-                        'nombre': usuario_control.nombre,
-                        'rol': 'admin' if usuario_control.is_admin else 'empleado'
-                    }
-            
-            cajas_con_usuarios.append(caja_dict)
-        
-        print(f"Enviando {len(cajas_con_usuarios)} cajas en la respuesta")
-        print("====== FIN LISTAR CAJAS ======")
-        return jsonify(cajas_con_usuarios), 200
-        
-    except Exception as e:
         import traceback
-        error_traceback = traceback.format_exc()
-        print(f"ERROR al listar cajas: {str(e)}")
-        print(f"Traceback: {error_traceback}")
-        print("====== FIN LISTAR CAJAS (ERROR) ======")
-        return jsonify({'error': str(e), 'traceback': error_traceback}), 500
-
-@caja_bp.route('/api/cajas/<int:caja_id>', methods=['GET'])
-def obtener_detalle_caja(caja_id):
-    """Obtiene el detalle de una caja específica"""
-    try:
-        caja = Caja.query.get(caja_id)
-        if not caja:
-            return jsonify({'error': f'No se encontró la caja con ID {caja_id}'}), 404
-        
-        # Obtener el detalle básico de la caja
-        caja_dict = caja.to_dict()
-        
-        # Añadir detalles de usuarios
-        if caja.usuario_apertura_id:
-            usuario_apertura = Usuario.query.get(caja.usuario_apertura_id)
-            if usuario_apertura:
-                caja_dict['usuario_apertura'] = {
-                    'id': usuario_apertura.id,
-                    'nombre': usuario_apertura.nombre,
-                    'rol': 'admin' if usuario_apertura.is_admin else 'empleado'
-                }
-        
-        if caja.usuario_cierre_id:
-            usuario_cierre = Usuario.query.get(caja.usuario_cierre_id)
-            if usuario_cierre:
-                caja_dict['usuario_cierre'] = {
-                    'id': usuario_cierre.id,
-                    'nombre': usuario_cierre.nombre,
-                    'rol': 'admin' if usuario_cierre.is_admin else 'empleado'
-                }
-        
-        if hasattr(caja, 'usuario_control_id') and caja.usuario_control_id:
-            usuario_control = Usuario.query.get(caja.usuario_control_id)
-            if usuario_control:
-                caja_dict['usuario_control'] = {
-                    'id': usuario_control.id,
-                    'nombre': usuario_control.nombre,
-                    'rol': 'admin' if usuario_control.is_admin else 'empleado'
-                }
-        
-        # Obtener ventas relacionadas a esta caja
-        ventas = Venta.query.filter(Venta.caja_id == caja.id).all()
-        
-        # Calcular resumen de ventas por método de pago
-        ventas_por_metodo = {}
-        for venta in ventas:
-            metodo = venta.metodo_pago
-            if metodo not in ventas_por_metodo:
-                ventas_por_metodo[metodo] = {'cantidad': 0, 'total': 0}
-            ventas_por_metodo[metodo]['cantidad'] += 1
-            ventas_por_metodo[metodo]['total'] += venta.total
-        
-        caja_dict['resumen_ventas'] = {
-            'total_ventas': sum(venta.total for venta in ventas),
-            'cantidad_ventas': len(ventas),
-            'ventas_por_metodo': ventas_por_metodo
-        }
-        
-        return jsonify(caja_dict), 200
-        
-    except Exception as e:
+        traceback.print_exc()
         return jsonify({'error': str(e)}), 500

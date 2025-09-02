@@ -105,9 +105,7 @@ const UltimosVendidos = () => {
             }}
           />
         </div>
-        <button className="ultimos-vendidos-action" title="Ver historial">
-          Histórico <span className="arrow">→</span>
-        </button>
+       
       </div>
       <div className="ultimos-vendidos-table">
         <div className="ultimos-vendidos-table-header">

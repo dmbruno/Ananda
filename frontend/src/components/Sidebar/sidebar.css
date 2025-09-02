@@ -112,15 +112,17 @@
   padding: 0; /* Quitar padding para que no se vea fondo extra */
   margin-inline-start: 0.625rem; /* Quitar margen lateral */
   margin-inline-end: 0.625rem;
-  margin-bottom: 2rem;
+  margin-bottom: 1rem;
   background: none; /* Quitar fondo azul del contenedor */
   border-radius: 0; /* Quitar border-radius del contenedor */
   font-size: 8px;
   position: relative;
   min-height: unset;
   display: flex;
-  align-items: flex-end;
-  justify-content: center;
+  flex-direction: column; /* Cambiar a columna para apilar verticalmente */
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.5rem; /* Espacio entre elementos */
   box-shadow: none;
 }
 
@@ -133,7 +135,7 @@
 }
 
 .sidebar-footer .sidebar-item {
-  margin: 0 0.5rem;
+  margin: 0; /* Quitar márgenes ya que usamos gap en el contenedor */
   position: relative;
   display: flex;
   align-items: center;
@@ -141,6 +143,7 @@
   border-radius: 0.7rem;
   transition: background 0.2s, color 0.2s, width 0.2s, filter 0.15s;
   overflow: visible;
+  width: 100%; /* Ocupar todo el ancho disponible */
 }
 
 .sidebar-footer .sidebar-item:hover,
@@ -209,6 +212,62 @@
   border-radius: 0.5rem; /* 8px */
   text-shadow: 0 4px 16px rgba(44, 62, 80, 0.22),
     0 1.5px 4px rgba(0, 0, 0, 0.05);
+}
+
+/* Estilos para el botón de logout */
+.logout-button {
+  width: 100%;
+  background: none;
+  border: none;
+  padding: 0.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  border-radius: 0.75rem;
+  transition: all 0.2s ease;
+  position: relative;
+  font-family: "Rajdhani", sans-serif;
+  font-weight: 500;
+}
+
+.logout-button:hover {
+  background: rgba(239, 68, 68, 0.1);
+  transform: translateY(-1px);
+}
+
+.logout-button:active {
+  transform: translateY(0);
+}
+
+.logout-icon {
+  color: #ef4444;
+  font-size: 1.25rem;
+  transition: color 0.2s ease;
+}
+
+.logout-label {
+  color: #ef4444;
+  font-size: 0.875rem;
+  font-weight: 500;
+  margin-left: 0.75rem;
+  opacity: 0;
+  white-space: nowrap;
+  transition: opacity 0.2s ease;
+}
+
+/* Mostrar label cuando el sidebar está expandido */
+.sidebar:hover .logout-label,
+.sidebar.sidebar-stock-active .logout-label {
+  opacity: 1;
+}
+
+.logout-button:hover .logout-icon {
+  color: #dc2626;
+}
+
+.logout-button:hover .logout-label {
+  color: #dc2626;
 }
 
 

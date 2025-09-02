@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import { fetchVentas } from "../../store/ventasSlice";
+import { exportarVentasAExcel } from "../../utils/exportarExcel";
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -27,7 +29,11 @@ ChartJS.register(
 
 const GraficoVentas = ({ fechaInicio, fechaFin, showBuscadorPorFechas = false }) => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const { items: ventas, status } = useSelector((state) => state.ventas);
+  // Obtener información del usuario desde Redux
+  const user = useSelector(state => state.auth.user);
+  const isAdmin = user && user.is_admin === true;
   const [desde, setDesde] = useState("");
   const [hasta, setHasta] = useState("");
 
@@ -153,6 +159,26 @@ const GraficoVentas = ({ fechaInicio, fechaFin, showBuscadorPorFechas = false })
   // Mostrar botón de descarga si hay fechas seleccionadas
   const mostrarDescarga = !!(filtroDesde && filtroHasta);
 
+  // Función para manejar la descarga de ventas
+  const handleDescargarVentas = () => {
+    // Verificar si el usuario es administrador
+    if (!isAdmin) {
+      // Mostrar una notificación si no es administrador
+      alert("Solo los administradores pueden descargar reportes de ventas.");
+      return;
+    }
+    
+    // Si es administrador, proceder con la descarga
+    if (filtroDesde && filtroHasta) {
+      const fecha = new Date().toLocaleDateString('es-AR').replace(/\//g, '-');
+      const nombreArchivo = `ventas-${filtroDesde}-al-${filtroHasta}-${fecha}.xlsx`;
+      exportarVentasAExcel(datos, nombreArchivo);
+      // Limpiar los campos después de la descarga
+      setDesde("");
+      setHasta("");
+    }
+  };
+
   return (
     <div className="grafico-ventas-card">
       <div className="grafico-ventas-header">
@@ -168,15 +194,16 @@ const GraficoVentas = ({ fechaInicio, fechaFin, showBuscadorPorFechas = false })
               onChangeDesde={setDesde}
               onChangeHasta={setHasta}
               onBuscar={() => {}}
-              onDescargarCSV={() => {
-                setDesde("");
-                setHasta("");
-              }}
+              onDescargarCSV={handleDescargarVentas}
               mostrarDescarga={mostrarDescarga}
             />
           </div>
         ) : (
-          <button className="grafico-ventas-action" title="Ver ventas">
+          <button 
+            className="grafico-ventas-action" 
+            title="Ver ventas"
+            onClick={() => navigate('/ventas')}
+          >
             Ventas <span className="arrow">→</span>
           </button>
         )}

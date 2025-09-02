@@ -1,15 +1,42 @@
 
 import React, { useState, useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { actualizarProducto } from "../../api/productos";
+import { agregarAlCarrito } from "../../store/carritoSlice";
 import "./ModalVerProducto.css";
 import BotonCancelar from "../Botones/BotonCancelar";
 import BotonEnviar from "../Botones/BotonEnviar";
 import BotonEditar from "../Botones/BotonEditar";
 
+// Definir campos inmutables (que afectan al SKU) y editables
+const CAMPOS_INMUTABLES = ['categoria', 'subcategoria', 'nombre', 'talle', 'color', 'codigo'];
+const CAMPOS_EDITABLES = ['costo', 'precio_venta', 'stock_actual', 'stock_minimo', 'marca', 'temporada', 'fecha_ingreso', 'activo'];
+
 const ModalVerProducto = ({ producto, onClose, onProductoActualizado }) => {
+  const dispatch = useDispatch();
+  const carrito = useSelector(state => state.carrito);
+  
+  // Obtener información del usuario desde Redux
+  const user = useSelector(state => state.auth.user);
+  // Verificar si el usuario es administrador
+  const isAdmin = user && user.is_admin === true;
+  
   const [previewOpen, setPreviewOpen] = useState(false);
   const [modoEdicion, setModoEdicion] = useState(false);
   const [datosProducto, setDatosProducto] = useState(producto);
+  const [agregandoCarrito, setAgregandoCarrito] = useState(false);
+
+  // Obtener la cantidad del producto en el carrito
+  const productoEnCarrito = carrito.items.find(item => item.id === datosProducto.id);
+  const cantidadEnCarrito = productoEnCarrito ? productoEnCarrito.cantidad : 0;
+  const stockDisponible = datosProducto.stock_actual - cantidadEnCarrito;
+
+  // Función para verificar si un campo es editable
+  const esCampoEditable = (campo) => {
+    // Si el campo es "costo" y el usuario no es admin, no es editable
+    if (campo === 'costo' && !isAdmin) return false;
+    return CAMPOS_EDITABLES.includes(campo);
+  };
 
   // Sincroniza datosProducto con producto actualizado
   useEffect(() => {
@@ -60,7 +87,13 @@ const ModalVerProducto = ({ producto, onClose, onProductoActualizado }) => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setDatosProducto({ ...datosProducto, [name]: value });
+    
+    // Solo permitir cambios en campos editables
+    if (esCampoEditable(name)) {
+      setDatosProducto({ ...datosProducto, [name]: value });
+    } else {
+      console.warn(`Campo ${name} no es editable - afecta al código SKU`);
+    }
   };
 
   const handleImagenChange = (e) => {
@@ -78,6 +111,43 @@ const ModalVerProducto = ({ producto, onClose, onProductoActualizado }) => {
   }
 };
 
+  const handleAgregarAlCarrito = () => {
+    if (!datosProducto.activo) {
+      alert('Este producto está inactivo y no se puede agregar al carrito');
+      return;
+    }
+
+    // Evitar doble click durante la animación
+    if (agregandoCarrito) return;
+
+    // Iniciar animación
+    setAgregandoCarrito(true);
+
+    // Preparar el item para el carrito
+    const itemCarrito = {
+      id: datosProducto.id,
+      nombre: datosProducto.nombre,
+      precio: datosProducto.precio_venta,
+      cantidad: 1,
+      stock: datosProducto.stock_actual,
+      imagen: datosProducto.imagen_url || null,
+      categoria: datosProducto.categoria_nombre || '',
+      subcategoria: datosProducto.subcategoria_nombre || '',
+      codigo: datosProducto.codigo || '',
+      talle: datosProducto.talle || '',
+      color: datosProducto.color || '',
+      marca: datosProducto.marca || ''
+    };
+
+    console.log('🛒 Agregando producto al carrito desde modal:', itemCarrito);
+    dispatch(agregarAlCarrito(itemCarrito));
+
+    // Finalizar animación después de 1 segundo
+    setTimeout(() => {
+      setAgregandoCarrito(false);
+    }, 1000);
+  };
+
   return (
     <div className="modal-ver-backdrop" onClick={handleClose}>
       <div
@@ -92,28 +162,36 @@ const ModalVerProducto = ({ producto, onClose, onProductoActualizado }) => {
             <div className="header-main-info">
               <div className="nombre-producto">
                 {modoEdicion ? (
-                  <input
-                    type="text"
-                    name="nombre"
-                    value={datosProducto.nombre || ""}
-                    onChange={handleChange}
-                    className="input-editar input-header"
-                    placeholder="Nombre"
-                  />
+                  <div className="campo-inmutable">
+                    <input
+                      type="text"
+                      name="nombre"
+                      value={datosProducto.nombre || ""}
+                      readOnly
+                      className="input-inmutable input-header"
+                      placeholder="Nombre"
+                      title="No editable - afecta al código SKU"
+                    />
+                    <span className="inmutable-icon">🔒</span>
+                  </div>
                 ) : (
                   datosProducto.nombre
                 )}
               </div>
               <div className="sku-producto">
                 {modoEdicion ? (
-                  <input
-                    type="text"
-                    name="codigo"
-                    value={datosProducto.codigo || ""}
-                    onChange={handleChange}
-                    className="input-editar input-header"
-                    placeholder="SKU"
-                  />
+                  <div className="campo-inmutable">
+                    <input
+                      type="text"
+                      name="codigo"
+                      value={datosProducto.codigo || ""}
+                      readOnly
+                      className="input-inmutable input-header"
+                      placeholder="SKU"
+                      title="Código inmutable para mantener trazabilidad"
+                    />
+                    <span className="inmutable-icon">🔒</span>
+                  </div>
                 ) : (
                   datosProducto.codigo
                 )}
@@ -227,15 +305,31 @@ const ModalVerProducto = ({ producto, onClose, onProductoActualizado }) => {
               <span className="detalle-label">Costo:</span>
               <span className="detalle-value">
                 {modoEdicion ? (
-                  <input
-                    type="number"
-                    name="costo"
-                    value={datosProducto.costo}
-                    onChange={handleChange}
-                    className="input-editar"
-                  />
+                  isAdmin ? (
+                    <input
+                      type="number"
+                      name="costo"
+                      value={datosProducto.costo}
+                      onChange={handleChange}
+                      className="input-editar"
+                    />
+                  ) : (
+                    <div className="campo-inmutable">
+                      <input
+                        type="number"
+                        name="costo"
+                        value={datosProducto.costo}
+                        readOnly
+                        className="input-inmutable blur-content"
+                        title="Solo visible para administradores"
+                      />
+                      <span className="inmutable-icon">🔒</span>
+                    </div>
+                  )
                 ) : (
-                  `$${datosProducto.costo}`
+                  <span className={!isAdmin ? "blur-content" : ""}>
+                    ${datosProducto.costo}
+                  </span>
                 )}
               </span>
             </div>
@@ -243,13 +337,17 @@ const ModalVerProducto = ({ producto, onClose, onProductoActualizado }) => {
               <span className="detalle-label">Talle:</span>
               <span className="detalle-value">
                 {modoEdicion ? (
-                  <input
-                    type="text"
-                    name="talle"
-                    value={datosProducto.talle || ""}
-                    onChange={handleChange}
-                    className="input-editar"
-                  />
+                  <div className="campo-inmutable">
+                    <input
+                      type="text"
+                      name="talle"
+                      value={datosProducto.talle || ""}
+                      readOnly
+                      className="input-inmutable"
+                      title="No editable - afecta al código SKU"
+                    />
+                    <span className="inmutable-icon">🔒</span>
+                  </div>
                 ) : (
                   datosProducto.talle
                 )}
@@ -299,7 +397,18 @@ const ModalVerProducto = ({ producto, onClose, onProductoActualizado }) => {
                     className="input-editar"
                   />
                 ) : (
-                  datosProducto.stock_actual
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <span>{datosProducto.stock_actual}</span>
+                    {cantidadEnCarrito > 0 && (
+                      <span style={{ 
+                        fontSize: '0.85em', 
+                        color: '#666', 
+                        fontStyle: 'italic' 
+                      }}>
+                        ({cantidadEnCarrito} en carrito)
+                      </span>
+                    )}
+                  </div>
                 )}
               </span>
             </div>
@@ -348,13 +457,17 @@ const ModalVerProducto = ({ producto, onClose, onProductoActualizado }) => {
               <span className="detalle-label">Color:</span>
               <span className="detalle-value">
                 {modoEdicion ? (
-                  <input
-                    type="text"
-                    name="color"
-                    value={datosProducto.color || ""}
-                    onChange={handleChange}
-                    className="input-editar"
-                  />
+                  <div className="campo-inmutable">
+                    <input
+                      type="text"
+                      name="color"
+                      value={datosProducto.color || ""}
+                      readOnly
+                      className="input-inmutable"
+                      title="No editable - afecta al código SKU"
+                    />
+                    <span className="inmutable-icon">🔒</span>
+                  </div>
                 ) : (
                   datosProducto.color
                 )}
@@ -362,12 +475,42 @@ const ModalVerProducto = ({ producto, onClose, onProductoActualizado }) => {
             </div>
           </div>
         </div>
+        
+        {/* Panel informativo para campos inmutables */}
+        {modoEdicion && (
+          <div className="panel-inmutables-info">
+            <div className="info-header">
+              <span className="info-icon">ℹ️</span>
+              <span className="info-title">Campos protegidos</span>
+            </div>
+            <p className="info-text">
+              Los campos con <span className="inmutable-icon">🔒</span> no se pueden editar porque afectan al código SKU.
+              Si necesita cambiar estos datos, elimine el producto y créelo nuevamente.
+            </p>
+          </div>
+        )}
+        
         <div className="modal-footer-producto">
           <div className="modal-footer-producto-row">
             {!modoEdicion && (
               <>
                 <BotonCancelar onClick={handleClose}>Atrás</BotonCancelar>
-                <BotonEnviar onClick={() => {}}>Agregar al carrito</BotonEnviar>
+                <BotonEnviar 
+                  onClick={handleAgregarAlCarrito}
+                  className={agregandoCarrito ? 'agregando-carrito' : ''}
+                  disabled={agregandoCarrito || stockDisponible <= 0 || !datosProducto.activo}
+                >
+                  {!datosProducto.activo 
+                    ? 'Producto inactivo'
+                    : stockDisponible <= 0 
+                    ? (cantidadEnCarrito > 0 ? 'Máximo alcanzado' : 'Sin stock')
+                    : agregandoCarrito 
+                    ? '✓ Agregado!' 
+                    : cantidadEnCarrito > 0
+                    ? `+1 (${cantidadEnCarrito} en carrito)`
+                    : 'Agregar al carrito'
+                  }
+                </BotonEnviar>
                 <BotonEditar onClick={handleEditar}>
                   Editar Producto
                 </BotonEditar>

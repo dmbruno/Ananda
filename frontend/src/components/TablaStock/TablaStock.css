@@ -14,12 +14,34 @@
   outline: none;
   box-shadow: none;
 }
+
+/* Estilo para el blur en la columna de costo para no administradores */
+.precio-cell.blur-content {
+  filter: blur(4px);
+  user-select: none;
+  position: relative;
+}
+
+.precio-cell.blur-content:hover::after {
+  content: "Solo visible para administradores";
+  position: absolute;
+  background: rgba(0, 0, 0, 0.7);
+  color: white;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  top: -30px;
+  left: 50%;
+  transform: translateX(-50%);
+  white-space: nowrap;
+  z-index: 10;
+}
 .tabla-stock-container {
-  background: white;
-  border-radius: 12px;
-  border: 1px solid #e5e7eb;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  width: 100%; 
+  border: 1px solid #656262; /* Restaurar el borde negro */
+  border-radius: 8px;
   overflow: hidden;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 .tabla-stock-header {
@@ -41,17 +63,28 @@
 }
 
 .tabla-stock-wrapper {
-  overflow-x: auto;
-  max-height: 500px;
-  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - 350px); /* Altura reducida */
+  min-height: 300px; /* Altura mínima reducida */
+  max-height: 55vh; /* Altura máxima reducida */
   position: relative;
 }
 
+.tabla-stock-scroll-container {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: auto; /* Ya permite scroll horizontal si viewport < ancho fijo */
+}
+
 .tabla-stock {
-  width: 100%;
-  border-collapse: separate;
-  border-spacing: 0;
-  background: white;
+  width: 100%; /* Ocupar todo el contenedor */
+  min-width: 1100px; /* Mantener mínimo para estructura de columnas */
+  max-width: none; /* Permitir expandirse */
+  border-collapse: collapse;
+  table-layout: fixed; /* Distribución estable de columnas */
+  white-space: nowrap;
+  margin-bottom: 0;
 }
 
 .tabla-stock thead {
@@ -65,7 +98,7 @@
   position: sticky;
   top: 0;
   background: #f9fafb;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  /* Removida la sombra que afectaba a las celdas de acciones */
 }
 
 .tabla-stock th {
@@ -78,6 +111,9 @@
   text-transform: uppercase;
   letter-spacing: 0.025em;
   font-family: 'Rajdhani', Arial, sans-serif;
+  box-shadow: none; /* Asegurar que no hay sombra en ningún header */
+  overflow: hidden; /* Para elipsis */
+  text-overflow: ellipsis;
 }
 
 .tabla-stock td {
@@ -87,6 +123,8 @@
   font-size: 0.75rem;
   transition: background-color 0.2s ease;
   font-family: 'Rajdhani', Arial, sans-serif;
+  overflow: hidden; /* Para elipsis */
+  text-overflow: ellipsis;
 }
 
 .tabla-stock tbody tr:hover {
@@ -266,117 +304,82 @@
   color: #721c24; /* Rojo oscuro */
 }
 
-/* Acciones */
-.acciones-cell {
+/* Acciones de la tabla stock - Clases muy específicas para evitar conflictos */
+.tabla-stock .acciones-cell {
   display: flex;
-  gap: 1rem;
+  gap: 0.5rem;
   justify-content: center;
   align-items: center;
+  padding: 0.6rem 0.3rem;
+  vertical-align: middle;
   width: 75px;
   min-width: 75px;
-  margin-top: 20px;
-  
-  
+  border-bottom: none; /* Sin línea inferior en la columna de acciones */
+  height: auto; /* Permitir altura automática */
+  margin-top: 8px;
 }
 
-.btn-carrito,
-.btn-eliminar {
+/* Botones de acción de la tabla stock - Estilos unificados */
+.tabla-stock .acciones-cell .btn-carrito,
+.tabla-stock .acciones-cell .btn-eliminar {
   background: none;
   border: none;
-  color: #222;
-  box-shadow: none;
-  width: 20px;
-  height: 20px;
-  padding: 0;
+  color: #6b7280;
+  width: 24px;
+  height: 24px;
+  padding: 4px;
+  margin: 0;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: color 0.15s, transform 0.1s;
+  transition: all 0.15s ease;
   border-radius: 4px;
-  margin-bottom: 15px; /* Asegurar que no hay márgenes */
 }
 
-.btn-carrito:hover,
-.btn-eliminar:hover {
-  color: #111;
-  transform: none; /* Quitar transform en hover general */
+/* Estados hover para los botones de la tabla stock */
+.tabla-stock .acciones-cell .btn-carrito:hover:not(.btn-carrito-disabled) {
+  color: #3b82f6;
+  background-color: rgba(59, 130, 246, 0.1);
 }
 
+.tabla-stock .acciones-cell .btn-eliminar:hover {
+  color: #ef4444;
+  background-color: rgba(239, 68, 68, 0.1);
+}
 
+/* Estados active para los botones de la tabla stock */
+.tabla-stock .acciones-cell .btn-carrito:active:not(.btn-carrito-disabled),
+.tabla-stock .acciones-cell .btn-eliminar:active {
+  transform: scale(0.95);
+}
 
-.btn-carrito svg,
-.btn-eliminar svg {
+/* SVG icons dentro de los botones de la tabla stock */
+.tabla-stock .acciones-cell .btn-carrito svg,
+.tabla-stock .acciones-cell .btn-eliminar svg {
   width: 16px;
   height: 16px;
   display: block;
-  filter: drop-shadow(0 2px 6px rgba(0,0,0,0.13));
-  transition: filter 0.15s;
+  transition: filter 0.15s ease;
 }
 
-.btn-carrito:active svg,
-.btn-eliminar:active svg {
-  filter: drop-shadow(0 1px 2px rgba(0,0,0,0.10));
-}
-
-/* Botón carrito deshabilitado */
-.btn-carrito-disabled {
+/* Botón carrito deshabilitado en la tabla stock */
+.tabla-stock .acciones-cell .btn-carrito-disabled {
   color: #9ca3af !important;
   cursor: not-allowed !important;
   opacity: 0.5;
 }
 
-.btn-carrito-disabled:hover {
+.tabla-stock .acciones-cell .btn-carrito-disabled:hover {
   color: #9ca3af !important;
+  background-color: transparent !important;
   transform: none !important;
 }
 
-.btn-carrito-disabled:active {
-  transform: none !important;
-}
-
-.btn-carrito-disabled svg {
-  filter: none !important;
-}
-
-/* Mejorar el estilo del botón carrito cuando está habilitado */
-.btn-carrito:hover:not(.btn-carrito-disabled) {
-  color: #3b82f6;
-  background-color: rgba(59, 130, 246, 0.1);
-  border-radius: 4px;
-}
-
-.btn-carrito:active:not(.btn-carrito-disabled) {
-  transform: scale(0.95);
-}
-
-/* Mejorar el estilo del botón eliminar */
-.btn-eliminar:hover {
-  color: #ef4444;
-  background-color: rgba(239, 68, 68, 0.1);
-  border-radius: 4px;
-}
-
-.btn-eliminar:active {
-  transform: scale(0.95);
-}
-
-/* Efecto simple cuando se agrega al carrito */
-.btn-carrito-success {
+/* Efecto de éxito cuando se agrega al carrito en la tabla stock */
+.tabla-stock .acciones-cell .btn-carrito-success {
   background-color: #10b981 !important;
   color: white !important;
-  border-radius: 4px;
-}
-
-/* Botones de acción más simples y limpios */
-.acciones-cell {
-  position: relative;
-  display: flex;
-  gap: 8px;
-  align-items: center;
-  justify-content: center;
-  padding: 0.6rem 0.3rem !important; /* Mismo padding que las otras celdas */
-  vertical-align: middle;
 }
 
 /* Loading */
@@ -455,4 +458,20 @@
     width: 28px;
     height: 28px;
   }
+}
+
+.tabla-stock-footer {
+  padding: 0.75rem 1rem;
+  background: #f3f4f8;
+  border-top: 1px solid #e8e8e8;
+  color: #4b5563;
+  font-size: 0.875rem;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+.tabla-stock-footer span {
+  font-weight: 600;
+  margin: 0 0.25rem;
 }

@@ -13,6 +13,7 @@ from models.venta import Venta
 from models.detalle_venta import DetalleVenta
 from models.subcategoria import Subcategoria
 from datetime import datetime, timedelta
+import random
 
 app = create_app()
 
@@ -21,18 +22,45 @@ with app.app_context():
     db.create_all()
 
     # Usuarios
+    # Definir una contraseña predeterminada para todos los usuarios
+    default_password = "password"
+    print(f"Configurando usuarios con contraseña predeterminada: {default_password}")
+    
     u1 = Usuario(nombre='Ana', apellido='García', is_admin=True, email='ana@demo.com')
+    u1.set_password(default_password)
+    
     u2 = Usuario(nombre='Luis', apellido='Pérez', is_admin=False, email='luis@demo.com')
+    u2.set_password(default_password)
+    
     u3 = Usuario(nombre='Carlos', apellido='Mendoza', is_admin=False, email='carlos@demo.com')
+    u3.set_password(default_password)
+    
     u4 = Usuario(nombre='María', apellido='Rodríguez', is_admin=True, email='maria@demo.com')
+    u4.set_password(default_password)
+    
     u5 = Usuario(nombre='Diego', apellido='Fernández', is_admin=False, email='diego@demo.com')
+    u5.set_password(default_password)
+    
     u6 = Usuario(nombre='Laura', apellido='González', is_admin=False, email='laura@demo.com')
+    u6.set_password(default_password)
+    
     u7 = Usuario(nombre='Pablo', apellido='Martín', is_admin=False, email='pablo@demo.com')
+    u7.set_password(default_password)
+    
     u8 = Usuario(nombre='Sofía', apellido='López', is_admin=True, email='sofia@demo.com')
+    u8.set_password(default_password)
+    
     u9 = Usuario(nombre='Andrés', apellido='Ruiz', is_admin=False, email='andres@demo.com')
+    u9.set_password(default_password)
+    
     u10 = Usuario(nombre='Valentina', apellido='Silva', is_admin=False, email='valentina@demo.com')
+    u10.set_password(default_password)
+    
     u11 = Usuario(nombre='Sebastián', apellido='Torres', is_admin=False, email='sebastian@demo.com')
+    u11.set_password(default_password)
+    
     u12 = Usuario(nombre='Camila', apellido='Vargas', is_admin=True, email='camila@demo.com')
+    u12.set_password(default_password)
     db.session.add_all([u1, u2, u3, u4, u5, u6, u7, u8, u9, u10, u11, u12])
 
     # Clientes con cumpleaños en distintas fechas (hoy, mañana, pasado, etc)
@@ -141,3 +169,6 @@ with app.app_context():
 
     db.session.commit()
     print('Datos ficticios cargados correctamente.')
+    print("USUARIOS DE PRUEBA:")
+    print("- Admin: ana@demo.com / password")
+    print("- Usuario: luis@demo.com / password")

@@ -22,7 +22,8 @@
   overflow-x: auto;
   display: flex;
   flex-direction: column;
-  height: calc(100vh - 120px); /* Ocupar hasta abajo de la pantalla */
+  height: auto; /* Cambiar a auto para ajustarse al contenido */
+  max-height: calc(100vh - 150px); /* Limitar altura máxima */
 }
 
 /* Header Section */
@@ -56,61 +57,35 @@
 
 /* Search Section */
 .usuarios-search-section {
-  margin-bottom: 2rem;
-}
-
-.search-input-container {
-  position: relative;
-  max-width: 400px;
-}
-
-.search-input {
-  width: 100%;
-  padding: 0.75rem 1rem 0.75rem 2.5rem;
-  border: 1px solid #e5e7eb;
-  border-radius: 0.5rem;
-  font-size: 0.875rem;
-  background-color: #f9fafb;
-  transition: all 0.2s ease;
-}
-
-.search-input:focus {
-  outline: none;
-  border-color: #3b82f6;
-  background-color: white;
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-}
-
-.search-icon {
-  position: absolute;
-  left: 0.75rem;
-  top: 50%;
-  transform: translateY(-50%);
-  color: #9ca3af;
-  pointer-events: none;
+  margin-bottom: 1.5rem;
 }
 
 /* Table Styles */
 .usuarios-table-container {
   background: white;
   border-radius: 1rem;
-  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
   overflow: hidden;
   border: 1px solid #e5e7eb;
-  flex: 1;
   display: flex;
   flex-direction: column;
-  height: 400px; /* Altura aún más pequeña para garantizar que se vea el footer */
-  max-height: 400px;
+  min-height: 380px; /* Altura mínima mayor */
+  max-height: calc(100vh - 200px); /* Altura adaptable como ventas históricas */
 }
+
+
 
 .usuarios-table-wrapper {
   flex: 1;
   overflow-y: auto;
   overflow-x: auto;
-  height: calc(100% - 40px); /* Restar altura del footer reducida */
-  max-height: calc(100% - 40px);
+  min-height: 0; /* Importante para que el flex funcione correctamente */
 }
+
+
+
+
+
 
 .usuarios-table {
   width: 100%;
@@ -126,7 +101,7 @@
 
 .usuarios-table th {
   background-color: #f3f4f8;
-  padding: 0.8rem; /* Reducido de 1rem */
+  padding: 0.75rem;
   text-align: center;
   font-family: "Rajdhani", Arial, sans-serif;
   font-style: normal;
@@ -139,7 +114,7 @@
   letter-spacing: 0.025em;
   position: sticky;
   top: 0;
-  z-index: 2;
+  z-index: 10;
 }
 
 .usuarios-table td {
@@ -151,6 +126,7 @@
 
 .usuarios-table tbody tr:hover {
   background-color: #f9fafb;
+  cursor: pointer;
 }
 
 .usuarios-table tbody tr:last-child td {
@@ -316,16 +292,14 @@
   display: flex;
   justify-content: flex-end;
   align-items: center;
-  padding: 0.5rem 1rem; /* Reducido el padding vertical y horizontal */
+  padding: 0.75rem;
   background-color: #f3f4f8;
   border-top: 1px solid #e5e7eb;
   border-radius: 0 0 1rem 1rem;
-  height: 40px; /* Altura igual al header reducida */
-  min-height: 40px;
   flex-shrink: 0;
-  z-index: 3;
+  z-index: 10;
   box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.05);
-  position: relative; /* Asegurar que esté siempre visible */
+  margin-top: auto; /* Esto empuja el footer al final */
 }
 
 .registros-info {

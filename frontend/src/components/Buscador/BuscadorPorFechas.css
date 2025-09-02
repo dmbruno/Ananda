@@ -1,3 +1,7 @@
+.buscador-fechas-container {
+  position: relative;
+}
+
 .buscador-fechas-bar {
   display: flex;
   align-items: center;
@@ -7,8 +11,10 @@
   padding: 0.5rem 1rem;
   box-shadow: 0 1px 3px rgba(0,0,0,0.04);
   font-family: 'Rajdhani', Arial, sans-serif;
-  
-  
+  width: 100%;
+  max-width: 700px;
+  flex-wrap: nowrap;
+  box-sizing: border-box;
 }
 
 .buscador-fechas-label {
@@ -66,6 +72,56 @@
   gap: 0.3rem;
   transition: background 0.15s;
   height: auto;
+}
+
+/* Estilos para la notificación */
+.buscador-notification {
+  position: absolute;
+  top: -40px;
+  right: 0;
+  padding: 8px 15px;
+  border-radius: 4px;
+  font-size: 14px;
+  z-index: 100;
+  animation: fade-in-out 3s ease-in-out;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.buscador-notification-success {
+  background-color: #d1fae5;
+  color: #047857;
+  border-left: 4px solid #10b981;
+}
+
+.buscador-notification-warning {
+  background-color: #fef3c7;
+  color: #b45309;
+  border-left: 4px solid #f59e0b;
+}
+
+.buscador-notification-error {
+  background-color: #fee2e2;
+  color: #b91c1c;
+  border-left: 4px solid #ef4444;
+}
+
+/* Botón deshabilitado para no administradores */
+.btn-disabled {
+  cursor: not-allowed !important;
+  opacity: 0.6 !important;
+  background-color: #ccc !important;
+}
+
+.admin-only-icon {
+  margin-left: 6px;
+  font-size: 14px;
+}
+
+@keyframes fade-in-out {
+  0% { opacity: 0; transform: translateY(-10px); }
+  10% { opacity: 1; transform: translateY(0); }
+  90% { opacity: 1; }
+  100% { opacity: 0; }
 }
 .buscador-fechas-csv:active {
   background: #bae6fd;

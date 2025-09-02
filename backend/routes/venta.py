@@ -6,15 +6,17 @@ from models.caja import Caja
 from database.db import db
 from datetime import datetime, timedelta
 from sqlalchemy import func, and_
+from utils.auth_utils import require_auth, get_current_user_from_token
 
 ventas_bp = Blueprint('ventas', __name__, url_prefix='/api/ventas')
 
 # Rutas CRUD 
 @ventas_bp.route('/', methods=['POST'])
-def crear_venta():
+@require_auth
+def crear_venta(current_user):
     data = request.get_json()
     detalles = data.get('detalles', [])
-    if not data.get('cliente_id') or not data.get('usuario_id') or not data.get('metodo_pago') or not detalles:
+    if not data.get('cliente_id') or not data.get('metodo_pago') or not detalles:
         return jsonify({'error': 'Faltan datos obligatorios'}), 400
     descuento = float(data.get('descuento', 0))
     total_bruto = 0
@@ -29,7 +31,7 @@ def crear_venta():
     
     venta = Venta(
         cliente_id=data['cliente_id'],
-        usuario_id=data['usuario_id'],
+        usuario_id=current_user.id,  # Usar el usuario autenticado
         caja_id=caja_abierta.id,  # Asociar con la caja abierta
         fecha_venta=datetime.now(),
         total=total_final,
@@ -52,7 +54,8 @@ def crear_venta():
 
 # Procesar venta completa (crear venta, descontar stock, actualizar caja)
 @ventas_bp.route('/procesar-completa', methods=['POST'])
-def procesar_venta_completa():
+@require_auth
+def procesar_venta_completa(current_user):
     try:
         print("🚀 [BACKEND] Iniciando procesamiento de venta completa...")
         data = request.get_json()
@@ -110,7 +113,7 @@ def procesar_venta_completa():
         
         venta = Venta(
             cliente_id=data['cliente_id'],
-            usuario_id=1,  # TODO: Obtener del usuario logueado
+            usuario_id=current_user.id,  # Usar el usuario autenticado
             caja_id=caja_id,  # Asociar la venta con la caja
             fecha_venta=datetime.now(),
             total=total_final,
@@ -192,7 +195,8 @@ def listar_ventas():
     resultado = []
     for v in ventas:
         cliente_nombre = v.cliente.nombre + ' ' + v.cliente.apellido if v.cliente else None
-        vendedor_nombre = v.usuario.nombre if v.usuario else 'Admin'
+        # Obtener el nombre completo del vendedor
+        vendedor_nombre = f"{v.usuario.nombre} {v.usuario.apellido}" if v.usuario else 'Admin'
         
         # Contar la cantidad total de productos en esta venta
         cantidad_productos = sum(d.cantidad for d in v.detalles)

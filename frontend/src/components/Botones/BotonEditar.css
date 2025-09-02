@@ -11,7 +11,7 @@
   box-sizing: border-box;
   cursor: pointer;
   transition: background 0.2s, box-shadow 0.2s;
-  gap: 0.25rem;
+  gap: 0.55rem;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15), 0 2px 4px rgba(0, 0, 0, 0.1);
   background: #9d70eb;         /* Gris oscuro */
   color: #fff;  

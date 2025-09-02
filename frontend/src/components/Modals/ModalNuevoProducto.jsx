@@ -32,7 +32,19 @@ const ModalNuevoProducto = ({ open, onClose }) => {
   const status = useSelector((state) => state.categorias.status);
   const [exiting, setExiting] = useState(false);
   const timeoutRef = useRef();
-  const [campos, setCampos] = useState(camposIniciales);
+  
+  // Obtener información del usuario desde Redux
+  const user = useSelector(state => state.auth.user);
+  // Verificar si el usuario es administrador
+  const isAdmin = user && user.is_admin === true;
+  
+  // Modificar campos iniciales si el usuario no es administrador
+  const initialCampos = {
+    ...camposIniciales,
+    costo: isAdmin ? "" : "0"  // Si no es admin, el costo inicial es "0"
+  };
+  
+  const [campos, setCampos] = useState(initialCampos);
   const [skuBase, setSkuBase] = useState("");
   const [isGeneratingSku, setIsGeneratingSku] = useState(false);
 
@@ -46,10 +58,13 @@ const ModalNuevoProducto = ({ open, onClose }) => {
   useEffect(() => {
     if (open) {
       setExiting(false);
-      setCampos(camposIniciales);
+      setCampos({
+        ...camposIniciales,
+        costo: isAdmin ? "" : "0"  // Si no es admin, el costo se establece a "0"
+      });
     }
     return () => clearTimeout(timeoutRef.current);
-  }, [open]);
+  }, [open, isAdmin]);
 
   useEffect(() => {
     if (status === 'idle') {
@@ -151,7 +166,8 @@ const ModalNuevoProducto = ({ open, onClose }) => {
     formData.append('nombre', campos.nombre);
     formData.append('categoria_id', campos.categoria);
     formData.append('subcategoria_id', campos.subcategoria);
-    formData.append('costo', campos.costo);
+    // Si no es admin, forzar el costo a "0" por seguridad
+    formData.append('costo', isAdmin ? campos.costo : "0");
     formData.append('precio_venta', campos.precio_venta);
     formData.append('talle', campos.talle);
     formData.append('color', campos.color);
@@ -236,7 +252,18 @@ const ModalNuevoProducto = ({ open, onClose }) => {
           </div>
           <div className="modal-nuevo-row">
             <label>Costo:</label>
-            <input type="number" value={campos.costo} onChange={e => setCampos({ ...campos, costo: e.target.value })} />
+            <input 
+              type="number" 
+              value={campos.costo} 
+              onChange={e => isAdmin ? setCampos({ ...campos, costo: e.target.value }) : null}
+              disabled={!isAdmin}
+              style={!isAdmin ? {
+                backgroundColor: "#f5f5f5", 
+                cursor: "not-allowed",
+                opacity: "0.7"
+              } : {}}
+              placeholder={!isAdmin ? "Solo disponible para administradores" : ""}
+            />
             <label>Sub-Categoría:</label>
             <select value={campos.subcategoria} onChange={e => setCampos({ ...campos, subcategoria: e.target.value })}>
               <option value="">Seleccionar</option>

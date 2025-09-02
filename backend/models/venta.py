@@ -35,5 +35,13 @@ class Venta(db.Model):
             'descuento': self.descuento
         }
     
+    def to_dict(self):
+        """Versión completa con detalles de la venta"""
+        venta_dict = self.to_dict_simple()
+        # Agregamos información adicional que pueda ser necesaria
+        venta_dict['detalles'] = [detalle.to_dict() for detalle in self.detalles] if hasattr(self, 'detalles') else []
+        venta_dict['usuario_nombre'] = f"{self.usuario.nombre} {self.usuario.apellido}" if self.usuario else f"Usuario #{self.usuario_id}"
+        return venta_dict
+    
     def __repr__(self):
         return f'<Venta {self.id} - Cliente: {self.cliente_id}>'

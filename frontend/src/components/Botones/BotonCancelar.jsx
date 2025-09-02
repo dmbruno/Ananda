@@ -1,9 +1,11 @@
 import React from "react";
+import './Botones.css';
 
-const BotonCancelar = ({ onClick, children, small = false }) => (
+const BotonCancelar = ({ onClick, children, small = false, disabled = false }) => (
   <button 
     className="modal-whatsapp-cancel" 
     onClick={onClick}
+    disabled={disabled}
     style={small ? {
       padding: '0.25rem 0.5rem',
       fontSize: '0.75rem'

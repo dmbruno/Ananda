@@ -74,7 +74,7 @@
 
 .grafico-metodo-title {
   text-align: left;
-  font-size: 1.25rem; /* 20px */
+  font-size: 1.25rem; /* 20px */  
   font-weight: 700;
   color: #1f2937;
   margin-bottom: .001rem;
@@ -86,23 +86,23 @@
 .grafico-metodo-action {
   background: none;
   border: none;
-  color: #b0b3bb;
-  font-family: "Rajdhani", Arial, sans-serif;
-  font-size: 1.1rem;
+  color: #bdbdbd;
+  font-size: 1rem;
   font-weight: 600;
   cursor: pointer;
   display: flex;
   align-items: center;
-  gap: 0.2rem;
+  gap: 2px;
   transition: color 0.2s;
-  margin-top: 0.2rem;
+  margin-left: auto;
 }
 .grafico-metodo-action:hover {
-  color: #4f46e5;
+  color: #222;
 }
 .arrow {
-  font-size: 1.2em;
-  margin-left: 0.1em;
+  font-family: Arial, sans-serif;
+  font-size: 1.1rem;
+  margin-left: 2px;
 }
 
 .grafico-metodo-subtitle {

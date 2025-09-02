@@ -1,17 +1,20 @@
 import React, { useState } from 'react';
 import './TablaStock.css';
-import Buscador from '../Buscador/Buscador';
 import axios from 'axios';
 import ModalVerProducto from '../Modals/ModalVerProducto';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { updateProducto } from '../../store/productosSlice';
 import { agregarAlCarrito } from '../../store/carritoSlice';
 
 // Recibe productos y loading por props desde StockPage
 const TablaStock = ({ productos = [], loading = false, error = null }) => {
-  const [busqueda, setBusqueda] = useState('');
   const [productoSeleccionado, setProductoSeleccionado] = useState(null);
   const dispatch = useDispatch();
+  
+  // Obtener información del usuario desde Redux
+  const user = useSelector(state => state.auth.user);
+  // Verificar si el usuario es administrador
+  const isAdmin = user && user.is_admin === true;
 
   const getStockStatus = (stock) => {
     if (stock <= 0) return 'agotado';
@@ -26,15 +29,8 @@ const TablaStock = ({ productos = [], loading = false, error = null }) => {
     }).format(precio);
   };
 
-  // Filtrado de productos según la búsqueda
-  const productosFiltrados = productos.filter((producto) => {
-    if (!busqueda.trim()) return true;
-    const texto = busqueda.toLowerCase();
-    // Buscar en todos los campos string y numéricos relevantes
-    return Object.values(producto).some((valor) =>
-      String(valor).toLowerCase().includes(texto)
-    );
-  });
+  // Ya no filtramos aquí, los productos ya vienen filtrados desde StockPage
+  const productosFiltrados = productos;
 
   const handleEliminarProducto = async (id) => {
     const confirmar = window.confirm('¿Estás seguro de que deseas eliminar este producto?');
@@ -110,15 +106,6 @@ const TablaStock = ({ productos = [], loading = false, error = null }) => {
 
   return (
     <>
-      {/* Buscador arriba, centrado y fuera de la tarjeta de stock */}
-      <div className="buscador-stock-bar-stock">
-        <Buscador
-          value={busqueda}
-          onChange={e => setBusqueda(e.target.value)}
-          placeholder="Buscar en stock..."
-        />
-      </div>
-
       <div className="tabla-stock-container">
         <div className="tabla-stock-header">
           <h3>
@@ -141,29 +128,30 @@ const TablaStock = ({ productos = [], loading = false, error = null }) => {
         </div>
 
         <div className="tabla-stock-wrapper">
-          <table className="tabla-stock">
-            <thead>
-              <tr>
-                <th>ID</th>
-                <th>Nombre</th>
-                <th>SKU</th>
-                <th>Categoría</th>
-                <th>Subcategoría</th> {/* Nueva columna para subcategoría */}
-                <th>Talle</th>
-                <th>Color</th>
-                <th>Marca</th>
-                <th>Temporada</th>
-                <th>Costo</th>
-                <th>Precio-Venta</th>
-                <th>Stock</th>
-                <th>Estado</th>
-                <th>Ingreso</th>
-                <th>Acciones</th>
-              </tr>
-            </thead>
-            <tbody>
-              {productosFiltrados.length > 0 ? (
-                productosFiltrados.map((producto) => (
+          <div className="tabla-stock-scroll-container">
+            <table className="tabla-stock">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Nombre</th>
+                  <th>SKU</th>
+                  <th>Categoría</th>
+                  <th>Subcategoría</th> {/* Nueva columna para subcategoría */}
+                  <th>Talle</th>
+                  <th>Color</th>
+                  <th>Marca</th>
+                  <th>Temporada</th>
+                  <th>Costo</th>
+                  <th>Precio-Venta</th>
+                  <th>Stock</th>
+                  <th>Estado</th>
+                  <th>Ingreso</th>
+                  <th>Acciones</th>
+                </tr>
+              </thead>
+              <tbody>
+                {productosFiltrados.length > 0 ? (
+                  productosFiltrados.map((producto) => (
                   <tr 
                     key={producto.id} 
                     className={`stock-row-${getStockStatus(producto.stock_actual)}`}
@@ -177,7 +165,7 @@ const TablaStock = ({ productos = [], loading = false, error = null }) => {
                     <td className="color-cell" onClick={() => handleRowClick(producto)}>{producto.color}</td>
                     <td className="marca-cell" onClick={() => handleRowClick(producto)}>{producto.marca}</td>
                     <td className="temporada-cell" onClick={() => handleRowClick(producto)}>{producto.temporada || '-'}</td>
-                    <td className="precio-cell" onClick={() => handleRowClick(producto)}>{formatPrecio(producto.costo)}</td>
+                    <td className={`precio-cell ${!isAdmin ? 'blur-content' : ''}`} onClick={() => handleRowClick(producto)}>{formatPrecio(producto.costo)}</td>
                     <td className="precio-cell" onClick={() => handleRowClick(producto)}>{formatPrecio(producto.precio_venta)}</td>
                     <td className={`stock-cell stock-${getStockStatus(producto.stock_actual)}`} onClick={() => handleRowClick(producto)}>
                       {producto.stock_actual}
@@ -236,6 +224,10 @@ const TablaStock = ({ productos = [], loading = false, error = null }) => {
               )}
             </tbody>
           </table>
+          </div>
+          <div className="tabla-stock-footer">
+            Mostrando <span>{productosFiltrados.length}</span> de <span>{productos.length}</span> productos
+          </div>
         </div>
       </div>
 

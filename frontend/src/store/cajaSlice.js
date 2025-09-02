@@ -1,11 +1,37 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from '../utils/axios';
 
-// Thunk para obtener caja actual
+// Thunk para obtener caja actual (con limitación para evitar bucles infinitos)
+let lastCajaRequest = 0;
+const MIN_REQUEST_INTERVAL = 2000; // 2 segundos mínimo entre peticiones
+
 export const obtenerCajaActual = createAsyncThunk(
   'caja/obtenerActual',
-  async (_, { rejectWithValue }) => {
+  async (_, { rejectWithValue, getState }) => {
     try {
+      // Evitar peticiones demasiado frecuentes
+      const now = Date.now();
+      if (now - lastCajaRequest < MIN_REQUEST_INTERVAL) {
+        console.log('⏱️ Petición ignorada - demasiado frecuente');
+        // Retornar el estado actual para no generar cambios
+        const currentState = getState().caja;
+        return { 
+          caja: currentState.cajaActual, 
+          estado: currentState.estado,
+          cached: true
+        };
+      }
+      
+      // Verificar si tenemos token antes de hacer la petición
+      const token = localStorage.getItem('access_token');
+      if (!token) {
+        console.error('🔴 No hay token de acceso para obtener caja');
+        return rejectWithValue({
+          error: 'No hay sesión activa. Inicie sesión para continuar.'
+        });
+      }
+      
+      lastCajaRequest = now;
       console.log('🔵 Obteniendo caja actual');
       const response = await axios.get('/api/caja/actual');
       console.log('🟢 Caja actual recibida:', response.data);
@@ -17,9 +43,30 @@ export const obtenerCajaActual = createAsyncThunk(
         respuesta: error.response?.data,
         status: error.response?.status
       });
+      
+      // Si es un error de autenticación (401), hacerlo evidente
+      if (error.response?.status === 401) {
+        return rejectWithValue({
+          error: 'Sesión expirada o inválida. Por favor inicie sesión nuevamente.',
+          needsLogin: true
+        });
+      }
+      
       return rejectWithValue(
         error.response?.data || { error: error.message }
       );
+    }
+  },
+  {
+    // Condición para evitar múltiples llamadas simultáneas
+    condition: (_, { getState }) => {
+      const { loading } = getState().caja;
+      // No disparar si ya hay una petición en curso
+      if (loading) {
+        console.log('🟡 Petición cancelada - ya hay una en curso');
+        return false;
+      }
+      return true;
     }
   }
 );
@@ -37,13 +84,12 @@ export const abrirCaja = createAsyncThunk(
       
       // Log completo de la petición
       console.log('🔵 Enviando petición POST a /api/caja/abrir con datos:', {
-        monto_inicial: montoNumerico,
-        usuario_id: 1
+        monto_inicial: montoNumerico
       });
       
       const response = await axios.post('/api/caja/abrir', {
-        monto_inicial: montoNumerico,
-        usuario_id: 1 // TODO: Obtener del usuario logueado
+        monto_inicial: montoNumerico
+        // usuario_id se obtiene automáticamente del token JWT
       });
       
       console.log('🟢 Respuesta exitosa de abrir caja:', response.data);
@@ -72,8 +118,8 @@ export const cerrarCaja = createAsyncThunk(
       console.log('🔵 Cerrando caja con datos:', datos);
       const response = await axios.post('/api/caja/cerrar', {
         notas: datos.notas || '',
-        monto_declarado: parseFloat(datos.monto_declarado) || 0,
-        usuario_id: 1 // TODO: Obtener del usuario logueado
+        monto_declarado: parseFloat(datos.monto_declarado) || 0
+        // usuario_id se obtiene automáticamente del token JWT
       });
       console.log('🟢 Respuesta de cerrar caja:', response.data);
       return response.data;
@@ -219,12 +265,34 @@ const cajaSlice = createSlice({
       })
       .addCase(obtenerCajaActual.fulfilled, (state, action) => {
         state.loading = false;
+        
+        // IMPORTANTE: Siempre actualizar el estado, incluso si es caché
+        console.log('🟢 Actualizando estado de caja:', action.payload);
+        
         state.cajaActual = action.payload.caja;
         state.estado = action.payload.estado;
+        
+        // Log para debugging
+        console.log('🟢 Estado actualizado - cajaActual:', state.cajaActual, 'estado:', state.estado);
+        
+        // Si hay un error en la respuesta (aunque sea código 200)
+        if (action.payload.error) {
+          state.error = action.payload.error;
+        } else {
+          state.error = null;
+        }
       })
       .addCase(obtenerCajaActual.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.error.message;
+        
+        // Mejorar el mensaje de error para mejor retroalimentación
+        if (action.error.name === 'AxiosError' && action.error.message.includes('Network Error')) {
+          state.error = 'Error de conexión: No se pudo conectar con el servidor';
+          state.estado = 'cerrada';  // Forzar "cerrada" para que se muestre el modal
+          state.cajaActual = null;
+        } else {
+          state.error = action.error.message;
+        }
       })
       // Abrir caja
       .addCase(abrirCaja.pending, (state) => {

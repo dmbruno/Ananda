@@ -12,15 +12,27 @@ def crear_usuario():
     data = request.get_json()
     if not data.get('nombre') or not data.get('apellido') or not data.get('email'):
         return jsonify({'error': 'Faltan datos obligatorios'}), 400
+    
+    if not data.get('password'):
+        return jsonify({'error': 'La contraseña es obligatoria'}), 400
+    
+    # Verificar si el email ya existe
+    usuario_existente = Usuario.query.filter_by(email=data['email']).first()
+    if usuario_existente:
+        return jsonify({'error': 'Ya existe un usuario con este correo electrónico'}), 400
+    
     usuario = Usuario(
         nombre=data['nombre'],
         apellido=data['apellido'],
         is_admin=data.get('is_admin', False),
         email=data['email']
     )
+    # Establecer la contraseña hasheada
+    usuario.set_password(data['password'])
+    
     db.session.add(usuario)
     db.session.commit()
-    return jsonify({'id': usuario.id}), 201
+    return jsonify({'id': usuario.id, 'message': 'Usuario creado exitosamente'}), 201
 
 # Obtener todos los usuarios
 @usuarios_bp.route('/', methods=['GET'])
@@ -42,12 +54,24 @@ def obtener_usuario(id):
 def actualizar_usuario(id):
     usuario = Usuario.query.get_or_404(id)
     data = request.get_json()
+    
+    # Verificar si el email ya existe (si se está cambiando)
+    if data.get('email') and data['email'] != usuario.email:
+        usuario_existente = Usuario.query.filter_by(email=data['email']).first()
+        if usuario_existente:
+            return jsonify({'error': 'Ya existe un usuario con este correo electrónico'}), 400
+    
     usuario.nombre = data.get('nombre', usuario.nombre)
     usuario.apellido = data.get('apellido', usuario.apellido)
     usuario.is_admin = data.get('is_admin', usuario.is_admin)
     usuario.email = data.get('email', usuario.email)
+    
+    # Solo actualizar contraseña si se proporciona una nueva
+    if data.get('password') and data['password'].strip():
+        usuario.set_password(data['password'])
+    
     db.session.commit()
-    return jsonify({'msg': 'Usuario actualizado'})
+    return jsonify({'msg': 'Usuario actualizado exitosamente'})
 
 # Eliminar usuario (Soft Delete)
 @usuarios_bp.route('/<int:id>', methods=['DELETE'])

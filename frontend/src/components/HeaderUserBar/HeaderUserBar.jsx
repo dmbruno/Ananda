@@ -1,12 +1,14 @@
 import React from "react";
 import { useNavigate } from 'react-router-dom';
 import { useCarritoCount } from "../../hooks/useCarritoCount";
+import { useCurrentUser } from "../../hooks/useCurrentUser";
 import "./HeaderUserBar.css";
 import "../Sidebar/Carrito/botonCarrito.css";
 
 const HeaderUserBar = () => {
   const navigate = useNavigate();
   const cartCount = useCarritoCount();
+  const { fullName } = useCurrentUser();
 
   const handleCarritoClick = () => {
     console.log('🛒 Navegando al carrito desde header...');
@@ -15,7 +17,7 @@ const HeaderUserBar = () => {
 
   return (
     <div className="header-userbar">
-      <span className="header-username">Romina Merluzzi</span>
+      <span className="header-username">{fullName || 'Usuario'}</span>
       <span 
         className="header-cart" 
         style={{ 

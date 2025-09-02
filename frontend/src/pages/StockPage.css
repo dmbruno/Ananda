@@ -4,6 +4,79 @@
   background-color: #fafbfc;
   margin-top: 50px;
   margin-left: 60px;
+  
+}
+
+/* Estilos para notificaciones */
+.notificacion {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  padding: 12px 20px;
+  border-radius: 6px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-width: 300px;
+  max-width: 400px;
+  animation: slide-in 0.3s ease-out;
+}
+
+.notificacion-error {
+  background-color: #fee2e2;
+  border-left: 4px solid #ef4444;
+  color: #b91c1c;
+}
+
+.notificacion-warning {
+  background-color: #fef3c7;
+  border-left: 4px solid #f59e0b;
+  color: #b45309;
+}
+
+.notificacion-success {
+  background-color: #d1fae5;
+  border-left: 4px solid #10b981;
+  color: #047857;
+}
+
+.notificacion-close {
+  background: none;
+  border: none;
+  font-size: 18px;
+  font-weight: bold;
+  cursor: pointer;
+  margin-left: 15px;
+  opacity: 0.7;
+}
+
+.notificacion-close:hover {
+  opacity: 1;
+}
+
+/* Botón deshabilitado para no administradores */
+.btn-disabled {
+  cursor: not-allowed !important;
+  opacity: 0.6 !important;
+  background-color: #ccc !important;
+}
+
+.admin-only-icon {
+  margin-left: 6px;
+  font-size: 14px;
+}
+
+@keyframes slide-in {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
 }
 
 .dashboard-title {
@@ -18,6 +91,33 @@
   padding-left: 1rem;
   padding-top: 1rem;
   text-align: start;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+.stock-search-container {
+  margin-bottom: 20px;
+  padding: 0 1rem;
+}
+
+.stock-search-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  max-width: 100%;
+}
+
+.stock-search-wrapper .buscador-container {
+  flex: 1;
+  width: 600px;
+  max-width: 600px;
+  
+}
+
+.stock-search-wrapper .ajustar-precios-btn {
+  white-space: nowrap;
 }
 
 .stock-page-content {
@@ -25,22 +125,80 @@
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  max-width: 100%;
+  width: 100%;
+  padding-right: 2rem; /* Padding derecho para separar del borde */
 }
 
 .stock-page-main {
   flex: 1;
-  padding: 2rem;
+  padding: 1rem 1rem 1rem 1rem; /* top right bottom left */
   overflow-y: auto;
   background: #fafbfc;
+  width: 100%;
 }
 
 /* Header que contiene breadcrumbs y botones en una línea */
 .stock-header {
   display: flex;
   align-items: center;
-  justify-content: space-between;
   margin-bottom: 2rem;
   width: 100%;
+  max-width: 100%; /* AQUÍ: Asegurar que no exceda el ancho del contenedor padre */
+  gap: 1rem; /* Espacio entre título y botones */
+  overflow: hidden; /* AQUÍ: Evitar que el contenido desborde el contenedor */
+  flex-wrap: wrap; /* Permitir wrap en pantallas pequeñas */
+  justify-content: space-between; /* Distribuir el espacio entre elementos */
+}
+
+/* Contenedor de búsqueda y botón de ajuste de precios */
+.stock-search-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  margin-left: auto; /* Empuja el contenedor hacia la derecha */
+  flex-shrink: 0;
+  
+}
+
+/* Caja de búsqueda */
+.search-box {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 460px;
+}
+
+.stock-search-input {
+  width: 100%;
+  padding: 10px 15px;
+  padding-right: 40px; /* Espacio para el icono */
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  font-size: 14px;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  background-color: white;
+}
+
+.stock-search-input:focus {
+  outline: none;
+  border-color: #6366f1;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+}
+
+.search-button {
+  position: absolute;
+  right: 10px;
+  background: none;
+  border: none;
+  color: #6b7280;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  margin: 0;
 }
 
 /* Breadcrumbs mejorados */
@@ -52,6 +210,11 @@
   border: none;
   box-shadow: none;
   margin-bottom: 0;
+  flex-grow: 1; /* Hacer que el contenedor del título ocupe el espacio disponible */
+  flex-shrink: 1; /* Permitir que el título se encoja */
+  min-width: 0; /* Necesario para que flex-shrink funcione en elementos con texto largo */
+  max-width: calc(100% - 360px); /* Restaurado */
+  overflow: hidden; /* Evitar que el contenido desborde */
 }
 
 .stock-breadcrumbs-icon {
@@ -68,28 +231,43 @@
 }
 
 .stock-title {
-  font-size: 1.5rem;
+  font-size: 1rem;
   font-weight: 800; /* Menos bold */
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
   color: black;
   margin: 0 0 1rem 0;
   font-family: "Rajdhani", Arial, sans-serif;
-  
   padding-top: 1rem;
   text-align: start;
   letter-spacing: 0.25px;
   line-height: 1.2;
-padding-left: 1rem;
-
+  padding-left: 1rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
 }
 
-/* Botones de acción mejorados */
+/* Botones de acción mejorados (restaurado) */
 .stock-actions {
   display: flex;
-  gap: 0.75rem;
-  margin-bottom: 0;
-  justify-content: flex-end;
+  gap: 0.5rem;
+  align-items: center; /* Para alinear verticalmente los botones */
+  margin-left: auto; /* Alinea este elemento a la derecha y lo hace crecer hacia la izquierda */
+  flex-shrink: 0; /* No encoger los botones */
+  width: auto; /* Ancho automático basado en contenido */
+  min-width: fit-content; /* Asegurar que cabe el contenido mínimo */
+  max-width: 500px; /* Ancho máximo aumentado para alojar más botones */
+  justify-content: flex-end; /* Alinear los botones a la derecha */
+  transition: transform .25s ease; /* quitar margin animation */
 }
+
+/* Clase para cuando hay múltiples botones */
+.stock-actions.multiple-buttons {
+  flex-wrap: wrap; /* Permitir que los botones se ajusten en múltiples líneas si es necesario */
+}
+
+
 
 /* Responsividad */
 @media (max-width: 768px) {
@@ -106,6 +284,19 @@ padding-left: 1rem;
   .stock-breadcrumbs {
     flex-direction: row;
     align-items: center;
+    width: 100%;
+  }
+
+  .stock-search-container {
+    width: 100%;
+    margin-left: 0;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+
+  .search-box {
+    width: 100%;
+    max-width: 100%;
   }
   
   .stock-breadcrumbs-icon {
@@ -117,8 +308,21 @@ padding-left: 1rem;
   }
   
   .stock-actions {
-    align-self: stretch;
-    justify-content: stretch;
+    width: 100%;
+    max-width: 100%; /* En móvil permitir que use el ancho completo */
+    justify-content: flex-start;
+    flex-wrap: wrap; /* Permitir que los botones se envuelvan en pantallas pequeñas */
     gap: 0.5rem;
+    position: static; /* Quitar posición relativa en móvil */
+    flex: 1 0 auto; /* En móvil ya no fijamos ancho */
+  }
+  
+  .stock-breadcrumbs {
+    max-width: 100%; /* Anular la restricción de ancho en móvil */
+  }
+  
+  .stock-actions button {
+    flex: 1 0 auto; /* Hacer que los botones ocupen espacio equitativo */
+    min-width: auto; /* Permitir que los botones se ajusten al ancho disponible */
   }
 }

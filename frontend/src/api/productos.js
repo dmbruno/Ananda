@@ -6,6 +6,30 @@ export async function obtenerProducto(id) {
 // API para productos
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5001/api/productos';
 
+export async function ajustarPreciosMasivos(ajusteData) {
+  try {
+    const token = localStorage.getItem('access_token');
+    const response = await fetch(`${API_URL}/ajuste-masivo-precios`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify(ajusteData)
+    });
+    
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.error || 'Error al ajustar precios');
+    }
+    
+    return await response.json();
+  } catch (error) {
+    console.error('Error en ajuste masivo de precios:', error);
+    throw error;
+  }
+}
+
 export async function actualizarProducto(id, datos) {
   let body;
   let headers = {};

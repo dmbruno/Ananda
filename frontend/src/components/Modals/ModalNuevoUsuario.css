@@ -1,0 +1,194 @@
+/* ModalNuevoUsuario.css */
+
+.modal-usuario-backdrop {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  background: rgba(0, 0, 0, 0.18);
+  z-index: 3000;
+  display: flex;
+  justify-content: flex-end;
+  align-items: flex-start;
+}
+
+.modal-usuario-container {
+  margin-top: 2.5rem; /* tamaño vertical del modal */
+  margin-right: 2.5rem; /* separación derecha del modal */
+  background: #fff;
+  border-radius: 0.6rem; /* radio de borde reducido */
+  box-shadow: 0 4px 16px 0 rgba(0, 0, 0, 0.18), 0 1px 4px 0 rgba(0, 0, 0, 0.1);
+  padding: 1.25rem 1.25rem 1rem 1.25rem; /* padding reducido */
+  display: flex;
+  flex-direction: column;
+  min-width: 175px; /* ancho mínimo reducido */
+  width: 310px; /* ancho reducido */
+  max-width: 98vw;
+  max-height: 70vh; /* altura máxima reducida */
+  overflow-y: auto;
+  font-family: "Rajdhani", Arial, sans-serif;
+  animation: modal-slide-in 0.45s cubic-bezier(0.6, -0.01, 0.45, 0.99) forwards;
+  position: relative;
+}
+
+@keyframes modal-slide-in {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes modal-slide-out {
+  from {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+}
+
+.modal-usuario-container.modal-usuario-exit {
+  animation: modal-slide-out 0.45s cubic-bezier(0.6, -0.01, 0.45, 0.99) forwards;
+}
+
+.modal-usuario-form {
+  display: flex;
+  flex-direction: column;
+}
+
+.modal-usuario-form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px; /* Reducido de 10px a 8px */
+}
+
+.modal-usuario-title {
+  font-size: 1.2rem;
+  font-family: "Rajdhani", Arial, sans-serif;
+  font-weight: 600;
+  text-align: center;
+  margin-bottom: 0.75rem; /* Reducido de 1rem */
+  color: #222;
+}
+
+.modal-usuario-label {
+  font-size: 1.1rem; /* tamaño de fuente reducido */
+  font-family: "Rajdhani", Arial, sans-serif;
+  font-weight: 500;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+  align-items: flex-start;
+}
+
+.modal-usuario-label.checkbox-label {
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.modal-usuario-input {
+  width: 100%;
+  font-size: 1.1rem; /* tamaño de fuente reducido */
+  font-family: "Rajdhani", Arial, sans-serif;
+  border: none;
+  border-bottom: 1px solid #222; /* grosor reducido */
+  background: transparent;
+  padding: 0.35rem 0.1rem 0.35rem 0.1rem; /* padding reducido */
+  margin-top: -5px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.modal-usuario-input:focus {
+  border-bottom: 1px solid #4caf50; /* grosor reducido */
+}
+
+/* Estilos específicos para campos en modo solo lectura */
+.modal-usuario-input[readOnly] {
+  background-color: #f8f9fa;
+  color: #666;
+  cursor: default;
+}
+
+.modal-usuario-input[readOnly]:focus {
+  border-bottom: 1px solid #ddd;
+}
+
+/* Estilo especial para el campo de contraseña en modo solo lectura */
+.modal-usuario-input.password-readonly {
+  font-family: 'Courier New', monospace;
+  letter-spacing: 2px;
+  color: #888;
+  background-color: #f8f9fa;
+}
+
+.modal-usuario-checkbox {
+  width: 18px;
+  height: 18px;
+  accent-color: #4caf50;
+  cursor: pointer;
+}
+
+.modal-usuario-checkbox-readonly {
+  width: 18px;
+  height: 18px;
+  accent-color: #4caf50;
+  cursor: default;
+  pointer-events: none;
+}
+
+.admin-status {
+  font-size: 1.1rem;
+  font-family: "Rajdhani", Arial, sans-serif;
+  color: #666;
+  padding: 0.35rem 0.1rem;
+  border-bottom: 1px solid #ddd;
+  margin-top: -5px;
+}
+
+.modal-usuario-form-group svg {
+  display: block;
+  margin: 0 auto 0.5rem auto; /* margen reducido */
+  width: 40px; /* ancho reducido */
+  height: 32px; /* alto reducido */
+}
+
+.modal-usuario-footer {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px;
+}
+
+/* Estilos para igualar las dimensiones de los botones en el footer */
+.modal-usuario-footer button {
+  min-width: 80px;
+  min-height: 40px;
+  padding: 8px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+@media (max-width: 600px) {
+  .modal-usuario-container {
+    width: 98vw;
+    min-width: unset;
+    padding: 0.6rem 0.25rem 0.5rem 0.25rem; /* padding reducido */
+  }
+  .modal-usuario-title {
+    font-size: 1rem; /* tamaño de fuente reducido */
+    margin-left: 0.25rem;
+  }
+}

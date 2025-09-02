@@ -15,11 +15,17 @@ const GestionCajasPage = () => {
   const navigate = useNavigate();
   const { cajas, loading } = useSelector((state) => state.caja);
   
+  // Obtener información del usuario desde Redux
+  const user = useSelector(state => state.auth.user);
+  // Verificar si el usuario es administrador
+  const isAdmin = user && user.is_admin === true;
+  
+  // Estado para el mensaje de notificación
+  const [notification, setNotification] = useState(null);
+  
   // Estado local para manejar la sidebar
   const [activeSidebarItem, setActiveSidebarItem] = useState('Gestión de Cajas');
   const [showDropdownCategorias, setShowDropdownCategorias] = useState(false);
-  // Placeholder for user/auth state until it's implemented
-  const usuario = { rol: 'admin' }; // Assuming admin role for now
   
   const [aperturaCajaVisible, setAperturaCajaVisible] = useState(false);
   const [cierreCajaVisible, setCierreCajaVisible] = useState(false);
@@ -35,6 +41,14 @@ const GestionCajasPage = () => {
   useEffect(() => {
     setActiveSidebarItem("Gestión de Cajas");
   }, []);
+
+  // Función para mostrar notificaciones temporales
+  const showNotification = (message, type = 'error') => {
+    setNotification({ message, type });
+    setTimeout(() => {
+      setNotification(null);
+    }, 5000); // Desaparece después de 5 segundos
+  };
 
   // Funciones para manejar la sidebar
   const handleSidebarItemClick = (label) => {
@@ -92,7 +106,7 @@ const GestionCajasPage = () => {
     const cajaAbierta = cajas?.find(caja => caja.fecha_cierre === null);
     
     if (cajaAbierta) {
-      alert('Ya existe una caja abierta. Debe cerrarla antes de abrir una nueva.');
+      showNotification('Ya existe una caja abierta. Debe cerrarla antes de abrir una nueva.', 'error');
       return;
     }
     
@@ -101,7 +115,7 @@ const GestionCajasPage = () => {
 
   const handleCerrarCaja = async (caja) => {
     if (caja.fecha_cierre) {
-      alert('Esta caja ya está cerrada.');
+      showNotification('Esta caja ya está cerrada.', 'error');
       return;
     }
     
@@ -136,12 +150,18 @@ const GestionCajasPage = () => {
 
   const handleMarcarControlada = (caja) => {
     if (!caja.fecha_cierre) {
-      alert('No se puede marcar como controlada una caja que no ha sido cerrada.');
+      showNotification('No se puede marcar como controlada una caja que no ha sido cerrada.', 'error');
       return;
     }
     
     if (caja.fecha_control) {
-      alert('Esta caja ya ha sido controlada.');
+      showNotification('Esta caja ya ha sido controlada.', 'error');
+      return;
+    }
+    
+    // Verificar si el usuario es administrador
+    if (!isAdmin) {
+      showNotification('Solo los administradores pueden marcar cajas como controladas.', 'warning');
       return;
     }
     
@@ -149,13 +169,13 @@ const GestionCajasPage = () => {
       dispatch(marcarCajaControlada(caja.id))
         .unwrap()
         .then(() => {
-          alert('Caja marcada como controlada exitosamente.');
+          showNotification('Caja marcada como controlada exitosamente.', 'success');
           // Recargar la lista de cajas para asegurar que se muestre el estado actualizado
           dispatch(listarCajas());
         })
         .catch((err) => {
           console.error('Error completo al marcar caja como controlada:', err);
-          alert('Error al marcar la caja como controlada: ' + (err.message || 'Error desconocido'));
+          showNotification('Error al marcar la caja como controlada: ' + (err.message || 'Error desconocido'), 'error');
         });
     }
   };
@@ -294,6 +314,14 @@ const GestionCajasPage = () => {
         </div>
       </div>
       
+      {/* Notificación */}
+      {notification && (
+        <div className={`notificacion notificacion-${notification.type}`}>
+          {notification.message}
+          <button className="notificacion-close" onClick={() => setNotification(null)}>×</button>
+        </div>
+      )}
+      
       <div className="cajas-filtros">
         <div className="filtro-estado">
           <span>Estado:</span>
@@ -377,10 +405,10 @@ const GestionCajasPage = () => {
                         </button>
                       )}
                       
-                      {(caja.fecha_cierre && !caja.fecha_control && usuario?.rol === 'admin') && (
+                      {(caja.fecha_cierre && !caja.fecha_control) && (
                         <button 
-                          className="btn-icon btn-success"
-                          title="Marcar como controlada"
+                          className={`btn-icon ${isAdmin ? 'btn-success' : 'btn-disabled'}`}
+                          title={isAdmin ? "Marcar como controlada" : "Solo administradores pueden marcar como controlada"}
                           onClick={() => handleMarcarControlada(caja)}
                         >
                           ✅

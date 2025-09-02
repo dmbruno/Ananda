@@ -1,0 +1,109 @@
+/* Estilos para los botones */
+
+.modal-whatsapp-send {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 20px;
+  background-color: #dcfce7;
+  border: none;
+  border-radius: 4px;
+  color: #16a34a;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+/* Removing the checkmark symbol */
+/* .modal-whatsapp-send:before {
+  content: "✓";
+  display: inline-block;
+  margin-right: 8px;
+  font-size: 16px;
+  font-weight: bold;
+} */
+
+.modal-whatsapp-send:hover {
+  background-color: #bbf7d0;
+}
+
+.modal-whatsapp-send:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+/* Estilos para el estado de carga */
+.modal-whatsapp-send.loading {
+  background-color: #e2e8f0;
+  color: #64748b;
+}
+
+.modal-whatsapp-send.loading:before {
+  content: "";
+}
+
+/* Estilos para el estado de éxito */
+.modal-whatsapp-send.success {
+  background-color: #dcfce7;
+  color: #16a34a;
+}
+
+.modal-whatsapp-send.success:before {
+  content: "";
+}
+
+/* Spinner de carga */
+.spinner {
+  width: 20px;
+  height: 20px;
+  margin-right: 8px;
+  border: 3px solid rgba(0, 0, 0, 0.1);
+  border-top-color: #16a34a;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Animación del checkmark */
+.checkmark-animate {
+  animation: scale 0.5s ease-in-out;
+}
+
+@keyframes scale {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.3);
+  }
+}
+
+/* Estilos para el botón de cancelar */
+.modal-whatsapp-cancel {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 20px;
+  background-color: #f9dada;
+  border: none;
+  border-radius: 4px;
+  color: #b91c1c;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.modal-whatsapp-cancel:hover {
+  background-color: #fecaca;
+}
+
+.modal-whatsapp-cancel:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}

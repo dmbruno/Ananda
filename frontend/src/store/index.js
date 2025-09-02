@@ -9,6 +9,7 @@ import carritoReducer from "./carritoSlice";
 import ventaProcesoReducer from "./ventaProcesoSlice";
 import cajaReducer from "./cajaSlice";
 import usuariosReducer from "./usuariosSlice";
+import authReducer from "./authSlice";
 
 const store = configureStore({
   reducer: {
@@ -22,6 +23,7 @@ const store = configureStore({
     ventaProceso: ventaProcesoReducer,
     caja: cajaReducer,
     usuarios: usuariosReducer,
+    auth: authReducer,
   },
 });
 

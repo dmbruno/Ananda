@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import { fetchVentas } from "../../store/ventasSlice";
 import {
   Chart as ChartJS,
@@ -23,6 +24,7 @@ const COLORS = ["#4F46E5", "#A5B4FC", "#818CF8"];
 
 const MetodoDePago = ({ fechaInicio, fechaFin, className = "", chartWidth = 200, chartHeight = 200, showBuscadorPorFechas = false }) => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const { items: ventas, status } = useSelector((state) => state.ventas);
   const [desde, setDesde] = useState("");
   const [hasta, setHasta] = useState("");
@@ -97,6 +99,11 @@ const MetodoDePago = ({ fechaInicio, fechaFin, className = "", chartWidth = 200,
     }
   };
 
+  // Función para navegar a la página de ventas
+  const irAVentas = () => {
+    navigate('/ventas');
+  };
+
   // Plugin para sombra en el doughnut
   const shadowPlugin = {
     id: 'doughnutShadow',
@@ -131,7 +138,15 @@ const MetodoDePago = ({ fechaInicio, fechaFin, className = "", chartWidth = 200,
               onBuscar={() => {}}
             />
           </div>
-        ) : null}
+        ) : (
+          <button 
+            className="grafico-metodo-action" 
+            title="Ver todos"
+            onClick={irAVentas}
+          >
+            Ver todos <span className="arrow">→</span>
+          </button>
+        )}
       </div>
       <div className="grafico-metodo-chart-container">
         <Doughnut data={data} options={options} height={chartHeight} width={chartWidth} plugins={[shadowPlugin]} />

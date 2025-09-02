@@ -28,8 +28,21 @@ export const updateClienteAsync = createAsyncThunk(
 export const marcarClienteSaludado = createAsyncThunk(
   'clientes/marcarSaludado',
   async (clienteId) => {
-    const response = await axios.put(`/api/clientes/${clienteId}/marcar-saludado`);
-    return { clienteId, ultimo_saludo: response.data.ultimo_saludo };
+    try {
+      // Verificar que clienteId sea válido
+      if (!clienteId) {
+        throw new Error('ID de cliente no válido');
+      }
+      
+      console.log('Marcando cliente como saludado, ID:', clienteId);
+      
+      // Usar la misma ruta que ya funciona en el backend (POST a /saludar)
+      const response = await axios.post(`/api/clientes/${clienteId}/saludar`);
+      return { clienteId, ultimo_saludo: response.data.fecha };
+    } catch (error) {
+      console.error(`Error al marcar cliente ${clienteId} como saludado:`, error);
+      throw error;
+    }
   }
 );
 

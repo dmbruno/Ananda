@@ -109,13 +109,21 @@ const Cumples = ({ fechaInicio, fechaFin }) => {
     .slice(0, 10);
 
   // Función para manejar el envío de mensaje
-  const handleEnviarMensaje = async (cliente) => {
+  const handleEnviarMensaje = async (clienteId) => {
     try {
-      await dispatch(marcarClienteSaludado(cliente.id)).unwrap();
+      console.log(`Marcando cliente con ID ${clienteId} como saludado desde Cumples.jsx`);
+      await dispatch(marcarClienteSaludado(clienteId)).unwrap();
+      console.log(`Cliente ${clienteId} marcado como saludado exitosamente`);
+      
+      // Actualizar la lista de clientes para que el cliente saludado desaparezca
+      dispatch(fetchClientes());
+      
+      // Cerrar el modal
       setModalOpen(false);
       setClienteSeleccionado(null);
     } catch (error) {
       console.error('Error al marcar cliente como saludado:', error);
+      alert('Error al marcar cliente como saludado. Intente nuevamente.');
     }
   };
 

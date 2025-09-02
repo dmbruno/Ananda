@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import { fetchDetalleVentas } from "../../store/detalleVentasSlice";
 import { fetchProductos } from "../../store/productosSlice";
 import "./TopMasVendidos.css";
@@ -11,6 +12,7 @@ const TopMasVendidos = ({ showSmallImage = false, showBuscadorPorFechas = false 
   const [hasta, setHasta] = useState("");
   const [rangoActivo, setRangoActivo] = useState(false); // true si el usuario buscó un rango
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const { items: detalles, status: statusDetalles } = useSelector((state) => state.detalleVentas);
   const { items: productos, status: statusProductos } = useSelector((state) => state.productos);
 
@@ -137,6 +139,11 @@ const TopMasVendidos = ({ showSmallImage = false, showBuscadorPorFechas = false 
     setRangoActivo(true);
   };
 
+  // Función para navegar a la página de ventas
+  const irAVentas = () => {
+    navigate('/ventas');
+  };
+
   return (
     <div className="top-mas-vendidos-card">
       <div className="top-mas-vendidos-header">
@@ -145,13 +152,17 @@ const TopMasVendidos = ({ showSmallImage = false, showBuscadorPorFechas = false 
           <h2 className="top-mas-vendidos-title">Top más vendidos</h2>
         </div>
         {showBuscadorPorFechas ? null : (
-          <button className="top-mas-vendidos-action" title="Ver todos">
+          <button 
+            className="top-mas-vendidos-action" 
+            title="Ver todos"
+            onClick={irAVentas}
+          >
             Ver todos <span className="arrow">→</span>
           </button>
         )}
       </div>
       {showBuscadorPorFechas && (
-        <div style={{ marginBottom: 4 }}>
+        <div className="top-mas-vendidos-buscador-container">
           <BuscadorPorFechas
             desde={desde}
             hasta={hasta}
@@ -160,6 +171,9 @@ const TopMasVendidos = ({ showSmallImage = false, showBuscadorPorFechas = false 
             mostrarDescarga={rangoActivo && !!(desde && hasta)}
             onBuscar={handleBuscar}
             onDescargarCSV={handleDescargarCSV}
+            className="top-mas-vendidos-buscador"
+            labelDesde="Desde"
+            labelHasta="Hasta"
           />
         </div>
       )}

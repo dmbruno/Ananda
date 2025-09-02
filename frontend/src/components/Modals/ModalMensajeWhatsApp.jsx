@@ -87,7 +87,7 @@ const ModalMensajeWhatsApp = ({ open, onClose, cliente, onClienteSaludado, onEnv
     const callbackSaludar = onEnviarMensaje || onClienteSaludado;
     if (typeof callbackSaludar === 'function') {
       console.log(`Marcando cliente ${cliente.id} como saludado después de enviar WhatsApp`);
-      callbackSaludar(cliente);
+      callbackSaludar(cliente.id);
     }
     
     // Abrir WhatsApp Web en una nueva pestaña

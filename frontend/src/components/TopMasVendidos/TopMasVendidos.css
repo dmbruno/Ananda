@@ -1,6 +1,6 @@
 .top-mas-vendidos-list {
-  min-height: 220px;
-  max-height: 260px; /* <-- Ajusta este valor para hacer el componente más chico o más alto */
+  min-height: 180px;
+  max-height: 240px; /* <-- Ajusta este valor para hacer el componente más chico o más alto */
   width: 100%;
   max-width: 100%;
   overflow-x: auto;
@@ -178,4 +178,95 @@
   color: #222;
   min-width: 40px;
   text-align: right;
+}
+
+/* Estilos específicos para el buscador dentro de TopMasVendidos */
+.top-mas-vendidos-buscador-container {
+  width: 100%;
+  max-width: 100%;
+  overflow: visible;
+  margin: 0 auto 8px auto;
+  padding: 0;
+}
+
+.top-mas-vendidos-buscador {
+  max-width: 100% !important;
+  width: 100% !important;
+}
+
+.top-mas-vendidos-buscador.buscador-fechas-bar {
+  width: 100% !important;
+  max-width: 100% !important;
+  flex-wrap: nowrap !important;
+  gap: 4px;
+  padding: 8px;
+  background: #f9fafb;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.top-mas-vendidos-buscador .buscador-fechas-label {
+  white-space: nowrap;
+  font-size: 0.85rem;
+  margin-right: 2px;
+  flex-shrink: 0;
+}
+
+.top-mas-vendidos-buscador .buscador-fechas-actions {
+  flex-shrink: 0;
+  display: flex;
+  gap: 4px;
+  margin-left: auto;
+}
+
+/* Ajustar inputs para que no hagan overflow */
+.top-mas-vendidos-buscador .buscador-fechas-input {
+  max-width: 90px;
+  width: 90px;
+  padding: 3px 6px;
+  font-size: 0.85rem;
+  flex-shrink: 0;
+}
+
+/* Ajuste específico para el botón de CSV */
+.top-mas-vendidos-buscador .buscador-fechas-csv {
+  padding: 0.25rem 0.5rem;
+  font-size: 0.85rem;
+  white-space: nowrap;
+  min-width: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+/* Ajuste para el botón de búsqueda */
+.top-mas-vendidos-buscador .buscador-fechas-buscar {
+  padding: 0.25rem 0.5rem;
+}
+
+/* Media query para pantallas muy pequeñas - deshabilitado para mantener siempre en una línea */
+@media (max-width: 480px) {
+  .top-mas-vendidos-buscador.buscador-fechas-bar {
+    flex-wrap: nowrap !important;
+  }
+  
+  .top-mas-vendidos-buscador .buscador-fechas-label {
+    font-size: 0.7rem;
+  }
+  
+  .top-mas-vendidos-buscador .buscador-fechas-input {
+    max-width: 80px;
+    width: 80px;
+    font-size: 0.8rem;
+  }
+  
+  .top-mas-vendidos-buscador .buscador-fechas-buscar,
+  .top-mas-vendidos-buscador .buscador-fechas-csv {
+    padding: 0.2rem 0.35rem;
+    font-size: 0.8rem;
+  }
 }

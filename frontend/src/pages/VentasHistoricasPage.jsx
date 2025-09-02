@@ -96,13 +96,10 @@ const VentasHistoricasPage = () => {
       return;
     }
     
-    // Ordenar ventas por fecha - las más recientes primero
+    // Ordenar ventas por fecha - las más recientes primero (ID más alto = más reciente)
     let filtradas = [...ventasParaProcesar].sort((a, b) => {
-      // Extraer fechas para comparación
-      const fechaA = a.fecha_venta ? new Date(a.fecha_venta) : new Date(0);
-      const fechaB = b.fecha_venta ? new Date(b.fecha_venta) : new Date(0);
-      // Ordenar descendente (más reciente primero)
-      return fechaB - fechaA;
+      // Ordenar por ID descendente (más reciente primero)
+      return b.id - a.id;
     });
     
     // Filtrar por término de búsqueda en todas las columnas posibles
@@ -290,7 +287,7 @@ const VentasHistoricasPage = () => {
               onDescargarCSV={handleDescargarCSV}
             />
             
-            {/* Botón para limpiar filtros */}
+            {/* Botón para limpiar filtros - colocado a la derecha del BuscadorPorFechas */}
             {(busqueda || rangoActivo) && (
               <button 
                 className="ventas-historicas-clear-filters" 

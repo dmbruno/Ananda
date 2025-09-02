@@ -5,14 +5,15 @@ import Sidebar from '../components/Sidebar/sidebar';
 import DropdownCategoriasSidebar from '../components/SidebarCategorias/DropdownCategoriasSidebar';
 import HeaderUserBar from '../components/HeaderUserBar/HeaderUserBar';
 import BotonCustom from '../components/Botones/BotonCustom';
+import Buscador from '../components/Buscador/Buscador';
 import { 
   fetchUsuarios, 
   deleteUsuario, 
   clearError,
   clearSelectedUsuario 
 } from '../store/usuariosSlice';
-// import ModalNuevoUsuario from '../components/Modals/ModalNuevoUsuario'; // Lo crearemos después
-// import ModalEditarUsuario from '../components/Modals/ModalEditarUsuario'; // Lo crearemos después
+import ModalNuevoUsuario from '../components/Modals/ModalNuevoUsuario';
+// import ModalEditarUsuario from '../components/Modals/ModalEditarUsuario'; // Lo crearemos después si es necesario
 import './UsuariosPage.css';
 
 const UsuariosPage = () => {
@@ -26,7 +27,9 @@ const UsuariosPage = () => {
   // Estados para los modales
   const [modalNuevoOpen, setModalNuevoOpen] = useState(false);
   const [modalEditarOpen, setModalEditarOpen] = useState(false);
+  const [modalVerOpen, setModalVerOpen] = useState(false);
   const [usuarioParaEditar, setUsuarioParaEditar] = useState(null);
+  const [usuarioParaVer, setUsuarioParaVer] = useState(null);
   
   // Estado de búsqueda
   const [searchTerm, setSearchTerm] = useState('');
@@ -107,9 +110,8 @@ const UsuariosPage = () => {
   };
 
   const handleVerUsuario = (usuario) => {
-    console.log('Ver detalles del usuario:', usuario);
-    // Aquí puedes implementar la navegación a una página de detalles
-    // navigate(`/usuarios/${usuario.id}`);
+    setUsuarioParaVer(usuario);
+    setModalVerOpen(true);
   };
 
   const handleEliminarUsuario = async (usuarioId) => {
@@ -128,7 +130,9 @@ const UsuariosPage = () => {
   const handleUsuarioGuardado = () => {
     setModalNuevoOpen(false);
     setModalEditarOpen(false);
+    setModalVerOpen(false);
     setUsuarioParaEditar(null);
+    setUsuarioParaVer(null);
     // Refrescar la lista de usuarios
     dispatch(fetchUsuarios());
   };
@@ -213,20 +217,11 @@ const UsuariosPage = () => {
 
           {/* Barra de búsqueda */}
           <div className="usuarios-search-section">
-            <div className="search-input-container">
-              <input
-                type="text"
-                placeholder="Search"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="search-input"
-                disabled={loading}
-              />
-              <svg className="search-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <circle cx="11" cy="11" r="8" stroke="currentColor" strokeWidth="2"/>
-                <path d="M21 21l-4.35-4.35" stroke="currentColor" strokeWidth="2"/>
-              </svg>
-            </div>
+            <Buscador
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              placeholder="Buscar usuarios..."
+            />
           </div>
 
           {/* Tabla de usuarios */}
@@ -252,12 +247,17 @@ const UsuariosPage = () => {
                     </tr>
                   ) : (
                     usuariosFiltrados.map((usuario) => (
-                      <tr key={usuario.id}>
+                      <tr 
+                        key={usuario.id}
+                        onClick={() => handleVerUsuario(usuario)}
+                        style={{ cursor: 'pointer' }}
+                        title="Haz clic para ver detalles del usuario"
+                      >
                         <td>{usuario.id}</td>
                         <td>{usuario.nombre}</td>
                         <td>{usuario.apellido}</td>
                       <td>{usuario.email}</td>
-                      <td>
+                      <td onClick={(e) => e.stopPropagation()}>
                         <div className="admin-checkbox">
                           <input 
                             type="checkbox" 
@@ -267,7 +267,7 @@ const UsuariosPage = () => {
                           />
                         </div>
                       </td>
-                      <td>
+                      <td onClick={(e) => e.stopPropagation()}>
                         <div className="acciones-buttons">
                           <button 
                             className="btn-ver"
@@ -321,18 +321,26 @@ const UsuariosPage = () => {
         </div>
 
         {/* Modales */}
-        {/* <ModalNuevoUsuario 
+        <ModalNuevoUsuario 
           open={modalNuevoOpen} 
           onClose={() => setModalNuevoOpen(false)}
           onUsuarioGuardado={handleUsuarioGuardado}
         />
         
-        <ModalEditarUsuario 
+        <ModalNuevoUsuario 
           open={modalEditarOpen} 
           onClose={() => setModalEditarOpen(false)}
           usuario={usuarioParaEditar}
           onUsuarioGuardado={handleUsuarioGuardado}
-        /> */}
+        />
+        
+        <ModalNuevoUsuario 
+          open={modalVerOpen} 
+          onClose={() => setModalVerOpen(false)}
+          usuario={usuarioParaVer}
+          soloLectura={true}
+          onUsuarioGuardado={handleUsuarioGuardado}
+        />
       </div>
     </div>
   );

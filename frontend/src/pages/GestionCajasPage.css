@@ -1,7 +1,74 @@
 .gestion-cajas-container {
   padding: 1.5rem;
-  margin-top: 3rem;
+  margin-top: 2rem;
   margin-left: 4rem;
+}
+
+/* Estilos para notificaciones */
+.notificacion {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  padding: 12px 20px;
+  border-radius: 6px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-width: 300px;
+  max-width: 400px;
+  animation: slide-in 0.3s ease-out;
+}
+
+.notificacion-error {
+  background-color: #fee2e2;
+  border-left: 4px solid #ef4444;
+  color: #b91c1c;
+}
+
+.notificacion-warning {
+  background-color: #fef3c7;
+  border-left: 4px solid #f59e0b;
+  color: #b45309;
+}
+
+.notificacion-success {
+  background-color: #d1fae5;
+  border-left: 4px solid #10b981;
+  color: #047857;
+}
+
+.notificacion-close {
+  background: none;
+  border: none;
+  font-size: 18px;
+  font-weight: bold;
+  cursor: pointer;
+  margin-left: 15px;
+  opacity: 0.7;
+}
+
+.notificacion-close:hover {
+  opacity: 1;
+}
+
+/* Botón deshabilitado para no administradores */
+.btn-disabled {
+  cursor: not-allowed !important;
+  opacity: 0.6 !important;
+  background-color: #ccc !important;
+}
+
+@keyframes slide-in {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
 }
 
 .dashboard-title {
@@ -287,17 +354,21 @@
 
 .cajas-table th {
   background: #f3f4f8;
-  font-weight: 500;
+  padding: 0.75rem;
+  text-align: center;
+  font-family: "Rajdhani", Arial, sans-serif;
+  font-style: normal;
+  font-weight: 600;
   color: rgb(100, 116, 139);
-  font-family: 'Rajdhani', sans-serif;
   font-size: 12px;
+  line-height: 18px;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.025em;
   position: sticky;
   top: 0;
   z-index: 10;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
-  text-align: center;
+  border-bottom: 1px solid #e5e7eb;
 }
 
 .cajas-table tr {
@@ -394,8 +465,12 @@
   display: flex;
   justify-content: flex-end;
   align-items: center;
-  font-size: 0.85rem;
-  color: #64748b;
+  font-family: "Rajdhani", Arial, sans-serif;
+  font-style: normal;
+  font-weight: 600;
+  color: rgb(100, 116, 139);
+  font-size: 12px;
+  line-height: 18px;
   position: sticky;
   bottom: 0;
   box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.06);
@@ -406,7 +481,12 @@
 }
 
 .cajas-table-footer span {
-  font-weight: 500;
+  font-family: "Rajdhani", Arial, sans-serif;
+  font-style: normal;
+  font-weight: 600;
+  color: rgb(100, 116, 139);
+  font-size: 12px;
+  line-height: 18px;
 }
 
 .loading {

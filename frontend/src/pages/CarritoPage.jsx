@@ -52,9 +52,21 @@ const CarritoPage = () => {
     });
   };
 
+  // Verificar estado de caja al cargar la página
   useEffect(() => {
+    // Simple, solo verificamos una vez al montar el componente
+    console.log('🏪 CarritoPage: Verificando estado de caja al cargar...');
     dispatch(obtenerCajaActual());
   }, [dispatch]);
+
+  // Log del estado de caja para debugging
+  useEffect(() => {
+    console.log('🏪 CarritoPage - Estado de caja actualizado:', {
+      estadoCaja,
+      cajaActual: cajaActual ? `ID: ${cajaActual.id}` : 'null',
+      cajaLoading
+    });
+  }, [estadoCaja, cajaActual, cajaLoading]);
 
   // Lógica inteligente para navegación del carrito
   useEffect(() => {
@@ -77,19 +89,28 @@ const CarritoPage = () => {
   const totalCaja = cajaActual ? 
     (cajaActual.monto_final || cajaActual.monto_inicial || 0) : 0;
 
-  // Si está cargando, mostrar loading
+  // Si no hay caja abierta, mostrar modal para abrir caja.
+  // Hacer esto incluso si `cajaLoading` es true, porque el usuario espera
+  // ver el modal para ingresar el monto inicial mientras se verifica el estado.
+  if (estadoCaja === 'cerrada' || estadoCaja === null || estadoCaja === undefined) {
+    console.log('🏪 CarritoPage: Mostrando modal de abrir caja. Estado:', estadoCaja, 'cajaLoading:', cajaLoading);
+    return <AbrirCajaModal onCajaAbierta={() => {
+      console.log('✅ CarritoPage: Caja abierta, refrescando estado...');
+      dispatch(obtenerCajaActual());
+    }} />;
+  }
+
+  // Si está cargando y ya no estamos en estado 'cerrada', mostrar el spinner global
   if (cajaLoading) {
+    console.log('🏪 CarritoPage: Mostrando loading de caja...');
     return (
       <div className="carrito-page-loading">
-        <div className="loading-spinner">Cargando...</div>
+        <div className="loading-spinner">Cargando estado de caja...</div>
       </div>
     );
   }
 
-  // Si no hay caja abierta, mostrar modal para abrir caja
-  if (estadoCaja === 'cerrada') {
-    return <AbrirCajaModal onCajaAbierta={() => dispatch(obtenerCajaActual())} />;
-  }
+  console.log('🏪 CarritoPage: Renderizando página normal con caja abierta');
 
   return (
     <div className="app-container">
