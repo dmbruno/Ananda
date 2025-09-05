@@ -27,7 +27,12 @@ def create_app():
     @app.route('/uploads/<filename>')
     def uploaded_file(filename):
         return send_from_directory('uploads', filename)
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///ananda.db'
+    # Asegurar que el directorio instance exista antes de usar app.instance_path
+    os.makedirs(app.instance_path, exist_ok=True)
+    app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get(
+        'DATABASE_URL',
+        f"sqlite:///{os.path.join(app.instance_path, 'ananda.db')}"
+   )
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     
     # JWT Configuration
