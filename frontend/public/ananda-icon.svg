@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="84" height="84">
+  <rect width="24" height="24" rx="6" fill="#ffffff"/>
+  <!-- Shopping bag: body + handles -->
+  <g fill="none" stroke="#4F46E5" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M7 8h10l-1.2 10a1 1 0 0 1-1 0.9H9.2a1 1 0 0 1-1-0.9L7 8z" fill="#4F46E5" opacity="0.08" stroke="none"/>
+    <path d="M7 8h10l-1.2 10a1 1 0 0 1-1 .9H9.2a1 1 0 0 1-1-.9L7 8z"/>
+    <path d="M9 8V6.5a3 3 0 0 1 6 0V8"/>
+    <path d="M9.5 11h5"/>
+  </g>
+</svg>
