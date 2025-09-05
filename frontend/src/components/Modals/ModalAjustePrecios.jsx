@@ -4,6 +4,7 @@ import { aplicarAjusteMasivo, fetchProductos, resetAjusteMasivoStatus } from '..
 import { fetchCategorias } from '../../store/categoriasSlice';
 import BotonEnviar from '../Botones/BotonEnviar';
 import BotonCancelar from '../Botones/BotonCancelar';
+import notify from '../../utils/notify';
 import './ModalAjustePrecios.css';
 
 const ModalAjustePrecios = ({ open, onClose, modoStockFecha, categoriaActual, subcategoriaActual }) => {
@@ -295,20 +296,20 @@ const ModalAjustePrecios = ({ open, onClose, modoStockFecha, categoriaActual, su
                 ? `¡Precios actualizados! Se ha incrementado un ${valorAjuste}% el precio de ${productosFiltrados.length} productos.`
                 : `¡Precios actualizados! Se ha incrementado $${valorAjuste} al precio de ${productosFiltrados.length} productos.`;
                 
-              alert(mensaje);
+              notify.info(mensaje);
               handleClose();
             }, 800);
           })
           .catch(error => {
             console.error("❌ Error al recargar productos:", error);
             setButtonLoading(false);
-            alert("Los precios se han actualizado pero ocurrió un error al recargar la página. Por favor, actualice manualmente.");
+            notify.warn("Los precios se han actualizado pero ocurrió un error al recargar la página. Por favor, actualice manualmente.");
           });
       })
       .catch((error) => {
         console.error("❌ Error al ajustar precios:", error);
         setButtonLoading(false);
-        alert("Error al ajustar los precios. Por favor, intente nuevamente.");
+        notify.error("Error al ajustar los precios. Por favor, intente nuevamente.");
       });
   };
   

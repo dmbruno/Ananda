@@ -15,10 +15,13 @@ import {
 import ModalNuevoUsuario from '../components/Modals/ModalNuevoUsuario';
 // import ModalEditarUsuario from '../components/Modals/ModalEditarUsuario'; // Lo crearemos después si es necesario
 import './UsuariosPage.css';
+import notify from '../utils/notify';
+import { useConfirm } from '../utils/confirm/ConfirmContext';
 
 const UsuariosPage = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const confirm = useConfirm();
   
   // Estados para la sidebar
   const [activeSidebarItem, setActiveSidebarItem] = useState("Usuarios");
@@ -115,15 +118,17 @@ const UsuariosPage = () => {
   };
 
   const handleEliminarUsuario = async (usuarioId) => {
-    if (window.confirm('¿Estás seguro de que quieres eliminar este usuario? Esta acción marcará al usuario como inactivo pero mantendrá el historial de ventas.')) {
-      try {
-        await dispatch(deleteUsuario(usuarioId)).unwrap();
-        // Mostrar mensaje de éxito
-        alert('Usuario eliminado exitosamente. El historial de ventas se mantiene intacto.');
-      } catch (error) {
-        console.error('Error al eliminar usuario:', error);
-        alert(`Error al eliminar el usuario: ${error}`);
+    try {
+      const ok = await confirm('¿Estás seguro de que quieres eliminar este usuario? Esta acción marcará al usuario como inactivo pero mantendrá el historial de ventas.');
+      if (!ok) {
+        notify.info('Eliminación cancelada');
+        return;
       }
+      await dispatch(deleteUsuario(usuarioId)).unwrap();
+      notify.success('Usuario eliminado exitosamente. El historial de ventas se mantiene intacto.');
+    } catch (error) {
+      console.error('Error al eliminar usuario:', error);
+      notify.error(`Error al eliminar el usuario: ${error?.message || error}`);
     }
   };
 

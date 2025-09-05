@@ -10,6 +10,7 @@ import BuscadorPorFechas from "../components/Buscador/BuscadorPorFechas";
 import VentasHistoricasTable from "../components/VentasHistoricas/VentasHistoricasTable";
 import "../components/Sidebar/Carrito/botonCarrito.css";
 import "./VentasHistoricasPage.css";
+import notify from '../utils/notify';
 
 const VentasHistoricasPage = () => {
   const dispatch = useDispatch();
@@ -172,7 +173,7 @@ const VentasHistoricasPage = () => {
         setRangoActivo(true);
       }, 0);
     } else {
-      alert("Por favor, seleccione ambas fechas para generar el reporte");
+      notify.warn('Por favor, seleccione ambas fechas para generar el reporte');
     }
   };
 

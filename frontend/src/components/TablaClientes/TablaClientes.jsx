@@ -3,9 +3,10 @@ import ModalMensajeWhatsApp from "../Modals/ModalMensajeWhatsApp";
 import ModalNuevoCliente from "../Modals/ModalNuevoCliente";
 import { useSelector, useDispatch } from "react-redux";
 import { fetchClientes } from "../../store/clientesSlice";
-import { marcarClienteSaludado } from "../../api/clientes";
+import { marcarClienteSaludado, eliminarClienteApi } from "../../api/clientes";
+import notify from '../../utils/notify';
 import "./TablaClientes.css";
-import Buscador from "../Buscador/Buscador";
+import Buscador from '../Buscador/Buscador';
 import BotonCustom from "../Botones/BotonCustom";
 import { FaCheckCircle } from "react-icons/fa";
 import {
@@ -15,6 +16,7 @@ import {
   formatearFecha,
   formatearFechaCompleta,
 } from "../../utils/dateUtils";
+import { useConfirm } from '../../utils/confirm/ConfirmContext';
 
 const TablaClientes = (props) => {
   const dispatch = useDispatch();
@@ -30,6 +32,8 @@ const TablaClientes = (props) => {
   const [busqueda, setBusqueda] = useState("");
   const [clientesSaludados, setClientesSaludados] = useState({});
   const [ordenarPorCumple, setOrdenarPorCumple] = useState(false);
+
+  const confirm = useConfirm();
 
   useEffect(() => {
     if (status === "idle") {
@@ -63,21 +67,19 @@ const TablaClientes = (props) => {
     props.onEditarCliente(cliente);
   };
 
-  const handleEliminarCliente = (cliente) => {
-    const confirmacion = window.confirm("¿Seguro desea eliminar este cliente?");
-    if (confirmacion) {
-      fetch(`/api/clientes/${cliente.id}`, {
-        method: "DELETE",
-      })
-        .then((response) => {
-          if (response.ok) {
-            alert("Cliente eliminado correctamente.");
-            dispatch(fetchClientes()); // Refresca la lista de clientes
-          } else {
-            alert("Error al eliminar el cliente.");
-          }
-        })
-        .catch(() => alert("Error de conexión al eliminar el cliente."));
+  const handleEliminarCliente = async (clienteId) => {
+    try {
+      const ok = await confirm('¿Seguro desea eliminar este cliente?');
+      if (!ok) {
+        notify.info('Eliminación cancelada');
+        return;
+      }
+      await eliminarClienteApi(clienteId);
+      notify.success('Cliente eliminado correctamente.');
+      dispatch(fetchClientes());
+    } catch (err) {
+      console.error('Error al eliminar cliente:', err);
+      notify.error(`Error al eliminar el cliente: ${err?.message || err}`, { autoClose: 5000 });
     }
   };
 
@@ -124,7 +126,7 @@ const TablaClientes = (props) => {
       dispatch(fetchClientes());
     } catch (error) {
       console.error(`Error al marcar cliente ${clienteId} como saludado:`, error);
-      alert("Ha ocurrido un error al marcar el cliente como saludado. Por favor intenta nuevamente.");
+      notify.error('Ha ocurrido un error al marcar el cliente como saludado. Por favor intenta nuevamente.', { autoClose: 5000 });
     }
   };
 
@@ -399,7 +401,7 @@ const TablaClientes = (props) => {
                         <button
                           className="tabla-clientes-btn tabla-clientes-btn-delete"
                           title="Eliminar cliente"
-                          onClick={() => handleEliminarCliente(c)}
+                          onClick={() => handleEliminarCliente(c.id)}
                         >
                           <svg
                             width="22"

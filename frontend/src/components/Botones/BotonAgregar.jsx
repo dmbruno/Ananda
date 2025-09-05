@@ -1,11 +1,9 @@
 import React from "react";
 import "./BotonAgregar.css";
 
-import "./BotonAgregar.css";
-
-const BotonAgregar = ({ onClick, children, disabled }) => (
+const BotonAgregar = ({ onClick, children, disabled, className = "" }) => (
   <button 
-    className="boton-agregar" 
+    className={`boton-agregar ${className}`} 
     onClick={onClick}
     disabled={disabled}
   >

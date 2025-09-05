@@ -245,11 +245,46 @@ def actualizar_venta(id):
 @ventas_bp.route('/<int:id>', methods=['DELETE'])
 def eliminar_venta(id):
     venta = Venta.query.get_or_404(id)
-    for d in venta.detalles:
-        db.session.delete(d)
-    db.session.delete(venta)
-    db.session.commit()
-    return jsonify({'msg': 'Venta eliminada'})
+    try:
+        # Restaurar stock y ajustar caja dentro de la misma sesión
+        caja = Caja.query.get(venta.caja_id) if venta.caja_id else None
+
+        # 1) Reponer stock para cada detalle
+        for detalle in venta.detalles:
+            producto = Producto.query.get(detalle.producto_id)
+            if producto:
+                # Asegurarse de no tener None
+                producto.stock_actual = (producto.stock_actual or 0) + (detalle.cantidad or 0)
+
+        # 2) Eliminar detalles y la venta
+        for d in list(venta.detalles):
+            db.session.delete(d)
+        db.session.delete(venta)
+
+        # 3) Recalcular montos de la caja asociada (si existe)
+        if caja:
+            # Sumar totales de las ventas restantes (excluir la venta eliminada)
+            ventas_restantes = Venta.query.filter(Venta.caja_id == caja.id).filter(Venta.id != id).all()
+            total_ventas_restantes = sum(v.total for v in ventas_restantes)
+
+            # Actualizar monto_final y monto_sistema coherentemente
+            caja.monto_final = (caja.monto_inicial or 0) + (total_ventas_restantes or 0)
+            caja.monto_sistema = caja.monto_final
+
+            # Si el usuario ya declaró un monto al cerrar la caja, recalcular la diferencia
+            if getattr(caja, 'monto_declarado', None) is not None:
+                try:
+                    caja.diferencia = float(caja.monto_declarado) - float(caja.monto_final)
+                except Exception:
+                    caja.diferencia = None
+
+        db.session.commit()
+        return jsonify({'msg': 'Venta eliminada'}), 200
+    except Exception as e:
+        db.session.rollback()
+        import traceback
+        traceback.print_exc()
+        return jsonify({'error': str(e)}), 500
 
 # Obtener estadísticas de ventas de los últimos 10 días
 @ventas_bp.route('/estadisticas/ultimos-10-dias', methods=['GET'])

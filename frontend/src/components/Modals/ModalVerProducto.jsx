@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { actualizarProducto } from "../../api/productos";
@@ -7,6 +6,8 @@ import "./ModalVerProducto.css";
 import BotonCancelar from "../Botones/BotonCancelar";
 import BotonEnviar from "../Botones/BotonEnviar";
 import BotonEditar from "../Botones/BotonEditar";
+import notify from '../../utils/notify';
+import { useConfirm } from '../../utils/confirm/ConfirmContext';
 
 // Definir campos inmutables (que afectan al SKU) y editables
 const CAMPOS_INMUTABLES = ['categoria', 'subcategoria', 'nombre', 'talle', 'color', 'codigo'];
@@ -25,6 +26,7 @@ const ModalVerProducto = ({ producto, onClose, onProductoActualizado }) => {
   const [modoEdicion, setModoEdicion] = useState(false);
   const [datosProducto, setDatosProducto] = useState(producto);
   const [agregandoCarrito, setAgregandoCarrito] = useState(false);
+  const confirm = useConfirm();
 
   // Obtener la cantidad del producto en el carrito
   const productoEnCarrito = carrito.items.find(item => item.id === datosProducto.id);
@@ -65,11 +67,14 @@ const ModalVerProducto = ({ producto, onClose, onProductoActualizado }) => {
         onProductoActualizado(productoActualizado);
       }
       // Confirmación y refresco local
-      if (window.confirm("Cambios guardados. ¿Desea ver el producto actualizado?")) {
+      const ok = await confirm("Cambios guardados. ¿Desea ver el producto actualizado?");
+      if (!ok) {
+        notify.info('No se mostró el producto actualizado');
+      } else {
         setDatosProducto(productoActualizado);
       }
     } catch (err) {
-      alert("Error al guardar cambios: " + err.message);
+      notify.error("Error al guardar cambios: " + err.message, { autoClose: 5000 });
     }
   };
 
@@ -113,7 +118,7 @@ const ModalVerProducto = ({ producto, onClose, onProductoActualizado }) => {
 
   const handleAgregarAlCarrito = () => {
     if (!datosProducto.activo) {
-      alert('Este producto está inactivo y no se puede agregar al carrito');
+      notify.warn('Este producto está inactivo y no se puede agregar al carrito');
       return;
     }
 

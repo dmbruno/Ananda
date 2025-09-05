@@ -1,7 +1,12 @@
 import React, { useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { eliminarVenta } from "../../store/ventasSlice";
+import { fetchVentas } from "../../store/ventasSlice";
+import { fetchProductos } from "../../store/productosSlice";
+import { obtenerCajaActual } from "../../store/cajaSlice";
 import ModalVerVenta from "../Modals/ModalVerVenta";
+import { useConfirm } from '../../utils/confirm/ConfirmContext';
+import notify from '../../utils/notify';
 import "./VentasHistoricasTable.css";
 
 const VentasHistoricasTable = ({ ventasFiltradas = [], onVerDetalle }) => {
@@ -11,6 +16,7 @@ const VentasHistoricasTable = ({ ventasFiltradas = [], onVerDetalle }) => {
 
   // Hook de Redux
   const dispatch = useDispatch();
+  const confirm = useConfirm();
 
   // Usar las ventas filtradas directamente
   const ventas = ventasFiltradas;
@@ -38,15 +44,31 @@ const VentasHistoricasTable = ({ ventasFiltradas = [], onVerDetalle }) => {
   };
 
   // Función para eliminar venta con confirmación
-  const handleEliminarVenta = (venta, e) => {
+  const handleEliminarVenta = async (venta, e) => {
     e.stopPropagation(); // Evitar que se abra el modal
     
-    const confirmar = window.confirm(
-      `¿Estás seguro de que deseas eliminar la venta #${venta.id}?\n\nCliente: ${venta.cliente_nombre || "Cliente no registrado"}\nTotal: $${venta.total.toLocaleString('es-AR')}\n\nEsta acción no se puede deshacer.`
-    );
-    
-    if (confirmar) {
-      dispatch(eliminarVenta(venta.id));
+    try {
+      const confirmar = await confirm(
+        `¿Estás seguro de que deseas eliminar la venta #${venta.id}?\n\nCliente: ${venta.cliente_nombre || "Cliente no registrado"}\nTotal: $${venta.total.toLocaleString('es-AR')}\n\nEsta acción no se puede deshacer.`
+      );
+      if (!confirmar) {
+        notify.info('Eliminación cancelada');
+        return;
+      }
+      try {
+        // Esperar a que la acción async complete y verificar resultado
+        await dispatch(eliminarVenta(venta.id)).unwrap();
+        // Refrescar datos críticos para que la UI refleje cambios (stock, caja, ventas)
+        dispatch(fetchVentas());
+        dispatch(fetchProductos());
+        dispatch(obtenerCajaActual());
+        notify.success('Venta eliminada correctamente.');
+      } catch (err) {
+        console.error('Error al eliminar venta:', err);
+        notify.error(`Error al eliminar la venta: ${err?.message || err}`, { autoClose: 5000 });
+      }
+    } catch (err) {
+      // no-op
     }
   };
 

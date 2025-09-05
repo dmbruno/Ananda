@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { cerrarCaja } from '../../../store/cajaSlice';
+import notify from '../../../utils/notify';
 import './CerrarCajaModal.css';
 
 const CerrarCajaModal = ({ cajaActual: cajaProp, onCajaCerrada, onCancel }) => {
@@ -85,11 +86,11 @@ const CerrarCajaModal = ({ cajaActual: cajaProp, onCajaCerrada, onCancel }) => {
         monto_declarado: parseFloat(montoDeclarado)
       })).unwrap();
       
-      alert('Caja cerrada exitosamente');
+      notify.success('Caja cerrada exitosamente');
       onCajaCerrada();
     } catch (error) {
       console.error('Error al cerrar caja:', error);
-      alert('Error al cerrar caja: ' + (error.message || 'Error desconocido'));
+      notify.error('Error al cerrar caja: ' + (error.message || 'Error desconocido'));
     }
   };
   

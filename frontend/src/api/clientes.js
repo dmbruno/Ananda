@@ -20,3 +20,18 @@ export const marcarClienteSaludado = async (clienteId) => {
     throw error;
   }
 };
+
+/**
+ * Elimina un cliente por ID (API)
+ * @param {number} clienteId
+ * @returns {Promise<object>} - respuesta del servidor
+ */
+export const eliminarClienteApi = async (clienteId) => {
+  try {
+    const response = await axios.delete(`/api/clientes/${clienteId}`);
+    return response.data;
+  } catch (error) {
+    console.error('Error al eliminar cliente:', error);
+    throw error;
+  }
+};

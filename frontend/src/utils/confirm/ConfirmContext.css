@@ -1,0 +1,138 @@
+.confirm-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.28);
+  display: flex;
+  align-items: flex-start; /* start to allow slide-from-top */
+  justify-content: center;
+  z-index: 9999;
+  padding-top: 2rem; /* leave 2rem from top */
+}
+
+.confirm-modal {
+  width: min(480px, 90%);
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.18);
+  padding: 1.25rem;
+  margin-top: 0;
+  transform-origin: top center;
+  transition: transform 320ms cubic-bezier(.2,.9,.3,1), opacity 220ms ease;
+  display: flex;
+  flex-direction: column; /* ensure message and actions stack vertically */
+  align-items: center;
+}
+
+.confirm-modal.enter {
+  transform: translateY(-100%); /* start above */
+  opacity: 0;
+  animation: slideDown 320ms forwards cubic-bezier(.2,.9,.3,1);
+}
+
+.confirm-modal.exit {
+  transform: translateY(0);
+  opacity: 1;
+  animation: slideUp 320ms forwards cubic-bezier(.2,.9,.3,1);
+}
+
+@keyframes slideDown {
+  from { transform: translateY(-100%); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { transform: translateY(0); opacity: 1; }
+  to { transform: translateY(-100%); opacity: 0; }
+}
+
+.confirm-message {
+  margin-bottom: 1rem;
+  color: #111;
+  font-size: 1rem;
+}
+
+.confirm-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  align-items: center; /* vertically center buttons */
+  margin-top: 1rem;
+}
+
+/* Make sure child button components don't expand to full width here */
+.confirm-actions > * {
+  margin: 0;           /* reset any external margins from button components */
+  flex: 0 0 auto;      /* prevent buttons from stretching */
+}
+
+/* Optional: slightly reduce gap on small screens */
+@media (max-width: 420px) {
+  .confirm-actions { gap: 0.4rem; }
+}
+
+/* ===== Confirm-specific overrides for the accept button ===== */
+/* Hide the built-in BotonAgregar icon inside the confirm modal */
+.confirm-actions .confirm-accept .boton-agregar-icon {
+  display: none !important;
+}
+
+/* Make the accept button look like a green confirmation action (non-invasive local override) */
+.confirm-actions .confirm-accept {
+  /* match cancel button dimensions and basic appearance */
+  padding: 10px 20px !important; /* same as .modal-whatsapp-cancel */
+  border-radius: 4px !important;
+  font-weight: 500 !important;
+  font-size: 1rem !important;
+  line-height: 1;
+
+  background-color: #dcfce7 !important; /* pale green bg */
+  color: #16a34a !important; /* green text */
+  border-color: transparent !important;
+  box-shadow: 0 2px 8px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.08) !important;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  transition: all 0.2s ease !important; /* match cancel transition */
+}
+
+/* Add a circular check icon at the start of the button using ::before */
+.confirm-actions .confirm-accept::before {
+  content: "\2713"; /* check mark */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background-color: #16a34a; /* green */
+  color: white;
+  font-weight: 700;
+  margin-right: 6px;
+  font-size: 12px;
+}
+
+/* Match the cancel button hover behavior (only color change, no translate) */
+.confirm-actions .confirm-accept:hover {
+  background-color: #bbf7d0 !important; /* slightly darker pale green */
+  transform: none !important;
+  /* keep the same elevated focus shadow on hover as cancel */
+  box-shadow: 0 4px 16px 0 rgba(0, 0, 0, 0.18), 0 2px 8px 0 rgba(0, 0, 0, 0.1) !important;
+}
+
+/* Focus should match cancel's focus shadow */
+.confirm-actions .confirm-accept:focus {
+  outline: none !important;
+  box-shadow: 0 4px 16px 0 rgba(0, 0, 0, 0.18), 0 2px 8px 0 rgba(0, 0, 0, 0.1) !important;
+}
+
+/* Active press effect should match cancel/send active transform */
+.confirm-actions .confirm-accept:active {
+  transform: scale(0.96) translateY(2px) !important;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.1) !important;
+}
+
+.confirm-actions .confirm-accept:disabled {
+  opacity: 0.7 !important;
+  cursor: not-allowed !important;
+}

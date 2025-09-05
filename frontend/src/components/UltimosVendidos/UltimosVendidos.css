@@ -53,6 +53,21 @@
   margin: 0;
   font-family: 'Rajdhani', Arial, sans-serif;
 }
+.ultimos-vendidos-title-with-icon {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+.ultimos-vendidos-icon {
+  font-size: 1.15rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent; /* <-- removed background */
+  padding: 0;               /* <-- removed padding */
+  border-radius: 0;        /* <-- no rounded bg */
+  box-shadow: none;        /* <-- removed shadow */
+}
 .ultimos-vendidos-action {
   background: none;
   border: none;

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux'; // Importar useSelector para acceder al estado de Redux
 import './BuscadorPorFechas.css';
+import notify from '../../utils/notify';
 
 
 
@@ -25,8 +26,7 @@ const BuscadorPorFechas = ({
   const [localDesde, setLocalDesde] = useState(desde || '');
   const [localHasta, setLocalHasta] = useState(hasta || '');
   const [modoDescarga, setModoDescarga] = useState(false);
-  const [showNotification, setShowNotification] = useState(false);
-  const [notification, setNotification] = useState({ message: '', type: '' });
+  // Eliminado estado local de notificaciones; usamos notify global
 
   // Sincronizar estados locales con props cuando cambien desde el componente padre
   useEffect(() => {
@@ -64,12 +64,12 @@ const BuscadorPorFechas = ({
   const handleDescargar = () => {
     // Verificar si el usuario es administrador
     if (!isAdmin) {
-      displayNotification('Solo los administradores pueden descargar reportes.', 'warning');
+      notify.warn('Solo los administradores pueden descargar reportes.');
       return;
     }
 
     if (onDescargarCSV) onDescargarCSV(localDesde, localHasta);
-    displayNotification("El reporte fue enviado para descarga", 'success');
+    notify.success('El reporte fue enviado para descarga');
     setLocalDesde("");
     setLocalHasta("");
     setModoDescarga(false);
@@ -77,23 +77,9 @@ const BuscadorPorFechas = ({
     if (onChangeHasta) onChangeHasta("");
   };
 
-  // Función para mostrar notificaciones
-  const displayNotification = (message, type) => {
-    setNotification({ message, type });
-    setShowNotification(true);
-    setTimeout(() => {
-      setShowNotification(false);
-    }, 3000); // La notificación desaparece después de 3 segundos
-  };
-
   return (
     <div className="buscador-fechas-container">
-      {/* Notificación */}
-      {showNotification && (
-        <div className={`buscador-notification buscador-notification-${notification.type}`}>
-          {notification.message}
-        </div>
-      )}
+      {/* Las notificaciones ahora se muestran con react-toastify (notify) */}
 
       <div className={`buscador-fechas-bar ${props.className || ''}`}>
         <label className="buscador-fechas-label">{labelDesde}: </label>

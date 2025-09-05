@@ -4,6 +4,7 @@ import "./ModalVerVenta.css";
 import BotonCancelar from "../Botones/BotonCancelar";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
+import notify from '../../utils/notify';
 
 const ModalVerVenta = ({ venta, onClose }) => {
   const [detalles, setDetalles] = useState([]);
@@ -116,7 +117,7 @@ const ModalVerVenta = ({ venta, onClose }) => {
       document.body.removeChild(notificacion);
     } catch (error) {
       console.error("Error al generar el PDF:", error);
-      alert("Ocurrió un error al generar el PDF");
+      notify.error("Ocurrió un error al generar el PDF");
     }
   };
 

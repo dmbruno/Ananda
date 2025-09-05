@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { setCliente, setPaso } from '../../../store/ventaProcesoSlice';
+import { fetchClientes } from '../../../store/clientesSlice';
 import BuscadorCliente from './BuscadorCliente';
 import ModalNuevoCliente from '../../Modals/ModalNuevoCliente';
 import './ClientePanel.css';
@@ -29,14 +30,19 @@ const ClientePanel = () => {
     setModalEditarCliente(true);
   };
 
-  const handleClienteGuardado = () => {
-    // El modal se encarga de refrescar la lista de clientes
-    // Necesitamos obtener el cliente recién creado y seleccionarlo
+  const handleClienteGuardado = (clienteGuardado) => {
+    // Cerrar modales y limpiar estado local
     setModalCrearCliente(false);
     setModalEditarCliente(false);
     setClienteInicial(null);
-    // Recargar la lista de clientes para obtener el cliente recién creado
-    // El cliente se seleccionará desde el buscador
+
+    // Si el modal nos devolvió el cliente creado/actualizado, seleccionarlo
+    if (clienteGuardado && clienteGuardado.id) {
+      dispatch(setCliente(clienteGuardado));
+    } else {
+      // En caso contrario, refrescar la lista global de clientes para que aparezca en los buscadores
+      dispatch(fetchClientes());
+    }
   };
 
   const handleCerrarModal = () => {

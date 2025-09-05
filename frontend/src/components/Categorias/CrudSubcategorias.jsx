@@ -6,7 +6,9 @@ import BotonEnviar from "../Botones/BotonEnviar";
 import BotonCancelar from "../Botones/BotonCancelar";
 import BotonAgregar from "../Botones/BotonAgregar";
 import BotonEditar from "../Botones/BotonEditar";
+import { useConfirm } from '../../utils/confirm/ConfirmContext';
 import "./CrudSubcategorias.css";
+import  notify  from '../../utils/notify'; // Asegúrate de que la ruta sea la correcta
 
 const CrudSubcategorias = () => {
   const dispatch = useDispatch();
@@ -37,8 +39,10 @@ const CrudSubcategorias = () => {
       }))); // Log para depurar
       setNuevaSubcategoria("");
       dispatch(fetchSubcategorias(categoriaSeleccionada));
+      notify.success('Subcategoría agregada correctamente.');
     } catch (error) {
-      console.error("Error adding subcategoria:", error);
+      console.error('Error al agregar subcategoría:', error);
+      notify.error('Error al agregar la subcategoría.');
     }
   };
 
@@ -57,19 +61,33 @@ const CrudSubcategorias = () => {
       setEditId(null);
       setEditNombre("");
       dispatch(fetchSubcategorias(categoriaSeleccionada));
+      notify.success('Subcategoría actualizada correctamente.');
     } catch (error) {
-      console.error("Error editing subcategoria:", error);
+      console.error('Error al editar subcategoría:', error);
+      notify.error('Error al actualizar la subcategoría.');
     }
   };
 
+  const confirm = useConfirm();
+
   const handleEliminar = async (subcat) => {
-    if (!window.confirm(`¿Eliminar la subcategoría "${subcat.nombre}"?`)) return;
     try {
-      console.log("Intentando eliminar subcategoría:", subcat.nombre);
-      console.log("Respuesta de eliminar subcategoría:", await dispatch(deleteSubcategoria({ id: subcat.id }))); // Log para depurar
-      dispatch(fetchSubcategorias(categoriaSeleccionada));
-    } catch (error) {
-      console.error("Error deleting subcategoria:", error);
+      const ok = await confirm(`¿Eliminar la subcategoría "${subcat.nombre}"?`);
+      if (!ok) {
+        notify.info('Eliminación cancelada');
+        return;
+      }
+      try {
+        console.log("Intentando eliminar subcategoría:", subcat.nombre);
+        console.log("Respuesta de eliminar subcategoría:", await dispatch(deleteSubcategoria({ id: subcat.id }))); // Log para depurar
+        dispatch(fetchSubcategorias(categoriaSeleccionada));
+        notify.success('Subcategoría eliminada correctamente.');
+      } catch (error) {
+        console.error("Error deleting subcategoria:", error);
+        notify.error('Error al eliminar la subcategoría', { autoClose: 5000 });
+      }
+    } catch (err) {
+      // Confirm hook error (no-op)
     }
   };
 

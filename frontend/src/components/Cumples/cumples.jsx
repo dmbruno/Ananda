@@ -6,6 +6,7 @@ import dayjs from "dayjs";
 import customParseFormat from "dayjs/plugin/customParseFormat";
 import "./cumples.css";
 import ModalMensajeWhatsApp from "../Modals/ModalMensajeWhatsApp";
+import notify from '../../utils/notify';
 
 dayjs.extend(customParseFormat);
 
@@ -123,7 +124,7 @@ const Cumples = ({ fechaInicio, fechaFin }) => {
       setClienteSeleccionado(null);
     } catch (error) {
       console.error('Error al marcar cliente como saludado:', error);
-      alert('Error al marcar cliente como saludado. Intente nuevamente.');
+      notify.error('Error al marcar cliente como saludado. Intente nuevamente.');
     }
   };
 

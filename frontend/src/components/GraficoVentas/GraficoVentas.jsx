@@ -16,6 +16,7 @@ import {
 import { Line } from "react-chartjs-2";
 import "./GraficoVentas.css";
 import BuscadorPorFechas from "../Buscador/BuscadorPorFechas";
+import notify from '../../utils/notify';
 
 ChartJS.register(
   CategoryScale,
@@ -164,7 +165,7 @@ const GraficoVentas = ({ fechaInicio, fechaFin, showBuscadorPorFechas = false })
     // Verificar si el usuario es administrador
     if (!isAdmin) {
       // Mostrar una notificación si no es administrador
-      alert("Solo los administradores pueden descargar reportes de ventas.");
+      notify.warn("Solo los administradores pueden descargar reportes de ventas.");
       return;
     }
     
@@ -183,7 +184,11 @@ const GraficoVentas = ({ fechaInicio, fechaFin, showBuscadorPorFechas = false })
     <div className="grafico-ventas-card">
       <div className="grafico-ventas-header">
         <div className="grafico-ventas-header-content">
-          <h2 className="grafico-ventas-amount">Ventas ${totalVentas.toLocaleString()}</h2>
+          {/* Icon + title inline on the same line, left-aligned - styling moved to CSS */}
+          <div className="grafico-ventas-title-with-icon">
+            <span className="grafico-ventas-icon" role="img" aria-label="Ventas">📈</span>
+            <h2 className="grafico-ventas-amount">Ventas ${totalVentas.toLocaleString()}</h2>
+          </div>
           <p className="grafico-ventas-subtitle">{(filtroDesde && filtroHasta) ? `Del ${filtroDesde} al ${filtroHasta}` : "Ultimos 10 días"}</p>
         </div>
         {showBuscadorPorFechas ? (

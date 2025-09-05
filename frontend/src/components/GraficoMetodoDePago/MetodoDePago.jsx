@@ -121,14 +121,19 @@ const MetodoDePago = ({ fechaInicio, fechaFin, className = "", chartWidth = 200,
   };
 
   return (
-    <div className={`grafico-metodo-card ${className}`}>
-      <div className="grafico-metodo-header">
+    <div className={`grafico-metodo-card ${className} ${showBuscadorPorFechas ? 'with-buscador-card' : ''}`}>
+      {/* When showBuscadorPorFechas is true we add a modifier class so the header stacks title + buscador */}
+      <div className={`grafico-metodo-header ${showBuscadorPorFechas ? 'with-buscador' : ''}`}>
         <div className="grafico-metodo-header-content">
-          <h2 className="grafico-metodo-title">Ventas realizadas</h2>
+          <div className="grafico-metodo-title-with-icon">
+            <span className="grafico-metodo-icon" role="img" aria-label="Metodos de pago">💳</span>
+            <h2 className="grafico-metodo-title">Ventas realizadas</h2>
+          </div>
           <p className="grafico-metodo-subtitle">{new Date().toLocaleDateString()}</p>
         </div>
         {showBuscadorPorFechas ? (
-          <div className="grafico-metodo-buscador-center">
+          // place buscador on its own line below the title (full width)
+          <div className="grafico-metodo-buscador-fullwidth">
             <BuscadorPorFechas
               desde={desde}
               hasta={hasta}
@@ -148,21 +153,23 @@ const MetodoDePago = ({ fechaInicio, fechaFin, className = "", chartWidth = 200,
           </button>
         )}
       </div>
-      <div className="grafico-metodo-chart-container">
-        <Doughnut data={data} options={options} height={chartHeight} width={chartWidth} plugins={[shadowPlugin]} />
-      </div>
-      <div className="grafico-metodo-legend">
-        <div className="legend-item">
-          <span className="legend-dot" style={{ background: COLORS[0] }}></span> TC
-          <span className="legend-percent">{safePercent(counts.TC)}%</span>
+      <div className="grafico-metodo-body">
+        <div className="grafico-metodo-chart-container">
+          <Doughnut data={data} options={options} height={chartHeight} width={chartWidth} plugins={[shadowPlugin]} />
         </div>
-        <div className="legend-item">
-          <span className="legend-dot" style={{ background: COLORS[1] }}></span> TB
-          <span className="legend-percent">{safePercent(counts.TB)}%</span>
-        </div>
-        <div className="legend-item">
-          <span className="legend-dot" style={{ background: COLORS[2] }}></span> FT
-          <span className="legend-percent">{safePercent(counts.FT)}%</span>
+        <div className="grafico-metodo-legend">
+          <div className="legend-item">
+            <span className="legend-dot" style={{ background: COLORS[0] }}></span> TC
+            <span className="legend-percent">{safePercent(counts.TC)}%</span>
+          </div>
+          <div className="legend-item">
+            <span className="legend-dot" style={{ background: COLORS[1] }}></span> TB
+            <span className="legend-percent">{safePercent(counts.TB)}%</span>
+          </div>
+          <div className="legend-item">
+            <span className="legend-dot" style={{ background: COLORS[2] }}></span> FT
+            <span className="legend-percent">{safePercent(counts.FT)}%</span>
+          </div>
         </div>
       </div>
     </div>

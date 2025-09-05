@@ -14,6 +14,8 @@ import BuscadorProducto from "./BuscadorProducto";
 import ProductoItem from "./ProductoItem";
 import ResumenVenta from "./ResumenVenta";
 import "./CarritoPanel.css";
+import notify from '../../../utils/notify';
+import { fetchVentas } from '../../../store/ventasSlice';
 
 export default function CarritoPanel() {
   const dispatch = useDispatch();
@@ -56,17 +58,17 @@ export default function CarritoPanel() {
     try {
       // Validaciones previas
       if (!cliente) {
-        alert("Debe seleccionar un cliente");
+        notify.warn("Debe seleccionar un cliente");
         return;
       }
 
       if (items.length === 0) {
-        alert("Debe agregar al menos un producto");
+        notify.warn("Debe agregar al menos un producto");
         return;
       }
 
       if (!metodoPago) {
-        alert("Debe seleccionar un método de pago");
+        notify.warn("Debe seleccionar un método de pago");
         return;
       }
 
@@ -91,11 +93,14 @@ export default function CarritoPanel() {
       // Si todo salió bien, limpiar carrito y actualizar caja
       dispatch(vaciarCarrito());
       dispatch(obtenerCajaActual());
+      // Refrescar productos para que las páginas de stock muestren el stock actualizado sin recargar
+      dispatch(fetchProductos());
+      // Refrescar ventas para que la tabla histórica muestre la nueva venta inmediatamente
+      dispatch(fetchVentas());
 
       // Mostrar mensaje de éxito
-      alert(`¡Venta procesada exitosamente! 
-Número de venta: ${resultado.venta.id}
-Total: $${totalFinal.toLocaleString("es-AR")}`);
+      const mensaje = `Número de venta: ${resultado.venta.id}\nTotal: $${totalFinal.toLocaleString("es-AR")}`;
+      notify.success(`¡Venta procesada exitosamente! \n${mensaje}`);
 
       // Reiniciar proceso después de 2 segundos
       setTimeout(() => {
@@ -103,7 +108,7 @@ Total: $${totalFinal.toLocaleString("es-AR")}`);
       }, 2000);
     } catch (error) {
       console.error("🔥 Error en handleProcesarVenta:", error);
-      alert(`Error al procesar la venta: ${error}`);
+      notify.error(`Error al procesar la venta: ${error}`, { autoClose: 6000 });
     }
   };
 

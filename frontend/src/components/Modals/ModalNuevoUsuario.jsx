@@ -7,6 +7,7 @@ import { MdPersonAdd, MdPerson } from "react-icons/md";
 import { useDispatch } from "react-redux";
 import { fetchUsuarios } from "../../store/usuariosSlice";
 import axios from "axios";
+import notify from '../../utils/notify';
 
 const camposIniciales = {
   nombre: "",
@@ -63,11 +64,11 @@ const ModalNuevoUsuario = ({ open, onClose, onSubmit, usuario, soloLectura = fal
       if (campos.id) {
         // Edición: PUT
         await axios.put(`/api/usuarios/${campos.id}`, campos);
-        alert("Usuario actualizado correctamente.");
+        notify.success("Usuario actualizado correctamente.");
       } else {
         // Alta: POST
         await axios.post("/api/usuarios/", campos);
-        alert("Usuario guardado correctamente.");
+        notify.success("Usuario guardado correctamente.");
       }
       // Refresca la lista de usuarios inmediatamente
       dispatch(fetchUsuarios());
@@ -77,7 +78,7 @@ const ModalNuevoUsuario = ({ open, onClose, onSubmit, usuario, soloLectura = fal
         handleClose();
       }
     } catch (error) {
-      alert("Error al guardar el usuario.");
+      notify.error("Error al guardar el usuario.");
       console.error("Error:", error);
     }
   };

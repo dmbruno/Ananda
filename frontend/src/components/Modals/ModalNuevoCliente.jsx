@@ -6,6 +6,7 @@ import { MdPersonAdd, MdPerson } from "react-icons/md";
 import { useDispatch } from "react-redux";
 import { fetchClientes } from "../../store/clientesSlice";
 import axios from "axios";
+import notify from '../../utils/notify';
 
 const camposIniciales = {
   nombre: "",
@@ -45,32 +46,39 @@ const ModalNuevoCliente = ({ open, onClose, onSubmit, cliente, soloLectura = fal
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     // Si es solo lectura, solo cerrar el modal
     if (soloLectura) {
       handleClose();
       return;
     }
-    
-    try {
-      if (campos.id) {
-        // Edición: PUT
-        await axios.put(`/api/clientes/${campos.id}`, campos);
-        alert("Cliente actualizado correctamente.");
-      } else {
-        // Alta: POST
-        await axios.post("/api/clientes/", campos);
-        alert("Cliente guardado correctamente.");
+
+    if (campos.id) {
+      // Edición: PUT
+      try {
+        const res = await axios.put(`/api/clientes/${campos.id}`, campos);
+        notify.success('Cliente actualizado correctamente.');
+        // Refrescar la lista global de clientes para que todos los buscadores la tengan actualizada
+        dispatch(fetchClientes());
+        onClose();
+        if (onClienteGuardado) onClienteGuardado(res.data || campos);
+      } catch (err) {
+        console.error('Error al actualizar cliente:', err);
+        notify.error('Error al guardar el cliente', { autoClose: 5000 });
       }
-      // Refresca la lista de clientes inmediatamente
-      dispatch(fetchClientes());
-      if (typeof onClienteGuardado === 'function') {
-        onClienteGuardado();
-      } else {
-        handleClose();
+    } else {
+      // Alta: POST
+      try {
+        const res = await axios.post("/api/clientes/", campos);
+        notify.success('Cliente guardado correctamente.');
+        // Refrescar la lista global de clientes para que esté disponible inmediatamente
+        dispatch(fetchClientes());
+        onClose();
+        if (onClienteGuardado) onClienteGuardado(res.data);
+      } catch (err) {
+        console.error('Error al guardar cliente:', err);
+        notify.error('Error al guardar el cliente', { autoClose: 5000 });
       }
-    } catch {
-      alert("Error al guardar el cliente.");
     }
   };
 

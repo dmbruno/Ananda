@@ -1,6 +1,5 @@
 .grafico-metodo-buscador-center {
   display: flex;
-  flex-direction: row;
   align-items: center;
   justify-content: center; /* <-- Centra horizontalmente el buscador */
   width: 100%;
@@ -55,41 +54,36 @@
   flex-direction: column;
   justify-content: flex-start;
   gap: 0.2rem;
+  
 }
 
 .grafico-metodo-header {
   display: flex;
-  flex-direction: row;
-  align-items: flex-start;
+  align-items: center;
   justify-content: space-between;
-  width: 100%;
-  
+  gap: 1rem;
 }
 
 .grafico-metodo-header-content {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
+  
 }
 
 .grafico-metodo-title {
-  text-align: left;
-  font-size: 1.25rem; /* 20px */  
+  margin: 0;
+  font-size: 20px;
   font-weight: 700;
-  color: #1f2937;
-  margin-bottom: .001rem;
-  font-family: "Rajdhani", Arial, sans-serif;
-  
-  
+  color: #111827;
 }
 
 .grafico-metodo-action {
-  background: none;
+  background: transparent;
   border: none;
-  color: #bdbdbd;
-  font-size: 1rem;
-  font-weight: 600;
+  color: #9CA3AF;
   cursor: pointer;
+  font-weight: 600;
   display: flex;
   align-items: center;
   gap: 2px;
@@ -106,11 +100,9 @@
 }
 
 .grafico-metodo-subtitle {
-  text-align: left;
-  font-size: 0.8125rem; /* 13px */
+  margin: 4px 0 0 0;
   color: #6b7280;
-  margin: 0;
-  font-family: "Rajdhani", Arial, sans-serif;
+  font-size: 0.95rem;
 }
 
 .grafico-metodo-chart-container {
@@ -135,6 +127,7 @@
   display: flex;
   justify-content: space-around;
   margin-top: 0.5rem;
+  
 }
 .legend-item {
   display: flex;
@@ -155,4 +148,104 @@
   color: #444;
   font-size: 0.95rem;
   font-weight: 600;
+}
+
+.grafico-metodo-title-with-icon {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.grafico-metodo-icon {
+  font-size: 1.25rem;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 0.25rem;
+}
+
+/* When the header has the buscador we stack title and buscador vertically */
+.grafico-metodo-header.with-buscador {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.6rem;
+}
+
+.grafico-metodo-buscador-fullwidth {
+  width: 100%;
+  margin-top: 6px;
+  display: flex;
+  justify-content: flex-start;
+}
+
+/* New body container to allow row layout when buscador is shown */
+.grafico-metodo-body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+/* CHANGE: Mover 20px hacia abajo solo en versión dashboard (sin buscador) */
+.grafico-metodo-card:not(.with-buscador-card) .grafico-metodo-body {
+  margin-top: 10px; /* <-- moved 20px */
+  
+}
+
+/* CHANGE: Mover 15px hacia abajo el header solo en versión dashboard (sin buscador) */
+.grafico-metodo-card:not(.with-buscador-card) .grafico-metodo-header {
+  margin-top: 10px; /* <-- moved 20px */
+}
+
+/* When card has buscador, place legend to the right and reduce chart width to keep overall size */
+.grafico-metodo-card.with-buscador-card .grafico-metodo-body {
+  flex-direction: row;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1.2rem;
+  
+  margin-top: 10px;
+  
+}
+
+.grafico-metodo-card.with-buscador-card .grafico-metodo-chart-container {
+  width: calc(100% - 160px); /* reserve ~160px for legend */
+  max-width: calc(100% - 160px);
+  display: flex;
+  justify-content: center;
+  
+}
+
+.grafico-metodo-card.with-buscador-card .grafico-metodo-legend {
+  width: 140px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  align-items: flex-start;
+  justify-content: center;
+  padding-top: 30px;
+}
+
+/* Keep previous defaults for legend when not in buscador mode */
+.grafico-metodo-legend {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  margin-top: 1rem;
+}
+
+/* Responsive: stack header on small screens */
+@media (max-width: 720px) {
+  .grafico-metodo-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .grafico-metodo-buscador-center {
+    margin-top: 8px;
+    width: 100%;
+  }
+  .grafico-metodo-header.with-buscador {
+    gap: 0.4rem;
+  }
 }

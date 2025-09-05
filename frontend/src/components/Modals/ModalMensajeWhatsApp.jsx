@@ -3,6 +3,7 @@ import "./ModalMensajeWhatsApp.css";
 import BotonCancelar from "../Botones/BotonCancelar";
 import BotonEnviar from "../Botones/BotonEnviar";
 import { diasHastaCumple } from "../../utils/dateUtils";
+import notify from '../../utils/notify';
 
 const mensajeCumpleanios = (nombre) =>
   `🎂 ¡Feliz Cumpleaños ${nombre || "[Nombre]"}! 
@@ -57,7 +58,7 @@ const ModalMensajeWhatsApp = ({ open, onClose, cliente, onClienteSaludado, onEnv
   
   const handleEnviarMensaje = () => {
     if (!cliente || !cliente.telefono) {
-      alert("No se puede enviar el mensaje: el cliente no tiene número de teléfono.");
+      notify.error("No se puede enviar el mensaje: el cliente no tiene número de teléfono.");
       return;
     }
     
@@ -66,7 +67,7 @@ const ModalMensajeWhatsApp = ({ open, onClose, cliente, onClienteSaludado, onEnv
     
     // Verificar si el número tiene el formato correcto
     if (numeroLimpio.length < 8) {
-      alert("El número de teléfono no parece válido.");
+      notify.warn("El número de teléfono no parece válido.");
       return;
     }
     

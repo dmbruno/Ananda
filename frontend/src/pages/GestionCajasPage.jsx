@@ -9,6 +9,9 @@ import CerrarCajaModal from '../components/CarritoPage/CerrarCajaModal/CerrarCaj
 import DetalleCajaModal from '../components/CarritoPage/DetalleCajaModal/DetalleCajaModal';
 import HeaderUserBar from '../components/HeaderUserBar/HeaderUserBar';
 import './GestionCajasPage.css';
+import { useConfirm } from '../utils/confirm/ConfirmContext';
+import notify from '../utils/notify';
+import BotonCustom from '../components/Botones/BotonCustom';
 
 const GestionCajasPage = () => {
   const dispatch = useDispatch();
@@ -19,8 +22,8 @@ const GestionCajasPage = () => {
   const user = useSelector(state => state.auth.user);
   // Verificar si el usuario es administrador
   const isAdmin = user && user.is_admin === true;
-  
-  // Estado para el mensaje de notificación
+  const confirm = useConfirm();
+ // Estado para el mensaje de notificación
   const [notification, setNotification] = useState(null);
   
   // Estado local para manejar la sidebar
@@ -106,7 +109,7 @@ const GestionCajasPage = () => {
     const cajaAbierta = cajas?.find(caja => caja.fecha_cierre === null);
     
     if (cajaAbierta) {
-      showNotification('Ya existe una caja abierta. Debe cerrarla antes de abrir una nueva.', 'error');
+      notify.error('Ya existe una caja abierta. Debe cerrarla antes de abrir una nueva.');
       return;
     }
     
@@ -148,35 +151,41 @@ const GestionCajasPage = () => {
     setCierreCajaVisible(true);
   };
 
-  const handleMarcarControlada = (caja) => {
+  const handleMarcarControlada = async (caja) => {
     if (!caja.fecha_cierre) {
-      showNotification('No se puede marcar como controlada una caja que no ha sido cerrada.', 'error');
+      // Usar notify global en lugar del banner local
+      notify.error('No se puede marcar como controlada una caja que no ha sido cerrada.');
       return;
     }
     
     if (caja.fecha_control) {
-      showNotification('Esta caja ya ha sido controlada.', 'error');
+      notify.error('Esta caja ya ha sido controlada.');
       return;
     }
     
     // Verificar si el usuario es administrador
     if (!isAdmin) {
-      showNotification('Solo los administradores pueden marcar cajas como controladas.', 'warning');
+      notify.warn('Solo los administradores pueden marcar cajas como controladas.');
       return;
     }
-    
-    if (confirm(`¿Está seguro que desea marcar la caja #${caja.id} como controlada? Esta acción registrará su usuario como responsable del control.`)) {
-      dispatch(marcarCajaControlada(caja.id))
-        .unwrap()
-        .then(() => {
-          showNotification('Caja marcada como controlada exitosamente.', 'success');
-          // Recargar la lista de cajas para asegurar que se muestre el estado actualizado
-          dispatch(listarCajas());
-        })
-        .catch((err) => {
-          console.error('Error completo al marcar caja como controlada:', err);
-          showNotification('Error al marcar la caja como controlada: ' + (err.message || 'Error desconocido'), 'error');
-        });
+     
+    try {
+      const ok = await confirm(`¿Está seguro que desea marcar la caja #${caja.id} como controlada? Esta acción registrará su usuario como responsable del control.`);
+      if (!ok) {
+        notify.info('Acción cancelada');
+        return;
+      }
+      try {
+        await dispatch(marcarCajaControlada(caja.id)).unwrap();
+        notify.success('Caja marcada como controlada exitosamente.');
+        // Recargar la lista de cajas para asegurar que se muestre el estado actualizado
+        dispatch(listarCajas());
+      } catch (err) {
+        console.error('Error completo al marcar caja como controlada:', err);
+        notify.error('Error al marcar la caja como controlada: ' + (err.message || 'Error desconocido'), { autoClose: 6000 });
+      }
+    } catch (err) {
+      // confirm hook error (no-op)
     }
   };
   
@@ -305,12 +314,9 @@ const GestionCajasPage = () => {
         <h1 className="dashboard-title">Gestión de Cajas</h1>
         <div className="header-right">
           <HeaderUserBar />
-          <button 
-            className="btn-primary" 
-            onClick={handleAbrirCaja}
-          >
+          <BotonCustom onClick={handleAbrirCaja} variant="primary" size="medium">
             Abrir Nueva Caja
-          </button>
+          </BotonCustom>
         </div>
       </div>
       

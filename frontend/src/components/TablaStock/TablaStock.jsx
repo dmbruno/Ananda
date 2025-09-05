@@ -5,11 +5,14 @@ import ModalVerProducto from '../Modals/ModalVerProducto';
 import { useDispatch, useSelector } from 'react-redux';
 import { updateProducto } from '../../store/productosSlice';
 import { agregarAlCarrito } from '../../store/carritoSlice';
+import notify from '../../utils/notify';
+import { useConfirm } from '../../utils/confirm/ConfirmContext';
 
 // Recibe productos y loading por props desde StockPage
 const TablaStock = ({ productos = [], loading = false, error = null }) => {
   const [productoSeleccionado, setProductoSeleccionado] = useState(null);
   const dispatch = useDispatch();
+  const confirm = useConfirm();
   
   // Obtener información del usuario desde Redux
   const user = useSelector(state => state.auth.user);
@@ -33,16 +36,22 @@ const TablaStock = ({ productos = [], loading = false, error = null }) => {
   const productosFiltrados = productos;
 
   const handleEliminarProducto = async (id) => {
-    const confirmar = window.confirm('¿Estás seguro de que deseas eliminar este producto?');
-    if (!confirmar) return;
+    const confirmar = await confirm('¿Estás seguro de que deseas eliminar este producto?');
+    if (!confirmar) {
+      notify.info('Eliminación cancelada');
+      return;
+    }
 
     try {
       await axios.delete(`/api/productos/${id}`);
-      alert('Producto eliminado con éxito');
-      window.location.reload(); // Recargar la página para actualizar la tabla
+      notify.success('Producto eliminado con éxito', { autoClose: 5000 });
+      // Esperar 2s antes de recargar para que el toast sea visible
+      setTimeout(() => {
+        window.location.reload(); // Recargar la página para actualizar la tabla
+      }, 2000);
     } catch (error) {
       console.error('Error al eliminar el producto:', error);
-      alert('Hubo un error al intentar eliminar el producto');
+      notify.error('Hubo un error al intentar eliminar el producto', { autoClose: 5000 });
     }
   };
 

@@ -90,7 +90,10 @@ const UltimosVendidos = () => {
   return (
     <div className="ultimos-vendidos-card">
       <div className="ultimos-vendidos-header">
-        <h2 className="ultimos-vendidos-title">Ultimos vendidos</h2>
+        <div className="ultimos-vendidos-title-with-icon">
+          <span className="ultimos-vendidos-icon" role="img" aria-label="Ventas">🛒</span>
+          <h2 className="ultimos-vendidos-title">Ultimos vendidos</h2>
+        </div>
         <div className="ultimos-vendidos-buscador">
           <BuscadorPorFechas
             desde={desde}
