@@ -184,6 +184,4 @@ Buena práctica: los thunks que mutan el backend deben devolver el resultado y l
 
 Si necesitás ayuda con el frontend o con la integración backend/frontend, abrí una issue o escribime directamente.
 
----
 
-README generado por GitHub Copilot — adapatalo según preferencias del equipo.

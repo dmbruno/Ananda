@@ -185,6 +185,3 @@ Contacto
 
 - Para dudas sobre la API o despliegue, abrí una issue o contactame.
 
----
-
-README generado por GitHub Copilot — adaptalo si necesitás más detalle sobre despliegue en Render u otros proveedores.
