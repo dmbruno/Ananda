@@ -1,6 +1,6 @@
 # Rutas CRUD para Usuarios
 from flask import Blueprint, request, jsonify
-from usuario import Usuario
+from models.usuario import Usuario
 from database.db import db
 from datetime import datetime
 
