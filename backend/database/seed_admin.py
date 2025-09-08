@@ -1,3 +1,4 @@
+from backend.app import create_app
 from database.db import db
 from models.usuario import Usuario
 
@@ -9,13 +10,11 @@ def main():
     is_admin = True
     activo = True
 
-    # ¿Ya existe este usuario?
     existing = Usuario.query.filter(Usuario.email == email).first()
     if existing:
         print("El usuario admin ya existe.")
         return
 
-    # Crear usuario
     usuario = Usuario(
         nombre=nombre,
         apellido=apellido,
@@ -23,11 +22,12 @@ def main():
         is_admin=is_admin,
         activo=activo
     )
-    usuario.set_password(password)  # Hashea la clave
-
+    usuario.set_password(password)
     db.session.add(usuario)
     db.session.commit()
     print("Usuario admin creado exitosamente.")
 
 if __name__ == "__main__":
-    main()
+    app = create_app()
+    with app.app_context():
+        main()
