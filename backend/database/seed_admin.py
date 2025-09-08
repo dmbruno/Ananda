@@ -1,6 +1,6 @@
 from backend.app import create_app
-from database.db import db
-from models.usuario import Usuario
+from backend.models.usuario import Usuario
+from backend.database.db import db
 
 def main():
     nombre = "diego"
