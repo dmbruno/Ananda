@@ -2,6 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import './ResetPasswordPage.css';
 
+
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5001/api';
+
 const ResetPasswordPage = () => {
   const { token } = useParams();
   const navigate = useNavigate();
@@ -29,7 +32,7 @@ const ResetPasswordPage = () => {
       
 
       try {
-        const response = await fetch('http://localhost:5001/api/auth/verify-reset-token', {
+        const response = await fetch(`${API_URL}/auth/verify-reset-token`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
