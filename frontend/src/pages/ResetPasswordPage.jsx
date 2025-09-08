@@ -26,6 +26,8 @@ const ResetPasswordPage = () => {
         return;
       }
 
+      
+
       try {
         const response = await fetch('http://localhost:5001/api/auth/verify-reset-token', {
           method: 'POST',
@@ -88,6 +90,9 @@ const ResetPasswordPage = () => {
     setValidationErrors(errors);
     return Object.keys(errors).length === 0;
   };
+  
+
+  const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5001/api';
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -100,7 +105,7 @@ const ResetPasswordPage = () => {
     setApiError('');
 
     try {
-      const response = await fetch('http://localhost:5001/api/auth/reset-password', {
+      const response = await fetch(`${API_URL}/auth/reset-password`,{
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
