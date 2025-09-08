@@ -2,7 +2,7 @@
 # Define la tabla y relaciones para usuarios del sistema
 from sqlalchemy import Column, Integer, String, Boolean, DateTime
 from werkzeug.security import generate_password_hash, check_password_hash
-from database.db import db
+from backend.database.db import db
 
 class Usuario(db.Model):
     __tablename__ = 'usuarios'

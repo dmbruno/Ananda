@@ -6,7 +6,7 @@ import os
 # Cargar variables de entorno
 load_dotenv()
 
-from database.db import db
+from backend.database.db import db
 from routes.usuario import usuarios_bp
 from routes.cliente import clientes_bp
 from routes.categoria import categorias_bp
