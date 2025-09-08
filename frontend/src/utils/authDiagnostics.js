@@ -2,6 +2,9 @@
  * Funciones de utilidad para verificar el estado de la API y la autenticación
  */
 
+// Obtén la URL base de la API desde variable de entorno (igual que en axios.js)
+const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5001';
+
 /**
  * Verifica si la API está disponible
  * @returns {Promise<boolean>} true si la API está disponible, false en caso contrario
@@ -11,7 +14,7 @@ export const checkApiAvailability = async () => {
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 segundos de timeout
     
-    const response = await fetch('http://localhost:5001/api/auth/ping', { 
+    const response = await fetch(`${API_BASE_URL}/api/auth/ping`, { 
       method: 'GET',
       signal: controller.signal 
     });
@@ -39,9 +42,8 @@ export const checkTokenValidity = async () => {
     
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 5000);
-    
-    // Intenta obtener información del usuario para verificar token
-    const response = await fetch('http://localhost:5001/api/auth/me/', {
+
+    const response = await fetch(`${API_BASE_URL}/api/auth/me/`, {
       method: 'GET',
       headers: {
         'Authorization': `Bearer ${token}`
@@ -50,7 +52,7 @@ export const checkTokenValidity = async () => {
     });
     
     clearTimeout(timeoutId);
-    
+
     return response.status === 200;
   } catch (error) {
     console.error('Error al verificar validez de token:', error);
