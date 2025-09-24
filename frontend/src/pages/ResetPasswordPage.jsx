@@ -19,7 +19,7 @@ const ResetPasswordPage = () => {
   const [tokenValid, setTokenValid] = useState(null);
   const [resetSuccess, setResetSuccess] = useState(false);
 
-  // Verificar validez del token al cargar la página
+  // Verificar validez del token al cargar la página.
   useEffect(() => {
     const verifyToken = async () => {
       if (!token) {
