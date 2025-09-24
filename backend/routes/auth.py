@@ -182,7 +182,7 @@ def forgot_password():
         reset_token = jwt.encode(reset_payload, SECRET_KEY, algorithm='HS256')
         
         # Crear URL de reset
-        frontend_url = os.getenv('FRONTEND_URL', 'http://localhost:5173')
+        frontend_url = os.getenv('PRODUCTION_FRONTEND_URL', os.getenv('FRONTEND_URL', 'http://localhost:5173'))
         reset_url = f"{frontend_url}/reset-password/{reset_token}"
         
         print(f"🔗 Token de recuperación para {email}: {reset_token}")
