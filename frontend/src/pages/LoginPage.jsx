@@ -33,7 +33,7 @@ const LoginPage = () => {
       window.history.replaceState({}, document.title, window.location.pathname);
     }
     
-    // Si hay un error de autenticación, asegurar que no haya tokens corruptos
+    // Si hay un error de autenticación, asegurar que no haya tokens corruptoss
     localStorage.removeItem('access_token');
     localStorage.removeItem('refresh_token');
   }, []);
