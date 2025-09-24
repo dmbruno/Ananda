@@ -1,9 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
+import axios from '../utils/axios';
 import './ResetPasswordPage.css';
-
-
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5001/api';
 
 const ResetPasswordPage = () => {
   const { token } = useParams();
@@ -32,15 +30,9 @@ const ResetPasswordPage = () => {
       
 
       try {
-        const response = await fetch(`${API_URL}/auth/verify-reset-token`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ token }),
-        });
+        const response = await axios.post('/api/auth/verify-reset-token', { token });
 
-        if (response.ok) {
+        if (response.status === 200) {
           setTokenValid(true);
         } else {
           setTokenValid(false);
@@ -93,9 +85,6 @@ const ResetPasswordPage = () => {
     setValidationErrors(errors);
     return Object.keys(errors).length === 0;
   };
-  
-
-  const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5001/api';
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -108,27 +97,19 @@ const ResetPasswordPage = () => {
     setApiError('');
 
     try {
-      const response = await fetch(`${API_URL}/auth/reset-password`,{
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ 
-          token, 
-          password: formData.password 
-        }),
+      const response = await axios.post('/api/auth/reset-password', { 
+        token, 
+        password: formData.password 
       });
 
-      const data = await response.json();
-
-      if (response.ok) {
+      if (response.status === 200) {
         setResetSuccess(true);
         // Redirigir al login después de 3 segundos
         setTimeout(() => {
           navigate('/login');
         }, 3000);
       } else {
-        setApiError(data.message || 'Error al restablecer la contraseña');
+        setApiError(response.data.message || 'Error al restablecer la contraseña');
       }
     } catch (error) {
       console.error('Error:', error);

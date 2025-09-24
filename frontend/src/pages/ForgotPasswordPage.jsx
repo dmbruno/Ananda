@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
+import axios from '../utils/axios';
 import './ForgotPasswordPage.css';
 
 const ForgotPasswordPage = () => {
@@ -13,9 +14,6 @@ const ForgotPasswordPage = () => {
     const emailRegex = /\S+@\S+\.\S+/;
     return emailRegex.test(email);
   };
-
-
-  const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5001/api';
 
   
   const handleSubmit = async (e) => {
@@ -38,20 +36,12 @@ const ForgotPasswordPage = () => {
 
     try {
       // Llamada a la API de recuperación de contraseña
-      const response = await fetch(`${API_URL}/auth/forgot-password`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email }),
-      });
+      const response = await axios.post('/api/auth/forgot-password', { email });
 
-      const data = await response.json();
-
-      if (response.ok) {
+      if (response.status === 200) {
         setEmailSent(true);
       } else {
-        setApiError(data.message || 'Error al enviar el correo');
+        setApiError(response.data.message || 'Error al enviar el correo');
       }
     } catch (error) {
       console.error('Error:', error);
