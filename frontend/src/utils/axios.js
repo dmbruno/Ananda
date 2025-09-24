@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 // Configure axios defaults
-axios.defaults.baseURL = (import.meta.env.VITE_API_URL || 'http://localhost:5001') + '/api';
+axios.defaults.baseURL = import.meta.env.VITE_API_URL || 'http://localhost:5001';
 axios.defaults.headers.post['Content-Type'] = 'application/json';
 axios.defaults.timeout = 15000; // 15 seconds
 
@@ -67,7 +67,7 @@ axios.interceptors.response.use(
     const originalRequest = error.config;
     
     // No contar errores en las rutas de autenticación para evitar bucles
-    const isAuthRoute = originalRequest.url.includes('/auth/');
+    const isAuthRoute = originalRequest.url.includes('/api/auth/');
     if (!isAuthRoute) {
       // Incrementar contador de errores solo para rutas no auth
       failedRequestCount++;
@@ -108,7 +108,7 @@ axios.interceptors.response.use(
           }
           
           console.log('🔄 Enviando petición de refresh token...');
-          const response = await axios.post('/auth/refresh/', { refresh_token: refreshToken });
+          const response = await axios.post('/api/auth/refresh/', { refresh_token: refreshToken });
           const { access_token } = response.data;
           
           console.log('✅ Token refrescado exitosamente');
