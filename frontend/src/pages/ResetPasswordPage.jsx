@@ -52,8 +52,8 @@ const ResetPasswordPage = () => {
       ...prev,
       [name]: value
     }));
-    
-    // Limpiar errores cuando el usuario comience a escribir
+
+    // Limpiar errores cuando el usuario comience a escribir.
     if (validationErrors[name]) {
       setValidationErrors(prev => ({
         ...prev,
