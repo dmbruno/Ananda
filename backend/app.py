@@ -58,9 +58,19 @@ def create_app():
     app.register_blueprint(auth_bp, url_prefix='/api/auth')
     app.register_blueprint(ajuste_precios_bp, url_prefix='/api/productos')
     
-    # Configure CORS with more specific settings - incluye puerto 5174
+    # Configure CORS - allow both development and production origins
+    allowed_origins = [
+        "http://localhost:5173", 
+        "http://localhost:5174", 
+        "http://127.0.0.1:5173", 
+        "http://127.0.0.1:5174", 
+        "http://localhost:5001", 
+        "http://127.0.0.1:5001",
+        "https://ananda-front.onrender.com"
+    ]
+    
     CORS(app, 
-         resources={r"/api/*": {"origins": ["http://localhost:5173", "http://localhost:5174", "http://127.0.0.1:5173", "http://127.0.0.1:5174", "http://localhost:5001", "http://127.0.0.1:5001","https://ananda-front.onrender.com" ]}}, 
+         resources={r"/api/*": {"origins": allowed_origins}}, 
          supports_credentials=True,
          allow_headers=["Content-Type", "Authorization"],
          methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"])
