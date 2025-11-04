@@ -3,7 +3,7 @@
  */
 
 // Obtén la URL base de la API desde variable de entorno (igual que en axios.js)
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5001';
+const API_BASE_URL = import.meta.env.VITE_API_URL   || 'http://localhost:5001';
 
 /**
  * Verifica si la API está disponible
