@@ -311,7 +311,13 @@ const ModalNuevoProducto = ({ open, onClose }) => {
               value={campos.codigo || ""} 
               readOnly 
               placeholder={isGeneratingSku ? "Generando SKU..." : "Se generará automáticamente"}
-              style={{ backgroundColor: "#f5f5f5", cursor: "not-allowed" }}
+              style={{ 
+                backgroundColor: "#f5f5f5", 
+                cursor: "not-allowed",
+                color: "#000000",
+                fontWeight: "700",
+                letterSpacing: "1.5px"
+              }}
             />
           </div>
         </form>
