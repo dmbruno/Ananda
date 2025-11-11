@@ -2,6 +2,8 @@
 from flask import Flask, send_from_directory
 from dotenv import load_dotenv
 import os
+import cloudinary
+import cloudinary.uploader
 
 # Cargar variables de entorno
 load_dotenv()
@@ -23,10 +25,23 @@ from flask_jwt_extended import JWTManager
 
 def create_app():
     app = Flask(__name__)
-    # Servir archivos de la carpeta uploads
+    
+    # Configurar Cloudinary
+    cloudinary.config(
+        cloud_name=os.getenv('CLOUDINARY_CLOUD_NAME'),
+        api_key=os.getenv('CLOUDINARY_API_KEY'),
+        api_secret=os.getenv('CLOUDINARY_API_SECRET'),
+        secure=True
+    )
+    
+    # Límite de archivos Flask
+    app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16MB
+    
+    # Servir archivos de la carpeta uploads (para retrocompatibilidad)
     @app.route('/uploads/<filename>')
     def uploaded_file(filename):
         return send_from_directory('uploads', filename)
+    
     # Asegurar que el directorio instance exista antes de usar app.instance_path
     os.makedirs(app.instance_path, exist_ok=True)
     app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get(
