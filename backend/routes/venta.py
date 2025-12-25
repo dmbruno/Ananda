@@ -7,8 +7,19 @@ from database.db import db
 from datetime import datetime, timedelta
 from sqlalchemy import func, and_
 from utils.auth_utils import require_auth, get_current_user_from_token
+import pytz
+import os
 
 ventas_bp = Blueprint('ventas', __name__, url_prefix='/api/ventas')
+
+# Configurar zona horaria de Argentina
+TIMEZONE = pytz.timezone(os.getenv('TIMEZONE', 'America/Argentina/Buenos_Aires'))
+
+def get_argentina_time():
+    """Obtener la hora actual de Argentina"""
+    return datetime.now(TIMEZONE)
+
+
 
 # Rutas CRUD 
 @ventas_bp.route('/', methods=['POST'])
@@ -33,7 +44,7 @@ def crear_venta(current_user):
         cliente_id=data['cliente_id'],
         usuario_id=current_user.id,  # Usar el usuario autenticado
         caja_id=caja_abierta.id,  # Asociar con la caja abierta
-        fecha_venta=datetime.now(),
+        fecha_venta=get_argentina_time(),
         total=total_final,
         metodo_pago=data['metodo_pago'],
         descuento=descuento
@@ -115,7 +126,7 @@ def procesar_venta_completa(current_user):
             cliente_id=data['cliente_id'],
             usuario_id=current_user.id,  # Usar el usuario autenticado
             caja_id=caja_id,  # Asociar la venta con la caja
-            fecha_venta=datetime.now(),
+            fecha_venta=get_argentina_time(),
             total=total_final,
             metodo_pago=data['metodo_pago'],
             descuento=descuento_porcentaje
