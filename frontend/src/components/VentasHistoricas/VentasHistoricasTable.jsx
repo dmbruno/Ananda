@@ -7,6 +7,7 @@ import { obtenerCajaActual } from "../../store/cajaSlice";
 import ModalVerVenta from "../Modals/ModalVerVenta";
 import { useConfirm } from '../../utils/confirm/ConfirmContext';
 import notify from '../../utils/notify';
+import { formatearFechaLocal } from '../../utils/dateUtils';
 import "./VentasHistoricasTable.css";
 
 const VentasHistoricasTable = ({ ventasFiltradas = [], onVerDetalle }) => {
@@ -21,11 +22,20 @@ const VentasHistoricasTable = ({ ventasFiltradas = [], onVerDetalle }) => {
   // Usar las ventas filtradas directamente
   const ventas = ventasFiltradas;
   
-  // Formatear fecha (YYYY-MM-DD a DD/MM)
+  // Formatear fecha sin conversión de timezone (DD/MM)
   const formatearFecha = (fechaStr) => {
     if (!fechaStr) return "";
-    const fecha = new Date(fechaStr);
-    return `${fecha.getDate().toString().padStart(2, '0')}/${(fecha.getMonth() + 1).toString().padStart(2, '0')}`;
+    
+    // Extraer la parte de la fecha (antes de 'T')
+    const partesFecha = fechaStr.split('T')[0].split('-');
+    
+    if (partesFecha.length !== 3) return "Fecha inválida";
+    
+    const dia = partesFecha[2];
+    const mes = partesFecha[1];
+    
+    // Retornar en formato DD/MM
+    return `${dia}/${mes}`;
   };
 
   // Las ventas ya vienen correctamente procesadas desde el componente padre

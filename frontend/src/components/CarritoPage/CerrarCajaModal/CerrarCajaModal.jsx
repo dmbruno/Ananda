@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { cerrarCaja } from '../../../store/cajaSlice';
 import notify from '../../../utils/notify';
+import { formatearFechaHoraLocal } from '../../../utils/dateUtils';
 import './CerrarCajaModal.css';
 
 const CerrarCajaModal = ({ cajaActual: cajaProp, onCajaCerrada, onCancel }) => {
@@ -186,7 +187,7 @@ const CerrarCajaModal = ({ cajaActual: cajaProp, onCajaCerrada, onCancel }) => {
                       <td>{venta.cliente_nombre || (venta.cliente && venta.cliente.nombre) || 'Cliente #' + venta.cliente_id}</td>
                       <td>{venta.metodo_pago}</td>
                       <td>${venta.total ? venta.total.toLocaleString('es-AR') : '0'}</td>
-                      <td>{new Date(venta.fecha_venta || venta.fecha).toLocaleTimeString()}</td>
+                      <td>{formatearFechaHoraLocal(venta.fecha_venta || venta.fecha).split(' ')[1]}</td>
                     </tr>
                   ))}
                 </tbody>

@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { formatearFechaHoraLocal } from '../../../utils/dateUtils';
 import './DetalleCajaModal.css';
 
 const DetalleCajaModal = ({ caja, onClose }) => {
@@ -166,7 +167,7 @@ const DetalleCajaModal = ({ caja, onClose }) => {
                       <td>{venta.cliente_nombre || (venta.cliente && `${venta.cliente.nombre || ''} ${venta.cliente.apellido || ''}`.trim()) || 'Cliente #' + venta.cliente_id}</td>
                       <td>{venta.metodo_pago}</td>
                       <td>${venta.total ? venta.total.toLocaleString('es-AR') : '0'}</td>
-                      <td>{new Date(venta.fecha_venta || venta.fecha).toLocaleTimeString()}</td>
+                      <td>{formatearFechaHoraLocal(venta.fecha_venta || venta.fecha).split(' ')[1]}</td>
                     </tr>
                   ))}
                 </tbody>

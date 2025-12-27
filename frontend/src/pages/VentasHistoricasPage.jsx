@@ -11,6 +11,7 @@ import VentasHistoricasTable from "../components/VentasHistoricas/VentasHistoric
 import "../components/Sidebar/Carrito/botonCarrito.css";
 import "./VentasHistoricasPage.css";
 import notify from '../utils/notify';
+import { formatearFechaLocal } from '../utils/dateUtils';
 
 const VentasHistoricasPage = () => {
   const dispatch = useDispatch();
@@ -187,8 +188,8 @@ const VentasHistoricasPage = () => {
     const headers = ["ID Venta", "Fecha", "Cliente", "Cantidad Productos", "Vendedor", "Total", "Método de Pago"];
     
     const rows = ventasFiltradas.map(v => {
-      // Formatear fecha
-      const fecha = v.fecha_venta ? new Date(v.fecha_venta).toLocaleDateString('es-AR') : '';
+      // Formatear fecha sin conversión de timezone
+      const fecha = v.fecha_venta ? formatearFechaLocal(v.fecha_venta) : '';
       
       // Formatear valor monetario
       const totalFormateado = v.total ? `$${v.total.toLocaleString('es-AR')}` : '$0';

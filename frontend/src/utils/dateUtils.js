@@ -160,3 +160,68 @@ export const formatearFechaCompleta = (fecha) => {
     return 'Fecha inválida';
   }
 };
+
+/**
+ * Formatea una fecha sin realizar conversión de zona horaria
+ * Útil para fechas que vienen del backend ya en la zona horaria correcta
+ * @param {string} fechaString - Fecha en formato ISO (YYYY-MM-DDTHH:mm:ss)
+ * @returns {string} Fecha formateada como DD/MM/YYYY
+ */
+export const formatearFechaLocal = (fechaString) => {
+  if (!fechaString) return '';
+  
+  try {
+    // Extraer la parte de la fecha (antes de 'T')
+    const partesFecha = fechaString.split('T')[0].split('-');
+    
+    if (partesFecha.length !== 3) return 'Fecha inválida';
+    
+    const anio = partesFecha[0];
+    const mes = partesFecha[1];
+    const dia = partesFecha[2];
+    
+    // Retornar en formato DD/MM/YYYY
+    return `${dia}/${mes}/${anio}`;
+  } catch (error) {
+    console.error("Error al formatear fecha local:", error);
+    return 'Fecha inválida';
+  }
+};
+
+/**
+ * Formatea una fecha y hora sin realizar conversión de zona horaria
+ * @param {string} fechaString - Fecha en formato ISO (YYYY-MM-DDTHH:mm:ss)
+ * @returns {string} Fecha formateada como DD/MM/YYYY HH:MM
+ */
+export const formatearFechaHoraLocal = (fechaString) => {
+  if (!fechaString) return '';
+  
+  try {
+    // Dividir fecha y hora
+    const partes = fechaString.split('T');
+    if (partes.length !== 2) return 'Fecha inválida';
+    
+    // Procesar fecha
+    const partesFecha = partes[0].split('-');
+    if (partesFecha.length !== 3) return 'Fecha inválida';
+    
+    const anio = partesFecha[0];
+    const mes = partesFecha[1];
+    const dia = partesFecha[2];
+    
+    // Procesar hora (puede tener milisegundos y zona horaria)
+    const horaCompleta = partes[1].split('.')[0]; // Eliminar milisegundos si los hay
+    const partesHora = horaCompleta.split(':');
+    
+    if (partesHora.length < 2) return 'Fecha inválida';
+    
+    const hora = partesHora[0];
+    const minuto = partesHora[1];
+    
+    // Retornar en formato DD/MM/YYYY HH:MM
+    return `${dia}/${mes}/${anio} ${hora}:${minuto}`;
+  } catch (error) {
+    console.error("Error al formatear fecha y hora local:", error);
+    return 'Fecha inválida';
+  }
+};

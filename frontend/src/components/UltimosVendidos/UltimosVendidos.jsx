@@ -4,6 +4,7 @@ import { fetchVentas } from "../../store/ventasSlice";
 import "./UltimosVendidos.css";
 import BuscadorPorFechas from "../Buscador/BuscadorPorFechas";
 import ModalVerVenta from "../Modals/ModalVerVenta";
+import { formatearFechaHoraLocal } from "../../utils/dateUtils";
 
 const metodoPagoLabel = {
   "TC": "Tarjeta",
@@ -59,7 +60,7 @@ const UltimosVendidos = () => {
     const encabezado = ["Fecha/Hora", "Cliente", "Productos", "Total", "Método de pago"];
     const filas = ventasFiltradas.map((venta) => [
       venta.fecha_venta
-        ? new Date(venta.fecha_venta).toLocaleDateString("es-AR", { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" })
+        ? formatearFechaHoraLocal(venta.fecha_venta)
         : "-",
       venta.cliente_nombre || "-",
       venta.cantidad_productos || "0",
@@ -129,7 +130,7 @@ const UltimosVendidos = () => {
           >
             <span>{
               venta.fecha_venta
-                ? new Date(venta.fecha_venta).toLocaleDateString("es-AR", { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" })
+                ? formatearFechaHoraLocal(venta.fecha_venta)
                 : "-"
             }</span>
             <span>{venta.cliente_nombre || "-"}</span>
