@@ -16,8 +16,13 @@ ventas_bp = Blueprint('ventas', __name__, url_prefix='/api/ventas')
 TIMEZONE = pytz.timezone(os.getenv('TIMEZONE', 'America/Argentina/Buenos_Aires'))
 
 def get_argentina_time():
-    """Obtener la hora actual de Argentina"""
-    return datetime.now(TIMEZONE)
+    """Obtener la hora actual de Argentina como naive datetime (sin zona horaria)"""
+    # Obtener hora actual en UTC
+    utc_now = datetime.now(pytz.UTC)
+    # Convertir a zona horaria de Argentina
+    argentina_time = utc_now.astimezone(TIMEZONE)
+    # Remover información de zona horaria para que PostgreSQL no la convierta
+    return argentina_time.replace(tzinfo=None)
 
 
 
