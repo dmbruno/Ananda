@@ -24,7 +24,7 @@ def get_argentina_time():
     # Remover información de zona horaria para que PostgreSQL no la convierta
     return argentina_time.replace(tzinfo=None)
 
-
+    
 
 # Rutas CRUD 
 @ventas_bp.route('/', methods=['POST'])
@@ -372,3 +372,123 @@ def obtener_detalles_venta(id):
         })
     
     return jsonify(detalles)
+
+@ventas_bp.route('/<int:venta_id>/cambiar-producto', methods=['POST'])
+@require_auth
+def cambiar_producto(current_user, venta_id):
+    """Cambiar un producto dentro de una venta existente.
+
+    Espera un JSON con:
+    - detalle_id: ID del DetalleVenta que se devuelve
+    - producto_nuevo_id: ID del producto que se lleva el cliente
+    - cantidad: cantidad a cambiar (default 1)
+    - metodo_pago_diferencia: metodo de pago para la diferencia positiva (FT/TC/TB)
+    """
+    try:
+        data = request.get_json() or {}
+        detalle_id = data.get('detalle_id')
+        producto_nuevo_id = data.get('producto_nuevo_id')
+        cantidad = int(data.get('cantidad', 1) or 1)
+        metodo_pago_diferencia = (data.get('metodo_pago_diferencia') or 'FT').upper()
+
+        if not detalle_id or not producto_nuevo_id:
+            return jsonify({'error': 'Faltan detalle_id o producto_nuevo_id'}), 400
+
+        # Buscar venta
+        venta = Venta.query.get(venta_id)
+        if not venta:
+            return jsonify({'error': 'Venta no encontrada'}), 404
+
+        # Buscar detalle a modificar
+        detalle = DetalleVenta.query.filter_by(id=detalle_id, venta_id=venta_id).first()
+        if not detalle:
+            return jsonify({'error': 'Detalle de venta no encontrado'}), 404
+
+        # Productos involucrados
+        producto_devuelto = Producto.query.get(detalle.producto_id)
+        producto_nuevo = Producto.query.get(producto_nuevo_id)
+        if not producto_nuevo:
+            return jsonify({'error': 'Producto nuevo no encontrado'}), 404
+
+        if not producto_devuelto:
+            return jsonify({'error': 'Producto devuelto no encontrado'}), 404
+
+        # Cantidad a usar (por ahora usamos la del detalle, ignorando lo que venga en el body)
+        cantidad_cambio = detalle.cantidad
+
+        # Importes viejo y nuevo
+        importe_viejo = detalle.subtotal or 0
+        precio_nuevo = producto_nuevo.precio_venta or 0
+        importe_nuevo = precio_nuevo * cantidad_cambio
+
+        # Verificar stock del nuevo producto
+        stock_nuevo_actual = producto_nuevo.stock_actual or 0
+        if stock_nuevo_actual < cantidad_cambio:
+            return jsonify({'error': f'Stock insuficiente para {producto_nuevo.nombre}. Disponible: {stock_nuevo_actual}, solicitado: {cantidad_cambio}'}), 400
+
+        # Ajustar stock: devuelto suma, nuevo resta
+        producto_devuelto.stock_actual = (producto_devuelto.stock_actual or 0) + cantidad_cambio
+        producto_nuevo.stock_actual = stock_nuevo_actual - cantidad_cambio
+
+        # Actualizar detalle para que apunte al nuevo producto
+        detalle.producto_id = producto_nuevo.id
+        detalle.precio_unitario = precio_nuevo
+        detalle.subtotal = importe_nuevo
+
+        # Recalcular total de la venta como suma de subtotales
+        nuevos_subtotales = db.session.query(func.coalesce(func.sum(DetalleVenta.subtotal), 0)).filter_by(venta_id=venta.id).scalar() or 0
+        total_bruto = nuevos_subtotales
+        descuento_porcentaje = venta.descuento or 0
+        monto_descuento = total_bruto * (descuento_porcentaje / 100)
+        total_final = total_bruto - monto_descuento
+
+        # Diferencia total respecto al total que tenía la venta
+        diferencia_total = total_final - (venta.total or 0)
+
+        # Actualizar venta (NO tocamos venta.caja_id ni cajas cerradas)
+        venta.total = total_final
+
+        # Ajustar caja solo por la diferencia, usando SIEMPRE la caja abierta actual
+        caja_abierta = Caja.query.filter_by(estado='abierta').first()
+        if caja_abierta and diferencia_total != 0:
+            if diferencia_total > 0:
+                # Cliente paga diferencia ahora -> entra en la caja ABIERTA actual
+                if caja_abierta.monto_final is None:
+                    caja_abierta.monto_final = (caja_abierta.monto_inicial or 0) + diferencia_total
+                else:
+                    caja_abierta.monto_final += diferencia_total
+            else:
+                # Diferencia a favor del cliente: por ahora solo se refleja en la venta,
+                # no movemos caja. Si en el futuro se devuelve efectivo, acá se debería
+                # restar abs(diferencia_total) de caja_abierta.monto_final.
+                pass
+
+        db.session.commit()
+
+        # Responder con venta simplificada similar a listar_ventas
+        cliente_nombre = venta.cliente.nombre + ' ' + venta.cliente.apellido if venta.cliente else None
+        vendedor_nombre = f"{venta.usuario.nombre} {venta.usuario.apellido}" if venta.usuario else 'Admin'
+        cantidad_productos = sum(d.cantidad for d in venta.detalles)
+
+        return jsonify({
+            'mensaje': 'Venta actualizada por cambio de producto',
+            'venta': {
+                'id': venta.id,
+                'cliente_id': venta.cliente_id,
+                'cliente_nombre': cliente_nombre,
+                'usuario_id': venta.usuario_id,
+                'vendedor_nombre': vendedor_nombre,
+                'fecha_venta': venta.fecha_venta.isoformat(),
+                'total': venta.total,
+                'metodo_pago': venta.metodo_pago,
+                'descuento': venta.descuento,
+                'cantidad_productos': cantidad_productos,
+            }
+        }), 200
+
+    except Exception as e:
+        import traceback
+        print('\n🔥 Error en cambiar_producto:', e)
+        print(traceback.format_exc())
+        db.session.rollback()
+        return jsonify({'error': f'Error interno: {str(e)}'}), 500

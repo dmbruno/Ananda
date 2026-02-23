@@ -4,12 +4,13 @@ import { NavLink } from "react-router-dom";
 const SidebarItem = ({ label, icon, route, active, notification, onClick, className, cartCount }) => {
   const isCart = className === "sidebar-cart-btn";
   const isStock = label === "Stock";
+  const isCambio = label === "Cambios";
   const computedClass =
     (isCart ? "sidebar-cart-btn" : "sidebar-item") +
     (active ? " active" : "");
 
-  // Si es Stock, usar div en lugar de NavLink para evitar navegación automática
-  if (isStock) {
+  // Si es Stock o Cambios, usar div en lugar de NavLink para evitar navegación automática
+  if (isStock || isCambio) {
     return (
       <div
         className={computedClass}

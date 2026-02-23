@@ -3,17 +3,17 @@ import { useDispatch } from 'react-redux';
 import { agregarAlCarrito } from '../../../store/carritoSlice';
 import './BuscadorProducto.css';
 
-export default function BuscadorProducto({ productos = [], busqueda, onBusquedaChange }) {
+export default function BuscadorProducto({ productos = [], busqueda, onBusquedaChange, onProductoSelect }) {
   const dispatch = useDispatch();
   const [productosFiltrados, setProductosFiltrados] = useState([]);
   const [mostrarSugerencias, setMostrarSugerencias] = useState(false);
 
   useEffect(() => {
-    if (busqueda.trim()) {
+    if (busqueda && busqueda.trim()) {
       const filtrados = productos.filter(producto => {
         const nombre = producto.nombre?.toLowerCase() || '';
         const codigo = producto.codigo?.toLowerCase() || '';
-        const categoria = producto.categoria?.nombre?.toLowerCase() || '';
+        const categoria = (producto.categoria_nombre || producto.categoria?.nombre || '').toLowerCase();
         const marca = producto.marca?.toLowerCase() || '';
         const busquedaLower = busqueda.toLowerCase();
         
@@ -21,7 +21,7 @@ export default function BuscadorProducto({ productos = [], busqueda, onBusquedaC
                codigo.includes(busquedaLower) ||
                categoria.includes(busquedaLower) ||
                marca.includes(busquedaLower);
-      }).slice(0, 8); // Limitar a 8 resultados
+      }).slice(0, 8);
       
       setProductosFiltrados(filtrados);
       setMostrarSugerencias(true);
@@ -35,8 +35,17 @@ export default function BuscadorProducto({ productos = [], busqueda, onBusquedaC
     onBusquedaChange(e.target.value);
   };
 
-  const handleAgregarProducto = (producto) => {
-    if (producto.stock_actual > 0) {
+  const manejarSeleccion = (producto) => {
+    // Si el componente padre provee onProductoSelect (como en el modal de cambios), usarlo
+    if (onProductoSelect) {
+      onProductoSelect(producto);
+      onBusquedaChange('');
+      setMostrarSugerencias(false);
+      return;
+    }
+
+    // Comportamiento por defecto: agregar al carrito
+    if (producto.stock_actual > 0 || producto.stock > 0) {
       dispatch(agregarAlCarrito({
         id: producto.id,
         nombre: producto.nombre,
@@ -45,21 +54,18 @@ export default function BuscadorProducto({ productos = [], busqueda, onBusquedaC
         imagen: producto.imagen_url,
         codigo: producto.codigo
       }));
-      
-      // Limpiar búsqueda después de agregar
       onBusquedaChange('');
       setMostrarSugerencias(false);
     }
   };
 
   const handleFocus = () => {
-    if (busqueda.trim()) {
+    if (busqueda && busqueda.trim()) {
       setMostrarSugerencias(true);
     }
   };
 
   const handleBlur = () => {
-    // Delay para permitir el click en sugerencias
     setTimeout(() => {
       setMostrarSugerencias(false);
     }, 200);
@@ -68,7 +74,7 @@ export default function BuscadorProducto({ productos = [], busqueda, onBusquedaC
   const handleKeyDown = (e) => {
     if (e.key === 'Enter' && productosFiltrados.length === 1) {
       e.preventDefault();
-      handleAgregarProducto(productosFiltrados[0]);
+      manejarSeleccion(productosFiltrados[0]);
     }
   };
 
@@ -108,7 +114,7 @@ export default function BuscadorProducto({ productos = [], busqueda, onBusquedaC
                   <div
                     key={producto.id}
                     className={`buscador-producto-item ${(producto.stock_actual || producto.stock) === 0 ? 'buscador-producto-item-sin-stock' : ''}`}
-                    onClick={() => handleAgregarProducto(producto)}
+                    onClick={() => manejarSeleccion(producto)}
                   >
                     <div className="buscador-producto-item-imagen">
                       {producto.imagen_url ? (
@@ -141,9 +147,9 @@ export default function BuscadorProducto({ productos = [], busqueda, onBusquedaC
                         <span className={`buscador-producto-item-stock ${(producto.stock_actual || producto.stock) === 0 ? 'buscador-producto-stock-cero' : ''}`}>
                           Stock: {producto.stock_actual || producto.stock}
                         </span>
-                        {producto.categoria && (
+                        {(producto.categoria_nombre || producto.categoria?.nombre) && (
                           <span className="buscador-producto-item-categoria">
-                            {producto.categoria.nombre}
+                            {producto.categoria_nombre || producto.categoria?.nombre}
                           </span>
                         )}
                       </div>
@@ -151,7 +157,7 @@ export default function BuscadorProducto({ productos = [], busqueda, onBusquedaC
 
                     {(producto.stock_actual || producto.stock) > 0 ? (
                       <div className="buscador-producto-item-accion">
-                        ➕
+                        {onProductoSelect ? '✓' : '➕'}
                       </div>
                     ) : (
                       <div className="buscador-producto-item-sin-stock-badge">

@@ -5,7 +5,8 @@ import { logoutUser } from '../../store/authSlice';
 import SidebarItem from "./sidebarItem";
 import BotonCarrito from "./Carrito/BotonCarrito";
 import { useCarritoCount } from "../../hooks/useCarritoCount";
-import { FaChartBar, FaReceipt, FaUsers, FaBox, FaBirthdayCake, FaUserCog, FaPlus, FaTags, FaCashRegister, FaHistory, FaSignOutAlt } from "react-icons/fa";
+import { FaChartBar, FaReceipt, FaUsers, FaBox, FaBirthdayCake, FaUserCog, FaPlus, FaTags, FaCashRegister, FaHistory, FaSignOutAlt, FaExchangeAlt } from "react-icons/fa";
+import ModalCambioPrenda from "../Cambios/ModalCambioPrenda";
 
 // Definir los items base del sidebar
 const getItems = (isAdmin) => {
@@ -32,6 +33,7 @@ const Sidebar = ({ onItemClick, activeItem, keepExpanded }) => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const cartCount = useCarritoCount();
+  const [isCambioOpen, setIsCambioOpen] = React.useState(false);
   
   // Obtener información del usuario desde Redux
   const user = useSelector(state => state.auth.user);
@@ -60,6 +62,15 @@ const Sidebar = ({ onItemClick, activeItem, keepExpanded }) => {
     }
   };
 
+  const handleItemClick = (item) => {
+    if (item.label === 'Cambios') {
+      setIsCambioOpen(true);
+    } else if (item.route) {
+      navigate(item.route);
+    }
+    onItemClick && onItemClick(item.label);
+  };
+
   // Determinar la clase CSS basada en si debe mantenerse expandida
   const sidebarClass = `sidebar ${keepExpanded ? 'sidebar-stock-active' : ''}`;
 
@@ -73,7 +84,7 @@ const Sidebar = ({ onItemClick, activeItem, keepExpanded }) => {
           <SidebarItem 
             key={item.label} 
             {...item} 
-            onClick={() => onItemClick && onItemClick(item.label)} 
+            onClick={() => handleItemClick(item)} 
             active={activeItem === item.label}
           />
         ))}
@@ -91,6 +102,7 @@ const Sidebar = ({ onItemClick, activeItem, keepExpanded }) => {
           <span className="logout-label">Cerrar Sesión</span>
         </button>
       </div>
+      <ModalCambioPrenda isOpen={isCambioOpen} onClose={() => setIsCambioOpen(false)} />
     </aside>
   );
 };

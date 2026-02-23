@@ -4,6 +4,7 @@ from models.producto import Producto
 from models.subcategoria import Subcategoria
 from database.db import db
 from models.categoria import Categoria
+from utils.auth_utils import require_auth
 import cloudinary
 import cloudinary.uploader
 import os
@@ -283,3 +284,38 @@ def obtener_ultimo_sku():
             ultimo_numero = max(ultimo_numero, numero)
     
     return jsonify({'ultimoNumero': ultimo_numero})
+
+@productos_bp.route('/<int:producto_id>/ajustar-stock', methods=['POST'])
+@require_auth
+def ajustar_stock(current_user, producto_id):
+    """Ajusta el stock de un producto usando un delta (positivo o negativo)."""
+    data = request.get_json() or {}
+
+    try:
+        delta = int(data.get('delta', 0))
+    except (TypeError, ValueError):
+        return jsonify({'error': 'delta inválido'}), 400
+
+    if delta == 0:
+        return jsonify({'error': 'delta no puede ser 0'}), 400
+
+    producto = Producto.query.get(producto_id)
+    if not producto:
+        return jsonify({'error': 'Producto no encontrado'}), 404
+
+    stock_actual = producto.stock_actual or 0
+    nuevo_stock = stock_actual + delta
+
+    if nuevo_stock < 0:
+        return jsonify({
+            'error': f'Stock insuficiente. Actual: {stock_actual}, intento de ajustar: {delta}'
+        }), 400
+
+    producto.stock_actual = nuevo_stock
+    db.session.commit()
+
+    return jsonify({
+        'id': producto.id,
+        'nombre': producto.nombre,
+        'stock_actual': producto.stock_actual
+    }), 200
