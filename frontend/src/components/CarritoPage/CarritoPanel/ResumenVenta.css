@@ -75,6 +75,35 @@
   line-height: 1.2;
 }
 
+.resumen-venta-tipo-descuento {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.resumen-venta-tipo-btn {
+  padding: 10px 16px;
+  border: 1px solid #dee2e6;
+  background: white;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 700;
+  transition: all 0.2s ease;
+  color: #495057;
+}
+
+.resumen-venta-tipo-btn:hover {
+  border-color: #adb5bd;
+  background: #f8f9fa;
+}
+
+.resumen-venta-tipo-btn-activo {
+  border-color: #0d6efd !important;
+  background: #e7f1ff !important;
+  color: #0d6efd !important;
+}
+
 .resumen-venta-descuento-container {
   position: relative;
   display: flex;

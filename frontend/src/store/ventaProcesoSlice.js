@@ -38,18 +38,32 @@ export const procesarVenta = createAsyncThunk(
       
       console.log('✅ Todas las validaciones pasaron');
       
+      // Calcular monto de descuento
+      const subtotal = ventaData.items.reduce(
+        (sum, item) => sum + item.precio * item.cantidad,
+        0
+      );
+      let montoDescuento = 0;
+      if (ventaProceso.descuento.tipo === 'porcentaje') {
+        montoDescuento = (subtotal * ventaProceso.descuento.valor) / 100;
+      } else {
+        montoDescuento = Math.min(ventaProceso.descuento.valor, subtotal);
+      }
+
       // Preparar datos completos de la venta
       const dataCompleta = {
         cliente_id: ventaProceso.cliente.id,
         metodo_pago: ventaProceso.metodoPago,
-        descuento: ventaProceso.descuentoPorcentaje,
+        descuento: ventaProceso.descuento.tipo === 'porcentaje'
+          ? ventaProceso.descuento.valor
+          : (montoDescuento / subtotal) * 100, // Convertir monto a porcentaje para compatibilidad backend
         items: ventaData.items.map(item => ({
           producto_id: item.id,
           cantidad: item.cantidad,
           precio_unitario: item.precio,
           subtotal: item.precio * item.cantidad
         })),
-        total: ventaData.total,
+        total: subtotal - montoDescuento,
         caja_id: caja.cajaActual.id
       };
       
@@ -88,7 +102,10 @@ const ventaProcesoSlice = createSlice({
   initialState: {
     paso: 1, // 1: cliente, 2: productos, 3: finalizar
     cliente: null,
-    descuentoPorcentaje: 0,
+    descuento: {
+      tipo: 'porcentaje', // 'porcentaje' o 'monto'
+      valor: 0
+    },
     metodoPago: '',
     procesando: false,
     error: null,
@@ -106,8 +123,13 @@ const ventaProcesoSlice = createSlice({
       // Aquí solo establecemos el cliente
     },
     setDescuento: (state, action) => {
-      const descuento = parseFloat(action.payload) || 0;
-      state.descuentoPorcentaje = Math.max(0, Math.min(100, descuento));
+      const { tipo, valor } = action.payload;
+      state.descuento.tipo = tipo || 'porcentaje';
+      state.descuento.valor = Math.max(0, valor || 0);
+    },
+    setTipoDescuento: (state, action) => {
+      state.descuento.tipo = action.payload;
+      state.descuento.valor = 0; // Limpiar valor al cambiar tipo
     },
     setMetodoPago: (state, action) => {
       state.metodoPago = action.payload;
@@ -121,7 +143,7 @@ const ventaProcesoSlice = createSlice({
     reiniciarVenta: (state) => {
       state.paso = 1;
       state.cliente = null;
-      state.descuentoPorcentaje = 0;
+      state.descuento = { tipo: 'porcentaje', valor: 0 };
       state.metodoPago = '';
       state.procesando = false;
       state.error = null;
@@ -189,6 +211,7 @@ export const {
   setPaso,
   setCliente,
   setDescuento,
+  setTipoDescuento,
   setMetodoPago,
   setProcesando,
   setError,

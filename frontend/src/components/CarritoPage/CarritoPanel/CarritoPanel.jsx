@@ -3,6 +3,7 @@ import { useSelector, useDispatch } from "react-redux";
 import {
   setPaso,
   setDescuento,
+  setTipoDescuento,
   setMetodoPago,
   procesarVenta,
   reiniciarVenta,
@@ -22,13 +23,13 @@ export default function CarritoPanel() {
   const {
     cliente,
     paso,
-    descuentoPorcentaje,
+    descuento,
     metodoPago,
     procesando,
     error,
     ventaExitosa,
   } = useSelector((state) => state.ventaProceso);
-  const { items = [], total } = useSelector((state) => state.carrito);
+  const { items = [] } = useSelector((state) => state.carrito);
   const { items: productos = [] } = useSelector((state) => state.productos);
 
   const [busquedaProducto, setBusquedaProducto] = useState("");
@@ -77,7 +78,12 @@ export default function CarritoPanel() {
         (sum, item) => sum + item.precio * item.cantidad,
         0
       );
-      const montoDescuento = (subtotal * descuentoPorcentaje) / 100;
+      let montoDescuento = 0;
+      if (descuento.tipo === 'porcentaje') {
+        montoDescuento = (subtotal * descuento.valor) / 100;
+      } else {
+        montoDescuento = Math.min(descuento.valor, subtotal);
+      }
       const totalFinal = subtotal - montoDescuento;
 
       // Preparar datos de la venta
@@ -118,7 +124,11 @@ export default function CarritoPanel() {
   };
 
   const handleDescuentoChange = (nuevoDescuento) => {
-    dispatch(setDescuento(Math.max(0, Math.min(100, nuevoDescuento))));
+    dispatch(setDescuento(nuevoDescuento));
+  };
+
+  const handleTipoDescuentoChange = (tipo) => {
+    dispatch(setTipoDescuento(tipo));
   };
 
   const handleMetodoPagoChange = (nuevoMetodo) => {
@@ -201,10 +211,10 @@ export default function CarritoPanel() {
                 <div className="carrito-panel-resumen-seccion">
                   <ResumenVenta
                     items={items}
-                    total={total}
-                    descuento={descuentoPorcentaje}
+                    descuento={descuento}
                     metodoPago={metodoPago}
                     onDescuentoChange={handleDescuentoChange}
+                    onTipoDescuentoChange={handleTipoDescuentoChange}
                     onMetodoPagoChange={handleMetodoPagoChange}
                   />
                 </div>
