@@ -2,7 +2,7 @@ import sys
 import os
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-# Test para las rutas de Categorías
+# Test qwepara las rutas de Categorías
 import pytest
 from app import create_app
 from database.db import db

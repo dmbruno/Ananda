@@ -7,7 +7,7 @@ export default function BuscadorProducto({ productos = [], busqueda, onBusquedaC
   const dispatch = useDispatch();
   const [productosFiltrados, setProductosFiltrados] = useState([]);
   const [mostrarSugerencias, setMostrarSugerencias] = useState(false);
-
+//comentario
   useEffect(() => {
     if (busqueda && busqueda.trim()) {
       const filtrados = productos.filter(producto => {
