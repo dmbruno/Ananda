@@ -6,6 +6,7 @@ from models.caja import Caja
 from database.db import db
 from datetime import datetime, timedelta
 from sqlalchemy import func, and_
+from sqlalchemy.orm import joinedload
 from utils.auth_utils import require_auth, get_current_user_from_token
 import pytz
 import os
@@ -207,7 +208,11 @@ def procesar_venta_completa(current_user):
 # Obtener todas las ventas
 @ventas_bp.route('/', methods=['GET'])
 def listar_ventas():
-    ventas = Venta.query.all()
+    ventas = Venta.query.options(
+        joinedload(Venta.cliente),
+        joinedload(Venta.usuario),
+        joinedload(Venta.detalles)
+    ).all()
     resultado = []
     for v in ventas:
         cliente_nombre = v.cliente.nombre + ' ' + v.cliente.apellido if v.cliente else None
