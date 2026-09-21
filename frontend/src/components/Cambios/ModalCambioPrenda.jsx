@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
+import axios from '../../utils/axios';
 import BuscadorProducto from '../CarritoPage/CarritoPanel/BuscadorProducto';
 import './ModalCambioPrenda.css';
 import notify from '../../utils/notify';
@@ -152,12 +153,6 @@ const ModalCambioPrenda = ({ isOpen, onClose, ventaId, detalleId, productoOrigin
 
       setProcesando(true);
 
-      const token = localStorage.getItem('access_token');
-      const headers = {
-        'Content-Type': 'application/json',
-        ...(token ? { Authorization: `Bearer ${token}` } : {}),
-      };
-
       // Si la diferencia es <= 0, no hay movimiento de caja; si es > 0, se usa metodoPago como metodo_pago_diferencia
       const payload = {
         detalle_id: detalleId,
@@ -168,27 +163,15 @@ const ModalCambioPrenda = ({ isOpen, onClose, ventaId, detalleId, productoOrigin
 
       console.log('[CAMBIO] Payload /api/ventas/cambiar-producto:', payload, 'ventaId:', ventaId);
 
-      const resp = await fetch(`/api/ventas/${ventaId}/cambiar-producto`, {
-        method: 'POST',
-        headers,
-        body: JSON.stringify(payload),
-      });
-
-      const texto = await resp.text();
-      console.log('[CAMBIO] Respuesta cambiar-producto', { status: resp.status, body: texto });
-
-      if (!resp.ok) {
-        let data = {};
-        try {
-          data = JSON.parse(texto);
-        } catch (e) {}
-        throw new Error(data.error || 'Error al procesar el cambio de producto en la venta');
-      }
-
       let dataResp = {};
       try {
-        dataResp = JSON.parse(texto);
-      } catch (e) {}
+        const resp = await axios.post(`/api/ventas/${ventaId}/cambiar-producto`, payload);
+        dataResp = resp.data;
+        console.log('[CAMBIO] Respuesta cambiar-producto', { status: resp.status, body: dataResp });
+      } catch (err) {
+        const data = err.response?.data || {};
+        throw new Error(data.error || 'Error al procesar el cambio de producto en la venta');
+      }
 
       // Notificación según diferencia
       if (saldo > 0) {
