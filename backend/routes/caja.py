@@ -111,7 +111,6 @@ def obtener_caja_actual():
                 'caja': caja_dict,
                 'estado': 'abierta'
             }
-            print(f"Enviando respuesta: {resultado}")
             print("====== FIN OBTENER CAJA ACTUAL ======")
             return jsonify(resultado), 200
         else:
